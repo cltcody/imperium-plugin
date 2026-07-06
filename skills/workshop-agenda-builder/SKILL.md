@@ -1,11 +1,9 @@
 ---
 name: workshop-agenda-builder
 description: |
-  Builds a structured, time-boxed customer workshop or EBC agenda from a modular section
-  library -- Visioning, Value Drivers, Fishbone, Capability Review, Prioritisation, Next
-  Steps -- plus facilitator briefs, materials lists, and a pre-workshop checklist.
-  Use when you say "build a workshop agenda", "plan an EBC", "customer discovery day", or
-  "plan a customer visit", for anything from a half-day session to a 3-day workshop.
+  Builds a time-boxed customer workshop or EBC agenda from a modular section library, plus
+  facilitator briefs, materials lists, and a pre-workshop checklist — half-day to 3-day. Use on
+  "build a workshop agenda", "plan an EBC", or "customer discovery day".
 ---
 
 # Workshop Agenda Builder

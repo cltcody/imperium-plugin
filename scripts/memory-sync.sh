@@ -190,7 +190,9 @@ cmd_status() {
 cmd_link() {
   [[ $# -ge 1 ]] || die "link needs an absolute project path [and optional label]"
   local path="$1" label enc proj target repo_class
-  label="$(label_for "$@")"
+  # normalize first — a trailing slash or ./.. segment would corrupt the encoded name
+  [[ -d "$path" ]] && path="$(cd "$path" && pwd)"
+  label="$(label_for "$path" "${2:-}")"
 
   repo_class="$(get_repo_class "$path")" || repo_class=""
   if [[ "$repo_class" == "corporate" ]]; then
@@ -201,6 +203,9 @@ cmd_link() {
   proj="$PROJECTS/$enc/memory"
   target="$STORE/$label/memory"
   mkdir -p "$target" "$PROJECTS/$enc"
+  # record the real source path so doctor never has to guess it back from the encoded name
+  # (written even when already linked, so re-running `link` upgrades legacy entries)
+  printf '%s\n' "$path" > "$PROJECTS/$enc/.memory-source-path"
   ensure_denylist; ensure_store_gitignore
 
   if [[ -L "$proj" ]]; then
@@ -336,6 +341,33 @@ guess_path_for_encoded() {
   printf '/%s' "$(tr '-' '/' <<<"${1#-}")"
 }
 
+# Does SOME existing directory decode from a Claude-encoded name? Decoding is ambiguous
+# (encode() flattens '/' and '.' to '-', and literal '-' passes through), so instead of
+# guessing the path back, walk the REAL filesystem and encode each directory forward: at every
+# level, a child dir whose encoded name is a token-aligned prefix of the remaining suffix is a
+# viable branch. Exact w.r.t. encode(), so '-Users-x-code-anger-app-source' resolves to
+# /Users/x/code/anger-app-source. Used only to soften doctor warnings for legacy links that
+# predate the .memory-source-path record.
+_resolves_from() {
+  local cur="$1" rest="$2" d base e
+  [[ -z "$rest" ]] && return 0
+  while IFS= read -r d; do
+    base="${d##*/}"
+    e="${base//./-}"                       # encode() applied to one component
+    if [[ "$rest" == "$e" ]]; then
+      return 0
+    elif [[ "$rest" == "$e"-* ]]; then
+      _resolves_from "$d" "${rest#"$e"-}" && return 0
+    fi
+  done < <(find -L "$cur" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
+  return 1
+}
+
+encoded_path_resolves() {
+  [[ "$1" == -?* ]] || return 1            # encoded absolute paths always start with '-'
+  _resolves_from / "${1#-}"
+}
+
 cmd_doctor() {
   step "memory-sync doctor — read-only diagnosis (never modifies anything; always exits 0)"
   local store_exists=0 saved proj target enc guess label linked found f size
@@ -375,24 +407,35 @@ cmd_doctor() {
     info "none — last pull/push (if any) succeeded"
   fi
 
-  # (c) orphaned links: symlink's guessed source project dir no longer exists (moved-repo gotcha)
+  # (c) orphaned links: the linked project's source dir no longer exists (moved-repo gotcha).
+  # Trusts the .memory-source-path recorded by `link`; legacy links without one fall back to
+  # decoding the folder name, which is ambiguous for hyphenated names — those only get a
+  # softer "possibly orphaned" once the greedy resolver also comes up empty.
   step "Orphaned links (moved-repo gotcha)"
   found=0
   saved="$(shopt -p nullglob || true)"; shopt -s nullglob
+  local srcfile src
   for proj in "$PROJECTS"/*/memory; do
     [[ -L "$proj" ]] || continue
     target="$(readlink "$proj")"
     [[ "$target" == "$STORE"/* ]] || continue   # only care about store-linked memories
     enc="$(basename "$(dirname "$proj")")"
-    guess="$(guess_path_for_encoded "$enc")"
-    if [[ ! -d "$guess" ]]; then
+    label="$(basename "$(dirname "$target")")"
+    srcfile="$(dirname "$proj")/.memory-source-path"
+    if [[ -f "$srcfile" ]]; then
+      src="$(head -n1 "$srcfile")"
+      [[ -d "$src" ]] && continue
       found=1
-      label="$(basename "$(dirname "$target")")"
-      warn "orphaned: $proj -> store/$label (guessed source project '$guess' doesn't exist — likely moved or deleted)"
-      info "  fix: bash \"${BASH_SOURCE[0]}\" link <current-path-of-$label> $label   # re-point the CURRENT path at the store"
-      info "  (link refuses if that path's STACK.md declares class: corporate — see references/dev/repo-classification.md)"
-      info "  fix: rm -f \"$proj\" && rm -rf \"$(dirname "$proj")\"   # then retire this stale entry"
+      warn "orphaned: $proj -> store/$label (recorded source project '$src' doesn't exist — moved or deleted)"
+    else
+      encoded_path_resolves "$enc" && continue
+      found=1
+      guess="$(guess_path_for_encoded "$enc")"
+      warn "possibly orphaned: $proj -> store/$label (no recorded source path and no existing dir decodes from '$enc'; naive guess was '$guess'. Decoding is best-effort, so this can be a false alarm)"
     fi
+    info "  fix: bash \"${BASH_SOURCE[0]}\" link <current-path-of-$label> $label   # re-points AND records the current path (silences a false alarm too)"
+    info "  (link refuses if that path's STACK.md declares class: corporate — see references/dev/repo-classification.md)"
+    info "  fix: rm -f \"$proj\" && rm -rf \"$(dirname "$proj")\"   # retire this stale entry — NOTE: that dir also holds the project's old session transcripts"
   done
   eval "$saved"
   [[ "$found" -eq 0 ]] && info "none found"
@@ -489,13 +532,22 @@ cmd_install_hooks() {
   chmod +x "$dest_self" "$dest_repoauto" 2>/dev/null || true
 
   step "Merging SessionStart/SessionEnd hooks into $CLAUDE_HOME/settings.json"
-  CLAUDE_HOME="$CLAUDE_HOME" python3 - <<'PY'
-import json, os
+  # Hook commands are written against a LITERAL $HOME (the shell expands it when the hook
+  # runs), so a settings.json migrated to another machine or username keeps working instead
+  # of failing with "No such file or directory". Only a non-standard CLAUDE_HOME falls back
+  # to a baked absolute path.
+  local hook_base
+  if [[ "$CLAUDE_HOME" == "$HOME/.claude" ]]; then
+    hook_base='$HOME/.claude'
+  else
+    hook_base="$CLAUDE_HOME"
+  fi
+  CLAUDE_HOME="$CLAUDE_HOME" HOOK_BASE="$hook_base" python3 - <<'PY'
+import json, os, re
 
 home = os.environ["CLAUDE_HOME"]
+base = os.environ.get("HOOK_BASE") or home
 path = os.path.join(home, "settings.json")
-mem  = os.path.join(home, "scripts", "memory-sync.sh")
-repo = os.path.join(home, "scripts", "repo-autoupdate.sh")
 
 import time, shutil
 data = {}
@@ -528,16 +580,57 @@ def ensure(event, cmd):
     entries.append({"hooks": [{"type": "command", "command": cmd, "timeout": 15}]})
     return True
 
-added = []
-if ensure("SessionStart", f'bash "{mem}" pull'):          added.append("SessionStart->memory pull")
-if ensure("SessionStart", f'bash "{repo}" check'):        added.append("SessionStart->repo auto-update")
-if ensure("SessionEnd",   f'bash "{mem}" push'):          added.append("SessionEnd->memory push")
+def upgrade(event, script, arg, newcmd):
+    """Rewrite stale variants of this hook — e.g. an absolute home path baked in by an older
+    install, possibly carried over from another machine — to newcmd, then drop the duplicate
+    blocks a rewrite can create. Only touches commands shaped exactly like ours."""
+    entries = hooks.get(event)
+    if not isinstance(entries, list):
+        return []
+    pat = re.compile(r'^bash "[^"]+/scripts/%s" %s$' % (re.escape(script), re.escape(arg)))
+    migrated = []
+    for block in entries:
+        if not isinstance(block, dict):
+            continue
+        for h in block.get("hooks", []):
+            if (isinstance(h, dict) and isinstance(h.get("command"), str)
+                    and h["command"] != newcmd and pat.match(h["command"])):
+                migrated.append(h["command"])
+                h["command"] = newcmd
+    if migrated:
+        seen = False
+        kept = []
+        for block in entries:
+            hs = block.get("hooks") if isinstance(block, dict) else None
+            only_new = bool(hs) and all(
+                isinstance(h, dict) and h.get("command") == newcmd for h in hs)
+            if only_new:
+                if seen:
+                    continue
+                seen = True
+            kept.append(block)
+        hooks[event] = kept
+    return migrated
+
+added, migrated = [], []
+for event, script, arg in (
+    ("SessionStart", "memory-sync.sh",     "pull"),
+    ("SessionStart", "repo-autoupdate.sh", "check"),
+    ("SessionEnd",   "memory-sync.sh",     "push"),
+):
+    cmd = 'bash "%s/scripts/%s" %s' % (base, script, arg)
+    migrated += upgrade(event, script, arg, cmd)
+    if ensure(event, cmd):
+        added.append("%s->%s %s" % (event, script, arg))
 
 with open(path, "w") as f:
     json.dump(data, f, indent=2)
     f.write("\n")
 
-print("  " + ("added " + ", ".join(added) if added else "hooks already present (no change)"))
+msg = []
+if migrated: msg.append("migrated %d stale hook path(s)" % len(migrated))
+if added:    msg.append("added " + ", ".join(added))
+print("  " + ("; ".join(msg) if msg else "hooks already present (no change)"))
 PY
 
   # register the repo we were installed from (e.g. imperium) for auto-update

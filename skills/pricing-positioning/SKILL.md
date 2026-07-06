@@ -1,11 +1,9 @@
 ---
 name: pricing-positioning
 description: |
-  Structures how to introduce and defend pricing in a customer conversation -- builds the
-  value sandwich (value before price, value after price), anchors to the ROI case, handles
-  "too expensive" pushback, and frames pricing as a business return decision.
-  Use when you ask "pricing conversation", "how to position our price", "when should I share
-  the price", "price objection", or "how do I defend the price".
+  Structures how to introduce and defend pricing — value sandwich, ROI anchoring, "too expensive"
+  pushback, price framed as a business-return decision. Use on "pricing conversation", "how to
+  position our price", "price objection", or "defend the price".
 ---
 
 # Pricing Positioning

@@ -1,6 +1,8 @@
 ---
 name: skill-creator
-description: Guide for creating effective skills in this project. Use when the user wants to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations — triggers like "create a skill", "add a skill", "new skill for", "update the skill", "improve the skill", or "how do I add a skill".
+description: |
+  Guide for creating or updating skills in this project — structure, frontmatter, triggering, and
+  packaging. Use on "create a skill", "add a skill", "new skill for", or "improve the skill".
 license: Complete terms in LICENSE.txt
 ---
 

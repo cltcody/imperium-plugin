@@ -1,6 +1,10 @@
 ---
 name: humanize
-description: Strip AI tells from user-facing prose — em-dash overuse, stock AI vocabulary (delve, pivotal, seamless…), and structural patterns like rule-of-three stacking and "not just X, but Y". Covers English and German (separate rulebooks). Use when the user says "humanize this", "de-AI this text", "sounds like AI", "remove em dashes", "make it sound natural", "klingt nach KI", "mach das menschlicher", or when the UX review head flags AI-tell findings in user-facing copy.
+description: |
+  Strip AI tells from user-facing prose — em-dash overuse, stock AI vocabulary, rule-of-three
+  stacking, "not just X, but Y" — with separate English and German rulebooks. Use on "humanize
+  this", "sounds like AI", "remove em dashes", "klingt nach KI", or AI-tell findings from the UX
+  review head.
 ---
 
 # Humanize — De-AI User-Facing Prose

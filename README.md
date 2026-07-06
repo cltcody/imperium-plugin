@@ -196,10 +196,12 @@ Full catalogue: [`INVENTORY.md`](INVENTORY.md). When-to-use map: [`CHEATSHEET.md
 - `discovery/`, `account/`, `demo/` — qualification, account intelligence, demos
 - `value/`, `deal/`, `rfp/`, `handover/` — value framing, deal strategy, RFP response, handover
 
-**Skills (43: 11 dev · 28 sales · 4 design)** — invoked by description:
-- Dev: `piv-orchestrator`, `security-audit`, `gdpr-check`, `skill-creator`, `diagram`, and more
+**Skills (55: 14 dev · 28 sales · 4 design · 9 life)** — invoked by description:
+- Dev: `piv-orchestrator`, `security-audit`, `gdpr-check`, `skill-creator`, `diagram`,
+  `feature-interview` (chat-portable planning interview — see *Where things work* below), and more
 - Sales: discovery, competitive battlecards, exec prep, demo coaching, negotiation, and more
 - Design: `brand`, `docx-generator`, `pptx-generator`
+- Life: decision councils (finance, home, health, family, purchases) + audits and navigators
 
 **Agents** (plugin `agents/`): `code-reviewer`, `security-auditor`, `gdpr-auditor`, `validator`, `validation-runner`, `codebase-analyst`, `rulecheck-agent`, `triage-agent`.
 
@@ -217,6 +219,31 @@ session cursor before `/compact` runs (manual or automatic), in the same `sessio
 overwrites a real `/cc:pause` file, writing to `session.auto.md` instead when one already exists.
 See `references/dev/context-engineering.md` → "Native memory & caching" and `/cc:memory` (below)
 for the full picture of where project memory lives.
+
+## Where things work (Claude Code vs claude.ai chat)
+
+The two component types have different reach — this is Claude platform behavior, not a cc
+setting, and there is no flag that changes it:
+
+| Component | Claude Code (CLI · desktop · web) | claude.ai chat / Cowork |
+|---|---|---|
+| **Commands** (`commands/`, typed `/cc:...`) | ✅ typed or model-invoked | ❌ never loaded |
+| **Skills** (`skills/`, triggered by description) | ✅ | ✅ |
+
+Two practical consequences:
+
+- **Dev commands need Claude Code anyway.** They operate on a repository — `STACK.md`, git,
+  file access — which chat doesn't have. For feature planning from a chat surface, use the
+  `feature-interview` skill: it interviews you to a **Feature Brief**, which you then hand to
+  `/cc:plan:feature` in Claude Code for the codebase-aware plan.
+- **Chat surfaces budget the skill listing.** The combined skill descriptions share a limited
+  context budget (practically ~8k characters), and overflow entries lose their descriptions —
+  cc keeps every description tight (≤350 chars, audited) for this reason. If a skill doesn't
+  trigger conversationally, ask for it **by name** ("use the demo-storyboard skill") — named
+  invocation works even when the description was dropped.
+
+If you used earlier versions of these workflows as standalone claude.ai skills: everything that
+became a *command* is now Claude Code-only by platform design; the skills half is unchanged.
 
 ## Plugin Prefix
 

@@ -1,6 +1,9 @@
 ---
 name: big-purchase-council
-description: A quick council for a significant purchase — car, appliance, gear, tech, anything big enough to think twice about. Four hats (total cost of ownership, need-vs-want, timing & financing, risk & regret) weigh it, then a moderator gives a buy / wait / skip / alternative call. Use for "should I buy [X]", "is [X] worth it", "buy vs lease", "new vs used", "should I finance this", "help me decide on this purchase", "talk me out of / into buying".
+description: |
+  Council for a significant purchase — four hats (total cost of ownership, need-vs-want, timing &
+  financing, risk & regret) weigh it; a moderator calls buy / wait / skip / alternative. Use for
+  "should I buy [X]", "is it worth it", "buy vs lease", "new vs used", "talk me out of buying".
 ---
 
 # Big-Purchase Council

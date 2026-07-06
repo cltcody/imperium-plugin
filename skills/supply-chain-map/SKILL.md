@@ -1,12 +1,10 @@
 ---
 name: supply-chain-map
 description: |
-  Builds a complete, structured visual supply chain map for any named company, combining
-  public research with rigorous gap analysis -- manufacturing networks, distribution models,
-  logistics flows, CMO vs owned plant splits, freight modes, sourcing structure.
-  Use when the user asks to "map", "visualise", "diagram", or "analyse the supply chain" of
-  a company, or wants to benchmark a SC model. Not for code/architecture diagrams -- use
-  `diagram` instead.
+  Builds a structured visual supply chain map for any named company from public research —
+  manufacturing networks, distribution, logistics flows, CMO vs owned plants, freight modes,
+  sourcing. Use on "map / diagram / analyse the supply chain of X". Not for code diagrams — use
+  `diagram`.
 ---
 
 # Supply Chain Map Skill

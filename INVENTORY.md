@@ -135,26 +135,27 @@ These are brand-neutral and need no configuration.
 <!-- BEGIN GENERATED: dev-skills -->
 | Skill | Description |
 |-------|-------------|
-| `architecture-board` | Deliberative pre-deploy architecture board — UX, AI, and systems heads review what's shipping together, surface and resolve their conflicts, and return one GO/NO-GO. Decision support for a release, not a substitute for the team's call. Use on "architecture review", "deploy board", "are we ready to ship", "design council", "architecture readiness", or from /cc:release:deploy. |
+| `architecture-board` | Pre-deploy architecture board — UX, AI, and systems heads review the release together, resolve |
 | `archon` | Run Archon CLI workflows in isolated git worktrees, or set up / configure Archon. Use on "use/run/ask archon to", "set up archon", "archon config/settings". Only for delegating to the Archon CLI, not direct Claude Code work. |
 | `benefits-navigator` | US government and admin process navigator — which agency, forms, documents, deadlines, costs, and pitfalls (SSA, IRS, USCIS, DMV, Medicaid/SNAP, ACA, VA). Orientation only, NOT legal advice — confirm on the official .gov site. Use for "how do I apply for [benefit]", "what forms do I need", "deal with the DMV/IRS". |
-| `big-purchase-council` | A quick council for a significant purchase — car, appliance, gear, tech, anything big enough to think twice about. Four hats (total cost of ownership, need-vs-want, timing & financing, risk & regret) weigh it, then a moderator gives a buy / wait / skip / alternative call. Use for "should I buy [X]", "is [X] worth it", "buy vs lease", "new vs used", "should I finance this", "help me decide on this purchase", "talk me out of / into buying". |
+| `big-purchase-council` | Council for a significant purchase — four hats (total cost of ownership, need-vs-want, timing & |
 | `council` | Convene a personal decision council for any dilemma — assemble expert "hats", reason from each lens, resolve the conflicts into one prioritized recommendation. Use on "help me decide", "should I…", "I'm torn between", or any genuine trade-off. Money, purchases, home, and recurring costs have dedicated councils — prefer those. |
 | `diagram` | Generate software architecture and flow diagrams in Excalidraw format. For a company's supply-chain / logistics map use the `supply-chain-map` skill instead; for Theory-of-Constraints thinking-process trees and clouds use `toc-bbit-expert`. |
 | `family-council` | Family decision council — communication, values, practical, and conflict-repair hats weigh a family decision, then resolve the tensions into a fair path forward. Decision preparation, NOT therapy or counseling. Use for "help our family decide", "we disagree about", "talk through a decision with my partner". |
+| `feature-interview` | Lightweight feature-planning interview — one question at a time, no repo access needed — |
 | `finance-council` | Personal finance advisory council (US) — investment / budget / planner / tax hats weigh a money decision, then resolve the conflicts into prioritized next steps. Decision preparation, NOT financial or tax advice. Use for "should I invest / pay down debt / buy vs rent", "Roth conversion", "money decision", "finance council". |
-| `gdpr-check` | GDPR compliance assessment of a project or feature, producing an officer-ready report with a status dashboard, gap analysis, and a prioritised remediation backlog. Use when the user says "GDPR check", "privacy review", "data protection check", "GDPR report", "are we GDPR compliant", "privacy impact", "DPIA", or asks whether a feature/project processes personal data lawfully. |
+| `gdpr-check` | GDPR compliance assessment of a project or feature — officer-ready report with status dashboard, |
 | `health-council` | Personal health decision council (US) — several lenses prepare you to talk to your clinician. STRICTLY decision preparation, NOT medical advice, diagnosis, or treatment; emergencies → 911. Use for "help me think through this health decision", "what should I ask my doctor", "weigh treatment options", "second opinion". |
 | `home-council` | Housing decision council (US) — money / life-fit / property / market-timing hats weigh buy-vs-rent, renovate, relocate, or refinance, resolved into one prioritized recommendation. Decision preparation, NOT financial or real-estate advice. Use for "should I buy or rent", "renovate or move", "home council", "is this house worth it". |
-| `humanize` | Strip AI tells from user-facing prose — em-dash overuse, stock AI vocabulary (delve, pivotal, seamless…), and structural patterns like rule-of-three stacking and "not just X, but Y". Covers English and German (separate rulebooks). Use when the user says "humanize this", "de-AI this text", "sounds like AI", "remove em dashes", "make it sound natural", "klingt nach KI", "mach das menschlicher", or when the UX review head flags AI-tell findings in user-facing copy. |
-| `insurance-review` | Insurance coverage review (US) — health, auto, home/renters, life, disability, and umbrella — checked for gaps, over-insurance, wrong limits, and duplicates, then a prioritized action plan. Decision preparation, NOT insurance advice. Use for "review my insurance", "am I properly insured", "do I have enough coverage", "insurance gaps", "do I need umbrella / disability / life insurance", "am I over-insured", "insurance check". |
-| `piv-orchestrator` | Diagnoses where you are in the development cycle (PIV loop) by inspecting actual project state — git, plans, execution reports, code reviews, validation — and routes to the right slash command, skill, or agent; can launch the next step directly. Use when the user says "what should I do next", "what's next", "where was I", "I'm stuck", "guide me", "PIV status", "which command should I use", "continue where we left off", or "orchestrate this". |
+| `humanize` | Strip AI tells from user-facing prose — em-dash overuse, stock AI vocabulary, rule-of-three |
+| `insurance-review` | Insurance coverage review (US) — health, auto, home/renters, life, disability, umbrella — for |
+| `piv-orchestrator` | Diagnoses where you are in the PIV development cycle from actual project state (git, plans, |
 | `rulecheck` | Autonomous rule adherence checker. Scans the codebase for rule violations, |
 | `save-task-list` | Save current task list for reuse across sessions |
-| `security-audit` | Run a full defensive security audit of a codebase or change-set and produce an officer-ready clearance report with severity-rated findings, gap analysis, and a prioritized remediation backlog. Use when the user says "security audit", "security review", "security report", "is this secure", "prepare a security clearance", "check for vulnerabilities", "are there any security issues", or before a release, marketplace submission, or compliance sign-off. |
-| `ship-pr` | Autonomous PR autopilot: create a pull request, validate it (project checks + |
-| `skill-creator` | Guide for creating effective skills in this project. Use when the user wants to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations — triggers like "create a skill", "add a skill", "new skill for", "update the skill", "improve the skill", or "how do I add a skill". |
-| `sop-creator` | Create runbooks, playbooks, and technical documentation for engineering teams. Use when the user wants to document a process, create a runbook, build operational docs, or formalize any repeatable technical procedure. Triggers on requests like "create a runbook for...", "document this process", "write a playbook", or any technical documentation request. |
+| `security-audit` | Full defensive security audit of a codebase or change-set — officer-ready clearance report with |
+| `ship-pr` | Autonomous PR autopilot — create the PR, validate (project checks + independent review), resolve |
+| `skill-creator` | Guide for creating or updating skills in this project — structure, frontmatter, triggering, and |
+| `sop-creator` | Create runbooks, playbooks, and technical documentation for engineering teams. Use on "create a |
 | `subscriptions-audit` | Audit recurring costs and subscriptions (US) for waste, duplicates, forgotten trials, and renewal traps; produce a prioritized savings and cancellation plan with a template. Use for "audit my subscriptions", "where can I cut costs", "lower my monthly bills", "subscription creep", "free trial about to renew". |
 | `triage` | Triage GitHub issues by applying type, effort, priority, and area labels. |
 <!-- END GENERATED: dev-skills -->
@@ -168,33 +169,33 @@ Skills marked **⚙** contain `[COMPANY]` / `[PRODUCT_X]` placeholders sourced f
 <!-- BEGIN GENERATED: sales-skills -->
 | Skill | Config | Description |
 |-------|:------:|-------------|
-| `account-intelligence` |  | Full account intelligence pipeline for ${user_config.company} sales and solution consulting teams. |
-| `business-case-stress-tester` |  | Pressure-tests a drafted business case or ROI model before the customer's finance team |
-| `champion-health` |  | Diagnoses the real strength of your champion in a live deal -- separates friendly contacts |
-| `competitive-battlecard` |  | Rapid competitive positioning card against any named competitor in the global trade |
-| `confidence-tagger` | ⚙ | Applies the ${user_config.company} Industry Solutions confidence-tagging standard to any presales |
-| `critical-business-issue-finder` |  | Analyses a discovery call summary, meeting notes, or account brief and surfaces the |
-| `demo-dryrun-coach` |  | Coaches an SC through a demo dry-run before a major customer session -- reviews the |
-| `demo-storyboard` |  | Builds a Tell-Show-Tell demo storyboard using Limbic Persona-Based Selling, PIV Loop, and |
-| `discovery` | ⚙ | Full-lifecycle discovery skill for ${user_config.company} solutions across GTM, TMS, Planning, |
-| `exec-briefing-prep` |  | Prepares the SC and AE for an executive or C-suite meeting -- builds a tight agenda, |
-| `field-comms-writer` |  | Writes professional follow-up emails, meeting recaps, Slack messages, and other |
+| `account-intelligence` |  | Full account intelligence pipeline — runs supply-chain mapping and ${user_config.company} |
+| `business-case-stress-tester` |  | Pressure-tests a business case or ROI model before the customer's finance team does — challenges |
+| `champion-health` |  | Diagnoses champion strength in a live deal — separates friendly contacts from advocates actively |
+| `competitive-battlecard` |  | Rapid competitive positioning card against any named competitor in trade compliance, supply |
+| `confidence-tagger` | ⚙ | Applies the ${user_config.company} confidence-tagging standard to presales output — every claim |
+| `critical-business-issue-finder` |  | Surfaces the Critical Business Issues hiding in a discovery summary, meeting notes, or account |
+| `demo-dryrun-coach` |  | Coaches a demo dry-run before a major session — checks Tell-Show-Tell compliance, pain-to-module |
+| `demo-storyboard` |  | Builds a Tell-Show-Tell demo storyboard with Limbic Persona-Based Selling and Pain-Capability- |
+| `discovery` | ⚙ | Full-lifecycle discovery for ${user_config.company} solutions — researches (Salesforce + |
+| `exec-briefing-prep` |  | Preps the SC and AE for a C-suite meeting — tight agenda, persona-calibrated talking points |
+| `field-comms-writer` |  | Writes customer-facing follow-up emails, recaps, and Slack messages after calls, demos, or key |
 | `grill-me` |  | Interviews the user relentlessly about a plan or design until reaching shared |
 | `handoff` |  | Compact the current conversation into a handoff document for another agent to pick up. |
-| `integration-complexity` |  | Assesses a prospect's integration landscape and rates the complexity and risk of |
+| `integration-complexity` |  | Assesses a prospect's integration landscape and rates the complexity and risk of connecting to |
 | `linkedin-post` | ⚙ | LinkedIn content engine — ideate, posts, articles, Live scripts, podcast notes, and style reviews, with config-driven voice profiles (personal or company). Use on "write a LinkedIn post/article", "turn this into a post", "draft a Live script", "topic ideas", "review this post". |
-| `meeting-notes-structurer` |  | Takes raw, messy notes from any customer meeting and structures them into a clean |
-| `negotiation-prep` |  | Builds a negotiation brief before any commercial discussion -- pricing conversation, |
-| `osd-architect` |  | Generates a full Optimal Solution Design (OSD) from discovery notes and POC results, |
-| `presales-coach` |  | Situational presales coach and deal concierge -- diagnoses the real deal constraint using |
-| `pricing-positioning` |  | Structures how to introduce and defend pricing in a customer conversation -- builds the |
+| `meeting-notes-structurer` |  | Structures raw customer-meeting notes into an action-oriented summary — |
+| `negotiation-prep` |  | Builds a negotiation brief before any commercial discussion — walk-away point, trade levers, |
+| `osd-architect` |  | Generates a full Optimal Solution Design from discovery notes and POC results per the |
+| `presales-coach` |  | Situational presales coach — diagnoses the real deal constraint via |
+| `pricing-positioning` |  | Structures how to introduce and defend pricing — value sandwich, ROI anchoring, "too expensive" |
 | `rfx-navigator` |  | Entry-point skill for any RFX document -- RFI, RFP, RFQ, ITT, or tender -- identifies the |
-| `supply-chain-map` |  | Builds a complete, structured visual supply chain map for any named company, combining |
-| `tactical-empathy-coach` |  | Coaches objection handling and difficult conversations using tactical empathy (Chris Voss: |
-| `toc-bbit-expert` |  | Theory of Constraints + Black Belt in Thinking expert coach -- guides the full BBiT |
-| `video-demo-creator` | ⚙ | Guides the full lifecycle of a presales demo video -- video brief, Tell-Show-Tell script, |
-| `win-loss-analyzer` |  | Runs a structured win or loss debrief on any closed deal -- extracts the real reason the |
-| `workshop-agenda-builder` |  | Builds a structured, time-boxed customer workshop or EBC agenda from a modular section |
+| `supply-chain-map` |  | Builds a structured visual supply chain map for any named company from public research — |
+| `tactical-empathy-coach` |  | Coaches objection handling with tactical empathy (Voss: labels, mirrors, calibrated questions, |
+| `toc-bbit-expert` |  | Theory of Constraints + Black Belt in Thinking coach — full BBiT process (UDEs, CRT, Evaporation |
+| `video-demo-creator` | ⚙ | Guides the full presales demo-video lifecycle — brief, Tell-Show-Tell script, recording |
+| `win-loss-analyzer` |  | Structured win/loss debrief on any closed deal — the real reason for the decision, what to |
+| `workshop-agenda-builder` |  | Builds a time-boxed customer workshop or EBC agenda from a modular section library, plus |
 | `write-a-skill` |  | Creates a new Claude skill for the Industry Solutions Skills library -- guides |
 <!-- END GENERATED: sales-skills -->
 
@@ -207,8 +208,8 @@ These read brand tokens before generating any artefact. Configure your brand via
 <!-- BEGIN GENERATED: design-skills -->
 | Skill | Config | Notes |
 |-------|:------:|-------|
-| `brand` |  | Shared brand registry for any company or co-branded output. |
+| `brand` |  | Shared brand registry read by output skills (pptx-generator, docx-generator) before any branded |
 | `design-system` |  | Generate on-brand UI from a neutral, config-driven design system — brand tokens plus a component kit in vanilla CSS, Tailwind/DaisyUI, React, and Vue adapters. Use when building or restyling UI, prototypes, or components: "design system", "UI kit", "style this page", "theme the app", "make a button/card/modal". |
-| `docx-generator` |  | Generates on-brand Word documents (.docx) for any company's presales or business |
+| `docx-generator` |  | Generates on-brand Word documents (.docx) — proposals, executive summaries, solution designs, |
 | `pptx-generator` |  | Generates and edits professional presentation slides as PPTX files, compatible with |
 <!-- END GENERATED: design-skills -->

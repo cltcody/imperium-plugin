@@ -1,11 +1,9 @@
 ---
 name: demo-dryrun-coach
 description: |
-  Coaches an SC through a demo dry-run before a major customer session -- reviews the
-  storyboard or script for Tell-Show-Tell compliance, checks every module maps to a
-  confirmed pain, audits timing, and flags likely objections before you go live.
-  Use when you say "dry run my demo", "practice this demo", "review my storyboard", or "get
-  feedback on my demo", or want a demo rehearsal before a big session.
+  Coaches a demo dry-run before a major session — checks Tell-Show-Tell compliance, pain-to-module
+  mapping, timing, and likely objections. Use on "dry run my demo", "practice this demo", "review
+  my storyboard", or "feedback on my demo".
 ---
 
 # Demo Dry-Run Coach

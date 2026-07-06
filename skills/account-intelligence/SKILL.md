@@ -1,21 +1,10 @@
 ---
 name: account-intelligence
-description: >
-  Full account intelligence pipeline for ${user_config.company} sales and solution consulting teams.
-  Runs supply chain mapping and solution-fit qualification in sequence for any named
-  company — producing a visual supply chain map AND a complete ${user_config.company} solution fit
-  assessment in one workflow.
-
-  Use this skill whenever the user wants to research AND qualify a prospect in one go.
-  Trigger phrases include: "full account analysis for [company]", "map and qualify
-  [company]", "research [company] for ${user_config.company}", "prepare for a call with [company]",
-  "account deep dive on [company]", "supply chain and qualification for [company]",
-  "what's the opportunity at [company]", "help me prep [company]", or any request
-  that combines supply chain research with sales qualification.
-
-  Also trigger proactively when the user has just finished a supply chain map and
-  asks "what's the ${user_config.company} angle?" or "what should we pitch?" — in that case, skip
-  straight to Phase 2.
+description: |
+  Full account intelligence pipeline — runs supply-chain mapping and ${user_config.company}
+  solution-fit qualification in sequence for any named company, producing the visual map AND the
+  fit assessment in one workflow. Use on "full account analysis for [company]", "map and qualify
+  [company]", or "prep me for a call with [company]".
 ---
 
 # Account Intelligence Pipeline

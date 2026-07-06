@@ -1,12 +1,10 @@
 ---
 name: presales-coach
 description: |
-  Situational presales coach and deal concierge -- diagnoses the real deal constraint using
-  ${user_config.qualification_framework} and the ${user_config.company} Playbook stage framework, then gives
-  SC-specific actions and routes to the right skill or command. Grounded in the PreSales
-  Handbook, the ${user_config.company} Playbook V3, and TOC+BBiT thinking.
-  Use when you say "I'm stuck on a deal", "what should I do next", "coach me", "deal feels
-  stuck", or "prospect has gone quiet".
+  Situational presales coach — diagnoses the real deal constraint via
+  ${user_config.qualification_framework} and the ${user_config.company} Playbook stages, then
+  gives SC-specific actions and routes to the right skill or command. Use on "I'm stuck on a
+  deal", "coach me", or "prospect has gone quiet".
 ---
 
 # PreSales Coach

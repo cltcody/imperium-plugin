@@ -1,11 +1,9 @@
 ---
 name: brand
-description: >
-  Shared brand registry for any company or co-branded output.
-  NOT invoked directly by users. Read by output skills (pptx-generator, docx-generator)
-  before generating any branded artefact. Contains authoritative color
-  tokens, font specs, logo asset paths, typography rules, and format-specific configs
-  for PPTX, DOCX, HTML, and Excalidraw. Configure your brand in brands/template/brand.json.
+description: |
+  Shared brand registry read by output skills (pptx-generator, docx-generator) before any branded
+  artefact — authoritative color tokens, fonts, logo paths, and per-format configs (PPTX, DOCX,
+  HTML, Excalidraw). NOT invoked directly by users; configure in brands/template/brand.json.
 user-invocable: false
 ---
 

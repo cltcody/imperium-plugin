@@ -1,11 +1,9 @@
 ---
 name: tactical-empathy-coach
 description: |
-  Coaches objection handling and difficult conversations using tactical empathy (Chris Voss:
-  labels, mirrors, calibrated questions, accusation audit) and NVC -- generates 3 ranked
-  response options for any objection or pushback.
-  Use to rehearse before a high-stakes call, or when you say "objection", "they pushed
-  back", "how do I respond to", "they said no", or "they're concerned about".
+  Coaches objection handling with tactical empathy (Voss: labels, mirrors, calibrated questions,
+  accusation audit) and NVC — 3 ranked responses for any pushback. Use to rehearse a high-stakes
+  call, or on "objection", "they pushed back", "how do I respond to".
 ---
 
 # Tactical Empathy Coach

@@ -1,12 +1,9 @@
 ---
 name: field-comms-writer
 description: |
-  Writes professional follow-up emails, meeting recaps, Slack messages, and other
-  customer-facing comms after calls, demos, discovery sessions, or key deal moments --
-  tone-matched, concise, no cliches. Pulls account/opportunity context from Salesforce
-  automatically when connected.
-  Use when you say "write a follow-up email", "send a recap", "post-demo email", "draft an
-  email to [customer]", or "write a follow-up".
+  Writes customer-facing follow-up emails, recaps, and Slack messages after calls, demos, or key
+  deal moments — tone-matched, concise, no cliches; pulls Salesforce context when connected. Use
+  on "write a follow-up email", "send a recap", or "draft an email to [customer]".
 ---
 
 # Field Comms Writer

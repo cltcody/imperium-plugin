@@ -1,11 +1,9 @@
 ---
 name: negotiation-prep
 description: |
-  Builds a negotiation brief before any commercial discussion -- pricing conversation,
-  contract negotiation, or discount pressure -- defining your walk-away point, trade levers,
-  concession sequence, and exact responses to common negotiation tactics.
-  Use when you say "negotiation prep", "negotiation brief", "they're pushing back on price",
-  "discount request", or "getting ready to negotiate".
+  Builds a negotiation brief before any commercial discussion — walk-away point, trade levers,
+  concession sequence, and responses to common tactics. Use on "negotiation prep", "they're
+  pushing back on price", "discount request", or "getting ready to negotiate".
 ---
 
 # Negotiation Prep

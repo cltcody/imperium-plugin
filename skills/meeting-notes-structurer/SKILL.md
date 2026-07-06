@@ -1,12 +1,10 @@
 ---
 name: meeting-notes-structurer
 description: |
-  Takes raw, messy notes from any customer meeting and structures them into a clean
-  action-oriented summary -- ${user_config.qualification_framework} updates, agreed next steps, red
-  flags, and a follow-up email ready to send. Pushes updates to Salesforce automatically
-  when connected.
-  Use when you say "structure these notes", "turn my notes into a summary", "what are the
-  action items", or "clean up these notes", or paste raw call notes.
+  Structures raw customer-meeting notes into an action-oriented summary —
+  ${user_config.qualification_framework} updates, next steps, red flags, and a ready follow-up
+  email; pushes to Salesforce when connected. Use on "structure these notes", "what are the action
+  items", or pasted call notes.
 ---
 
 # Meeting Notes Structurer

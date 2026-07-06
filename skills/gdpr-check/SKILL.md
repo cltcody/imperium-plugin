@@ -1,6 +1,9 @@
 ---
 name: gdpr-check
-description: GDPR compliance assessment of a project or feature, producing an officer-ready report with a status dashboard, gap analysis, and a prioritised remediation backlog. Use when the user says "GDPR check", "privacy review", "data protection check", "GDPR report", "are we GDPR compliant", "privacy impact", "DPIA", or asks whether a feature/project processes personal data lawfully.
+description: |
+  GDPR compliance assessment of a project or feature — officer-ready report with status dashboard,
+  gap analysis, and prioritised remediation backlog. Use on "GDPR check", "privacy review",
+  "DPIA", or whether a feature processes personal data lawfully.
 context: fork
 agent: general-purpose
 ---

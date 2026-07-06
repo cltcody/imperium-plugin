@@ -1,12 +1,9 @@
 ---
 name: docx-generator
 description: |
-  Generates on-brand Word documents (.docx) for any company's presales or business
-  deliverables -- proposals, executive summaries, letters, solution designs, handover docs,
-  ROI cases. Supports any configured brand via python-docx; starts from brand templates or
-  builds from scratch.
-  Use when you say "generate a word doc", "docx", "write a report", "create a proposal
-  document", or "branded document".
+  Generates on-brand Word documents (.docx) — proposals, executive summaries, solution designs,
+  handover docs, ROI cases — via python-docx from brand templates or scratch. Use on "generate a
+  word doc", "docx", "create a proposal document", or "branded document".
 ---
 
 # Word Document Generator

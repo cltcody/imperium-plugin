@@ -1,6 +1,10 @@
 ---
 name: architecture-board
-description: Deliberative pre-deploy architecture board — UX, AI, and systems heads review what's shipping together, surface and resolve their conflicts, and return one GO/NO-GO. Decision support for a release, not a substitute for the team's call. Use on "architecture review", "deploy board", "are we ready to ship", "design council", "architecture readiness", or from /cc:release:deploy.
+description: |
+  Pre-deploy architecture board — UX, AI, and systems heads review the release together, resolve
+  their conflicts, and return one GO/NO-GO (decision support, not a substitute for the team's
+  call). Use on "architecture review", "deploy board", "are we ready to ship", or from
+  /cc:release:deploy.
 ---
 
 # Architecture Review Board

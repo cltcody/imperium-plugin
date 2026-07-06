@@ -1,11 +1,9 @@
 ---
 name: video-demo-creator
 description: |
-  Guides the full lifecycle of a presales demo video -- video brief, Tell-Show-Tell script,
-  pre-recording checklist, editing guidance, and 13-point validation across all 5 video
-  levels (Teaser to Live Demo). Integrates with Descript, Synthesia, and goConsensus.
-  Use when you say "create a demo video", "help me record a demo", "video brief", "demo
-  video script", or "Synthesia script".
+  Guides the full presales demo-video lifecycle — brief, Tell-Show-Tell script, recording
+  checklist, editing, and 13-point validation across all 5 video levels; integrates Descript,
+  Synthesia, goConsensus. Use on "create a demo video", "video brief", or "Synthesia script".
 ---
 
 # Video Demo Creator

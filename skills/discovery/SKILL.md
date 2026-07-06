@@ -1,12 +1,10 @@
 ---
 name: discovery
 description: |
-  Full-lifecycle discovery skill for ${user_config.company} solutions across GTM, TMS, Planning,
-  Channel, Logistics, and Supply Collaboration -- researches (Salesforce + SharePoint +
-  web), applies the FTD opening framework, and produces a branded pre-discovery
-  questionnaire or post-call summary.
-  Use when you say "discovery prep", "run discovery", "FTD", "call prep", "what should I
-  ask", or "discovery summary".
+  Full-lifecycle discovery for ${user_config.company} solutions — researches (Salesforce +
+  SharePoint + web), applies the FTD opening framework, and produces a branded pre-discovery
+  questionnaire or post-call summary. Use on "discovery prep", "FTD", "call prep", or "discovery
+  summary".
 ---
 
 # Discovery Skill

@@ -1,6 +1,9 @@
 ---
 name: piv-orchestrator
-description: Diagnoses where you are in the development cycle (PIV loop) by inspecting actual project state — git, plans, execution reports, code reviews, validation — and routes to the right slash command, skill, or agent; can launch the next step directly. Use when the user says "what should I do next", "what's next", "where was I", "I'm stuck", "guide me", "PIV status", "which command should I use", "continue where we left off", or "orchestrate this".
+description: |
+  Diagnoses where you are in the PIV development cycle from actual project state (git, plans,
+  reports, reviews) and routes to — or launches — the right command, skill, or agent. Use on "what
+  should I do next", "where was I", "I'm stuck", "PIV status", or "continue where we left off".
 ---
 
 # PIV Orchestrator

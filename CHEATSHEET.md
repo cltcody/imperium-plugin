@@ -7,6 +7,10 @@ are in a dev cycle run `/cc:next`.
 Commands are `/cc:<group>:<name>`. Skills are invoked by description (just say what you want,
 e.g. *"stress-test this plan"* → `grill-me`).
 
+> **Surface note:** commands run only in Claude Code (CLI/desktop/web) — they need the repo.
+> Skills also work on claude.ai chat, where commands never load; see README → *Where things
+> work*. Chat-side feature planning: the `feature-interview` skill.
+
 ---
 
 ## Dev — the core loop (PIV)
@@ -118,6 +122,7 @@ None of these need company/brand setup — they work with zero configuration.
 
 | Want to… | Skill |
 |----------|-------|
+| Plan a feature from chat (no repo) → Feature Brief for `/cc:plan:feature` | `feature-interview` |
 | Stress-test a plan/design before building | `grill-me` |
 | Hand a session off to another agent | `handoff` |
 | Draw an architecture/flow diagram | `diagram` |

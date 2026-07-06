@@ -49,7 +49,7 @@ All councils instantiate the shared council pattern (`references/life/council-pa
 
 ## Skills
 
-- **Dev skills (13)**: Planning, implementation, verification (incl. post-deployment health), release, GitHub integration, PR autopilot (`ship-pr`), debugging, PIV loop, code review, security review, `architecture-board` (deliberative pre-deploy UX/AI/systems GO-NO-GO), `humanize` (strip AI tells from user-facing prose — EN + DE rulebooks)
+- **Dev skills (14)**: Planning, implementation, verification (incl. post-deployment health), release, GitHub integration, PR autopilot (`ship-pr`), debugging, PIV loop, code review, security review, `architecture-board` (deliberative pre-deploy UX/AI/systems GO-NO-GO), `humanize` (strip AI tells from user-facing prose — EN + DE rulebooks), `feature-interview` (chat-portable planning interview → Feature Brief consumed by `/cc:plan:feature`)
 - **Sales skills (28)**: Discovery, account intelligence, demo scripting, value framing, deal strategy, RFP response, handover documentation
 - **Design skills (4)**: `brand` registry, `design-system` (neutral UI token layer + components in 4 adapters), `docx-generator`, `pptx-generator`
 - **Life skills (9)**: `council` (general decision engine), `finance-council`, `big-purchase-council`, `subscriptions-audit`, `home-council`, `insurance-review`, `health-council`, `family-council`, `benefits-navigator` — all run the shared `references/life/council-pattern.md`; health/finance/family carry a "decision prep, not professional advice" frame

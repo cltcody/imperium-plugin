@@ -1,11 +1,10 @@
 ---
 name: demo-storyboard
 description: |
-  Builds a Tell-Show-Tell demo storyboard using Limbic Persona-Based Selling, PIV Loop, and
-  PCV (Pain-Capability-Value) logic -- one value module per pain, Picture Pitch opening, full
-  scripted flow, and Summary Value Close for any ${user_config.company} GTM product.
-  Use when preparing a customer demonstration, or you say "demo prep", "storyboard", "demo
-  script", "structure the demo", "build a demo flow", or "how should I demo this".
+  Builds a Tell-Show-Tell demo storyboard with Limbic Persona-Based Selling and Pain-Capability-
+  Value logic — one value module per pain, Picture Pitch opening, Summary Value Close — for any
+  ${user_config.company} GTM product. Use on "demo prep", "storyboard", "demo script", or "build a
+  demo flow".
 ---
 
 # Demo Storyboard

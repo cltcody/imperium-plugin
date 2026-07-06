@@ -1,6 +1,9 @@
 ---
 name: sop-creator
-description: Create runbooks, playbooks, and technical documentation for engineering teams. Use when the user wants to document a process, create a runbook, build operational docs, or formalize any repeatable technical procedure. Triggers on requests like "create a runbook for...", "document this process", "write a playbook", or any technical documentation request.
+description: |
+  Create runbooks, playbooks, and technical documentation for engineering teams. Use on "create a
+  runbook", "document this process", "write a playbook", or any repeatable-procedure documentation
+  request.
 ---
 
 # SOP & Runbook Creator

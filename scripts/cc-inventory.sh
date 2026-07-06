@@ -146,7 +146,7 @@ sales_commands_table = build_command_table(sales_rows)
 DEV_SKILLS = [
     "piv-orchestrator", "security-audit", "gdpr-check", "skill-creator", "sop-creator",
     "archon", "rulecheck", "save-task-list", "triage", "diagram", "ship-pr",
-    "architecture-board", "humanize",
+    "architecture-board", "humanize", "feature-interview",
     "council", "finance-council", "big-purchase-council", "subscriptions-audit",
     "home-council", "insurance-review",
     "health-council", "family-council", "benefits-navigator",

@@ -1,11 +1,9 @@
 ---
 name: champion-health
 description: |
-  Diagnoses the real strength of your champion in a live deal -- separates friendly contacts
-  from genuine internal advocates actively selling for you, and flags at-risk champions
-  before they go quiet at the worst moment.
-  Use when you ask "how strong is my champion", "is my champion real", "champion health
-  check", or "do I have a real champion", or want a champion risk assessment.
+  Diagnoses champion strength in a live deal — separates friendly contacts from advocates actively
+  selling for you, and flags at-risk champions early. Use on "how strong is my champion", "is my
+  champion real", or "champion health check".
 ---
 
 # Champion Health Diagnostic

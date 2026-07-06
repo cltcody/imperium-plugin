@@ -145,7 +145,10 @@ do not ask" is a conflict → remove the flag from the target.
 **b) Description length.** Flag any skill/command description over ~350 characters — the
 listing truncates entries at 1,536 chars, but the shared budget is the real constraint. Put
 the key use case and trigger phrases first. Report total listing size (all names +
-descriptions of model-invocable entries) so drift is visible run-over-run.
+descriptions of model-invocable entries) so drift is visible run-over-run. For **skills**
+specifically, also report the total against ~8k chars: that's the practical listing budget on
+claude.ai chat surfaces (where only skills load — see README → *Where things work*), and
+overflow there silently drops descriptions and breaks conversational triggering.
 
 New commands default to model-invocable — when adding one, decide deliberately: deliberate
 typed workflow → add `disable-model-invocation: true`; conversational trigger (or a chain

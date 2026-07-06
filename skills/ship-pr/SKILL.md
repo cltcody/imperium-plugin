@@ -1,12 +1,9 @@
 ---
 name: ship-pr
 description: |
-  Autonomous PR autopilot: create a pull request, validate it (project checks +
-  independent code review), resolve EVERY finding and recommendation (low /
-  medium / high / critical), re-validate until clean, then squash-and-merge.
-  Powerful and irreversible — it ends in a merge to the base branch. Explicitly
-  invoked only; never auto-run. Use when you say "ship this PR", "/ship-pr",
-  "create validate and merge", or "run the ship flow".
+  Autonomous PR autopilot — create the PR, validate (project checks + independent review), resolve
+  EVERY finding, re-validate until clean, then squash-and-merge. Irreversible; explicitly invoked
+  only, never auto-run. Use on "ship this PR" or "run the ship flow".
 disable-model-invocation: true
 argument-hint: "[PR number | branch — optional; defaults to current branch]"
 ---

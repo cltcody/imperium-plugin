@@ -1,12 +1,9 @@
 ---
 name: confidence-tagger
 description: |
-  Applies the ${user_config.company} Industry Solutions confidence-tagging standard to any presales
-  output, labelling every claim 🟢 Confirmed (sourced), 🟡 Inferred (reasoned), or
-  🔴 Unknown (data gap). Use as a final quality pass before customer-facing or internal
-  material leaves the team.
-  Use when you say "tag this", "add confidence tags", "quality check this", "review for
-  accuracy", "confidence check", "mark confidence levels", or "what do we actually know".
+  Applies the ${user_config.company} confidence-tagging standard to presales output — every claim
+  labelled 🟢 Confirmed, 🟡 Inferred, or 🔴 Unknown — as a final quality pass before material leaves
+  the team. Use on "tag this", "confidence check", or "what do we actually know".
 ---
 
 # Confidence Tagger
