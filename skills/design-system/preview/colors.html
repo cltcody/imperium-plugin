@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tokens — Color</title>
+  <link rel="stylesheet" href="../tokens/tokens.css">
+  <style>
+    body { padding: 2rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .75rem; }
+    .swatch { border: 1px solid var(--ds-color-border); border-radius: var(--ds-radius-md); overflow: hidden; }
+    .chip { height: 56px; } .meta { padding: .5rem .6rem; font-size: var(--ds-text-xs); }
+    .name { font-weight: 600; } .val { color: var(--ds-color-fg-muted); font-family: var(--ds-font-mono); }
+    h2 { margin-top: 1.5rem; }
+  </style>
+</head>
+<body>
+  <h1>Color roles</h1>
+  <p><small>Each role is a <code>--ds-color-*</code> variable. <code>[data-theme="dark"]</code> re-declares the same names.</small></p>
+  <h2>Brand & neutral</h2>
+  <div class="grid" id="g1"></div>
+  <h2>Semantic</h2>
+  <div class="grid" id="g2"></div>
+  <script>
+    const mk = (id, names) => {
+      const el = document.getElementById(id);
+      el.innerHTML = names.map(n => {
+        const v = getComputedStyle(document.body).getPropertyValue(`--ds-color-${n}`).trim();
+        return `<div class="swatch"><div class="chip" style="background:var(--ds-color-${n})"></div>
+          <div class="meta"><div class="name">${n}</div><div class="val">${v}</div></div></div>`;
+      }).join("");
+    };
+    mk("g1", ["primary","primary-hover","accent","bg","surface","surface-2","border","fg","fg-muted"]);
+    mk("g2", ["success","warning","error","info"]);
+  </script>
+</body>
+</html>

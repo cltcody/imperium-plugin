@@ -1,0 +1,23 @@
+{
+  "name": "imperium",
+  "description": "Cody's personal Command Center plugin marketplace",
+  "owner": {
+    "name": "Cody Williams"
+  },
+  "plugins": [
+    {
+      "name": "cc",
+      "source": "./",
+      "description": "Unified dev workflow + sales methodology + personal life-decision skills and commands",
+      "version": "1.1.0",
+      "tags": [
+        "dev",
+        "sales",
+        "presales",
+        "workflow",
+        "life",
+        "personal"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "name": "cc",
+  "displayName": "Command Center",
+  "description": "Unified dev workflow + sales methodology + personal life-decision skills and commands",
+  "version": "1.1.0",
+  "author": {
+    "name": "Cody Williams"
+  },
+  "userConfig": {
+    "company": {
+      "type": "string",
+      "title": "Company name",
+      "description": "Your company, used across the sales and GTM skills",
+      "default": "your company"
+    },
+    "company_product": {
+      "type": "string",
+      "title": "Flagship product",
+      "description": "Your main product or platform name",
+      "default": "your flagship product"
+    },
+    "product_a": {
+      "type": "string",
+      "title": "Product A",
+      "description": "First product in your portfolio (optional)",
+      "default": "Product A"
+    },
+    "product_b": {
+      "type": "string",
+      "title": "Product B",
+      "description": "Second product in your portfolio (optional)",
+      "default": "Product B"
+    },
+    "product_c": {
+      "type": "string",
+      "title": "Product C",
+      "description": "Third product in your portfolio (optional)",
+      "default": "Product C"
+    },
+    "product_d": {
+      "type": "string",
+      "title": "Product D",
+      "description": "Fourth product in your portfolio (optional)",
+      "default": "Product D"
+    },
+    "product_e": {
+      "type": "string",
+      "title": "Product E",
+      "description": "Fifth product in your portfolio (optional)",
+      "default": "Product E"
+    },
+    "suite_1": {
+      "type": "string",
+      "title": "Solution suite 1",
+      "description": "First solution-suite or product-family name (optional)",
+      "default": "Solution Suite 1"
+    },
+    "suite_2": {
+      "type": "string",
+      "title": "Solution suite 2",
+      "description": "Second solution-suite or product-family name (optional)",
+      "default": "Solution Suite 2"
+    },
+    "qualification_framework": {
+      "type": "string",
+      "title": "Qualification framework",
+      "description": "Sales qualification framework the discovery skills score against (MEDDPICC, MEDDIC, SPIN, BANT)",
+      "default": "MEDDPICC"
+    },
+    "primary_color": {
+      "type": "string",
+      "title": "Brand primary color",
+      "description": "Hex color for generated documents and design tokens",
+      "default": "#000000"
+    },
+    "accent_color": {
+      "type": "string",
+      "title": "Brand accent color",
+      "description": "Hex accent color for generated documents and design tokens",
+      "default": "#0066CC"
+    },
+    "background_color": {
+      "type": "string",
+      "title": "Brand background color",
+      "description": "Hex background color for generated documents",
+      "default": "#FFFFFF"
+    },
+    "font_family": {
+      "type": "string",
+      "title": "Brand font",
+      "description": "Font family for generated documents and design tokens",
+      "default": "Inter"
+    },
+    "workspace_dir": {
+      "type": "string",
+      "title": "Workspace directory",
+      "description": "Project-relative folder where cc commands write plans, reports, and reviews",
+      "default": ".specify"
+    }
+  }
+}

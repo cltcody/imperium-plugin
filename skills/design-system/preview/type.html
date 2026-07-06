@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tokens — Typography</title>
+  <link rel="stylesheet" href="../tokens/tokens.css">
+  <style>body{padding:2rem;} .row{display:flex;align-items:baseline;gap:1rem;border-bottom:1px solid var(--ds-color-border);padding:.6rem 0;} .tag{width:6rem;font-family:var(--ds-font-mono);font-size:var(--ds-text-xs);color:var(--ds-color-fg-muted);}</style>
+</head>
+<body>
+  <h1>Type scale</h1>
+  <p><small>Family: <code>--ds-font-sans</code>. Eight steps, <code>--ds-text-xs</code> → <code>--ds-text-4xl</code>.</small></p>
+  <div id="scale"></div>
+  <script>
+    document.getElementById("scale").innerHTML = ["4xl","3xl","2xl","xl","lg","base","sm","xs"].map(s =>
+      `<div class="row"><span class="tag">${s}</span><span style="font-size:var(--ds-text-${s})">The quick brown fox</span></div>`).join("");
+  </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+{
+  "_version": "1.0.0",
+  "_instructions": "Fill in every [PLACEHOLDER] value, then run: bash scripts/cc-apply.sh",
+
+  "identity": {
+    "company":         "[YOUR COMPANY NAME]",
+    "company_product": "[YOUR FLAGSHIP PRODUCT]",
+    "plugin_name":     "cc",
+    "plugin_display":  "Command Center"
+  },
+
+  "products": {
+    "product_a": "[PRODUCT A NAME]",
+    "product_b": "[PRODUCT B NAME]",
+    "product_c": "[PRODUCT C NAME]",
+    "product_d": "[PRODUCT D NAME]",
+    "product_e": "[PRODUCT E NAME]"
+  },
+
+  "solutions": {
+    "suite_1": "[SOLUTION SUITE 1]",
+    "suite_2": "[SOLUTION SUITE 2]"
+  },
+
+  "brand": {
+    "primary_color":    "#000000",
+    "accent_color":     "#0066CC",
+    "background_color": "#FFFFFF",
+    "font_family":      "Inter",
+    "sign_off":         "[YOUR STANDARD SIGN-OFF]"
+  },
+
+  "sales": {
+    "qualification_framework": "MEDDPICC"
+  },
+
+  "paths": {
+    "workspace_dir": ".specify",
+    "deals_workspace": "~/code/deals-workspace"
+  },
+
+  "classification": {
+    "personal_owners": [],
+    "work_owners": [],
+    "work_owner_suffixes": []
+  },
+
+  "worktree": {
+    "port_base": 8124
+  },
+
+  "placeholders": {
+    "[COMPANY]":                "identity.company",
+    "[COMPANY_PRODUCT]":        "identity.company_product",
+    "[PRODUCT_A]":              "products.product_a",
+    "[PRODUCT_B]":              "products.product_b",
+    "[PRODUCT_C]":              "products.product_c",
+    "[PRODUCT_D]":              "products.product_d",
+    "[PRODUCT_E]":              "products.product_e",
+    "[SOLUTION_SUITE_1]":       "solutions.suite_1",
+    "[SOLUTION_SUITE_2]":       "solutions.suite_2",
+    "[QUALIFICATION_FRAMEWORK]": "sales.qualification_framework",
+    "[ACCENT_COLOR_HEX]":       "brand.accent_color",
+    "[PRIMARY_COLOR_HEX]":      "brand.primary_color",
+    "[BACKGROUND_COLOR_HEX]":   "brand.background_color",
+    "[BRAND_FONT]":             "brand.font_family",
+    "[WORKSPACE_DIR]":          "paths.workspace_dir"
+  }
+}

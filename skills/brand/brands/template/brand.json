@@ -1,0 +1,19 @@
+{
+  "_instructions": "Fill in all fields below. Remove this _instructions key when done.",
+  "company_name": "[YOUR COMPANY NAME]",
+  "primary_color": "#000000",
+  "accent_color": "#0066CC",
+  "background_color": "#FFFFFF",
+  "font_family": "Inter",
+  "font_weights": [400, 600, 700],
+  "logo_dark": "assets/logo-dark.svg",
+  "logo_light": "assets/logo-light.svg",
+  "docx_template": null,
+  "pptx_template": null,
+  "tone_rules": [
+    "Active voice preferred",
+    "No superlatives",
+    "Date format: YYYY-MM-DD"
+  ],
+  "sign_off": "[YOUR STANDARD SIGN-OFF]"
+}

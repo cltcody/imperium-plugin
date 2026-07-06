@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tokens — Elevation & motion</title>
+  <link rel="stylesheet" href="../tokens/tokens.css">
+  <style>
+    body{padding:2rem;} .row{display:flex;gap:2rem;flex-wrap:wrap;}
+    .card{background:var(--ds-color-surface);border:1px solid var(--ds-color-border);border-radius:var(--ds-radius-lg);padding:1.25rem 1.5rem;width:180px;}
+    .e1{box-shadow:var(--ds-shadow-1);} .e2{box-shadow:var(--ds-shadow-2);}
+    .tag{font-family:var(--ds-font-mono);font-size:var(--ds-text-xs);color:var(--ds-color-fg-muted);}
+    .mover{margin-top:2rem;background:var(--ds-color-primary);color:var(--ds-color-primary-fg);padding:.6rem 1rem;border-radius:var(--ds-radius-md);display:inline-block;transition:transform var(--ds-duration) var(--ds-ease);}
+    .mover:hover{transform:translateY(-4px);}
+  </style>
+</head>
+<body>
+  <h1>Elevation</h1>
+  <div class="row">
+    <div class="card e1"><div class="tag">shadow-1</div><div>Resting surface</div></div>
+    <div class="card e2"><div class="tag">shadow-2</div><div>Raised surface</div></div>
+  </div>
+  <h1 style="margin-top:2rem">Motion</h1>
+  <p><small>Hover the chip — <code>--ds-ease</code> + <code>--ds-duration</code>.</small></p>
+  <span class="mover">Hover me</span>
+</body>
+</html>

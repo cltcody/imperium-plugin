@@ -1,0 +1,17 @@
+# Seed profile: Next.js (TypeScript)
+# Used by /cc:setup:stack as a starting point. Detection prefers the project's
+# real package.json scripts and lockfile over these defaults.
+stack: nextjs
+language: typescript
+package_manager: npm        # detect: package-lock.json→npm · pnpm-lock.yaml→pnpm · yarn.lock→yarn · bun.lockb→bun
+working_dir: .
+commands:
+  install: npm ci
+  smoke: npx tsc --noEmit          # fast fail before tests/build
+  test: npm test
+  typecheck: npx tsc --noEmit       # or `npm run typecheck` if defined
+  lint: npm run lint                # next lint / eslint
+  format:check: npm run format:check # prettier --check (if configured)
+  build: npm run build              # next build
+  dev: npm run dev                  # next dev
+  # migrate: npx prisma migrate deploy   # uncomment if using Prisma

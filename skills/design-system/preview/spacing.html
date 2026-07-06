@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tokens — Spacing & radii</title>
+  <link rel="stylesheet" href="../tokens/tokens.css">
+  <style>body{padding:2rem;} .row{display:flex;align-items:center;gap:1rem;margin:.4rem 0;} .tag{width:7rem;font-family:var(--ds-font-mono);font-size:var(--ds-text-xs);color:var(--ds-color-fg-muted);} .bar{background:var(--ds-color-primary);height:14px;border-radius:2px;} .box{background:var(--ds-color-surface-2);border:1px solid var(--ds-color-border);width:72px;height:48px;display:flex;align-items:center;justify-content:center;font-size:var(--ds-text-xs);color:var(--ds-color-fg-muted);}</style>
+</head>
+<body>
+  <h1>Spacing</h1>
+  <div id="space"></div>
+  <h1 style="margin-top:2rem">Radii</h1>
+  <div class="row" id="radii"></div>
+  <script>
+    document.getElementById("space").innerHTML = [1,2,3,4,5,6,7,8].map(n =>
+      `<div class="row"><span class="tag">space-${n}</span><span class="bar" style="width:var(--ds-space-${n})"></span></div>`).join("");
+    document.getElementById("radii").innerHTML = ["sm","md","lg","pill"].map(r =>
+      `<div class="box" style="border-radius:var(--ds-radius-${r})">${r}</div>`).join("");
+  </script>
+</body>
+</html>

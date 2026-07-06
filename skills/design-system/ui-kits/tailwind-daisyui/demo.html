@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en" data-theme="ds">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Design System — Tailwind/DaisyUI adapter demo</title>
+
+  <!-- Same CDN setup a no-build project (e.g. a Django app) uses -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+
+  <!-- NO-BUILD theming: point DaisyUI's color vars at our token values.
+       Change only these to rebrand; they mirror dsTheme in theme.js. -->
+  <style>
+    [data-theme="ds"] {
+      --p: #2563eb;  --pc: #ffffff;
+      --s: #0ea5e9;  --sc: #ffffff;
+      --a: #0ea5e9;  --ac: #ffffff;
+      --n: #1f2733;  --nc: #ffffff;
+      --b1: #ffffff; --b2: #f8fafc; --b3: #f1f5f9; --bc: #0f172a;
+      --in: #2563eb; --su: #16a34a; --wa: #d97706; --er: #dc2626;
+      --rounded-box: 0.75rem; --rounded-btn: 0.5rem; --rounded-badge: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-base-200 p-8">
+  <div class="max-w-4xl mx-auto space-y-8">
+    <h1 class="text-2xl font-bold">DaisyUI adapter — themed by --ds-* tokens</h1>
+
+    <div class="flex flex-wrap gap-2 items-center">
+      <button class="btn btn-primary">Primary</button>
+      <button class="btn">Default</button>
+      <button class="btn btn-secondary">Secondary</button>
+      <button class="btn btn-success">Success</button>
+      <button class="btn btn-error">Error</button>
+      <button class="btn btn-outline">Outline</button>
+      <button class="btn btn-ghost">Ghost</button>
+      <button class="btn btn-sm btn-primary">Small</button>
+    </div>
+
+    <div class="flex flex-wrap gap-2 items-center">
+      <span class="badge">Neutral</span>
+      <span class="badge badge-primary">Primary</span>
+      <span class="badge badge-success">Success</span>
+      <span class="badge badge-warning">Warning</span>
+      <span class="badge badge-error">Error</span>
+    </div>
+
+    <div class="stats shadow">
+      <div class="stat"><div class="stat-title">Revenue</div><div class="stat-value">$48.2k</div></div>
+      <div class="stat"><div class="stat-title">Open items</div><div class="stat-value">17</div></div>
+      <div class="stat"><div class="stat-title">Matched</div><div class="stat-value">93%</div></div>
+    </div>
+
+    <div class="card bg-base-100 shadow max-w-sm">
+      <div class="card-body">
+        <h2 class="card-title">Card title</h2>
+        <p class="text-sm opacity-70">Grouped content on a base-100 surface.</p>
+        <div class="card-actions"><button class="btn btn-primary btn-sm">Action</button></div>
+      </div>
+    </div>
+
+    <div role="tablist" class="tabs tabs-bordered">
+      <a role="tab" class="tab tab-active">Overview</a>
+      <a role="tab" class="tab">Activity</a>
+      <a role="tab" class="tab">Settings</a>
+    </div>
+
+    <div class="flex flex-wrap gap-3 items-end max-w-xl">
+      <label class="form-control flex-1"><span class="label-text">Name</span><input class="input input-bordered" placeholder="Jane Doe"></label>
+      <label class="form-control flex-1"><span class="label-text">Type</span><select class="select select-bordered"><option>Invoice</option><option>Receipt</option></select></label>
+      <input type="checkbox" class="toggle toggle-primary" checked>
+      <span class="loading loading-spinner loading-sm"></span>
+    </div>
+
+    <div role="alert" class="alert alert-success"><span>Saved successfully.</span></div>
+
+    <div class="card bg-base-100 shadow overflow-hidden">
+      <table class="table table-sm">
+        <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>2026-06-01</td><td>Office supplies</td><td>$124.00</td><td><span class="badge badge-success">Matched</span></td></tr>
+          <tr><td>2026-06-03</td><td>Cloud hosting</td><td>$89.00</td><td><span class="badge">Pending</span></td></tr>
+          <tr><td>2026-06-05</td><td>Travel</td><td>$612.40</td><td><span class="badge badge-error">Unmatched</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

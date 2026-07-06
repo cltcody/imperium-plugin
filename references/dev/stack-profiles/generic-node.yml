@@ -1,0 +1,12 @@
+# Seed profile: generic Node/JS project (no specific framework detected).
+# Detection prefers real package.json scripts; these are conservative fallbacks.
+stack: node
+language: javascript
+package_manager: npm        # detect from lockfile
+working_dir: .
+commands:
+  install: npm ci
+  test: npm test
+  lint: npm run lint         # only if a lint script exists
+  build: npm run build       # only if a build script exists
+  dev: npm start

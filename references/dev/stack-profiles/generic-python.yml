@@ -1,0 +1,14 @@
+# Seed profile: generic Python project (no specific framework detected).
+# Detection sets package_manager from the lockfile: uv.lock→uv · poetry.lock→poetry · else pip.
+# Prefix commands with `uv run` / `poetry run` as appropriate; pip uses an active venv.
+stack: python
+language: python
+package_manager: pip        # uv | poetry | pip
+working_dir: .
+commands:
+  install: pip install -e .
+  smoke: python -c "import <package>"   # replace <package> with the importable name
+  test: pytest -v
+  typecheck: mypy .
+  lint: ruff check .
+  format:check: ruff format --check .

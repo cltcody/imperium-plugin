@@ -1,0 +1,15 @@
+# Seed profile: Expo / React Native (TypeScript)
+# Grounded in a real Expo app (expo start, jest, eslint, tsc --noEmit, npm).
+# Detection prefers the project's real package.json scripts over these defaults.
+stack: expo-react-native
+language: typescript
+package_manager: npm
+working_dir: .
+commands:
+  install: npm ci
+  smoke: npx tsc --noEmit
+  test: npm test                    # jest (often `jest --passWithNoTests`)
+  typecheck: npx tsc --noEmit       # or `npm run typecheck`
+  lint: npm run lint                # eslint
+  dev: npx expo start               # or `npm run web` for web target
+  # build: eas build --platform all # uncomment if using EAS Build

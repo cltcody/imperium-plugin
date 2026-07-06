@@ -1,0 +1,16 @@
+# Seed profile: FastAPI (Python) — the original cc dev-command stack.
+# working_dir is typically `backend/` in the full-stack template layout.
+stack: fastapi
+language: python
+package_manager: uv         # uv | poetry | pip
+working_dir: backend
+commands:
+  install: uv sync
+  smoke: uv run python -c "from app.main import app; print('All imports valid')"
+  test: uv run pytest -v
+  typecheck: uv run mypy app/        # plus `uv run pyright app/` if used
+  lint: uv run ruff check .
+  format:check: uv run ruff format --check .
+  migrate: uv run alembic upgrade head
+  dev: uv run uvicorn app.main:app --reload
+  coverage: uv run pytest --cov=app --cov-report=term-missing

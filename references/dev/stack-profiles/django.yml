@@ -1,0 +1,17 @@
+# Seed profile: Django (Python)
+# Detection sets package_manager from the lockfile: uv.lock→uv · poetry.lock→poetry · else pip.
+# working_dir is often `backend/` in a monorepo, or `.` for a standalone Django project.
+stack: django
+language: python
+package_manager: uv         # uv | poetry | pip
+working_dir: .
+commands:
+  install: uv sync
+  smoke: uv run python manage.py check       # fast config/app validation
+  test: uv run python manage.py test          # or `uv run pytest -v` with pytest-django
+  typecheck: uv run mypy .
+  lint: uv run ruff check .
+  format:check: uv run ruff format --check .
+  migrate: uv run python manage.py migrate
+  dev: uv run python manage.py runserver
+  coverage: uv run pytest --cov               # with pytest-django + pytest-cov

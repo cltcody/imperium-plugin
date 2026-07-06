@@ -1,0 +1,110 @@
+/* ============================================================================
+   Design System — Tokens
+   A neutral, brand-agnostic token layer with two professional, switchable themes:
+
+     • "modern"  — Graphite: cool neutrals, near-black ink, restrained indigo accent
+     • "classic" — Warm Editorial: warm stone neutrals, ink, refined amber accent
+
+   Switch by setting data-theme on a root element:  <html data-theme="modern">  or
+   <html data-theme="classic">. "modern" is the default. The brand accent + canvas are
+   meant to be overridden per company via /cc:setup:design (which reads cc.config.json);
+   the neutral ramp, type, spacing, radii, elevation and motion are shared across themes.
+
+   Naming: --ds-<category>-<role>[-<state>].
+   ============================================================================ */
+
+:root {
+  /* ── Shared scales (theme-independent) ──────────────────────────────────── */
+  --ds-font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --ds-font-mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+
+  --ds-text-xs: 0.75rem;  --ds-text-sm: 0.875rem; --ds-text-base: 1rem;
+  --ds-text-lg: 1.125rem; --ds-text-xl: 1.25rem;  --ds-text-2xl: 1.5rem;
+  --ds-text-3xl: 1.875rem; --ds-text-4xl: 2.25rem;
+  --ds-weight-normal: 400; --ds-weight-medium: 500; --ds-weight-semibold: 600; --ds-weight-bold: 700;
+  --ds-leading-tight: 1.2; --ds-leading-normal: 1.5; --ds-leading-relaxed: 1.7;
+
+  --ds-space-1: 0.25rem; --ds-space-2: 0.5rem; --ds-space-3: 0.75rem; --ds-space-4: 1rem;
+  --ds-space-5: 1.5rem;  --ds-space-6: 2rem;   --ds-space-7: 3rem;    --ds-space-8: 4rem;
+
+  --ds-radius-sm: 4px; --ds-radius-md: 8px; --ds-radius-lg: 12px; --ds-radius-pill: 9999px;
+
+  --ds-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-duration-fast: 120ms; --ds-duration: 200ms;
+}
+
+/* ── Theme: Modern (Graphite) — also the default on :root ─────────────────── */
+:root,
+[data-theme="modern"] {
+  --ds-color-primary:        #111827;   /* near-black ink — brand action     */
+  --ds-color-primary-hover:  #1f2937;
+  --ds-color-primary-fg:     #ffffff;
+  --ds-color-accent:         #4f46e5;   /* restrained indigo, used sparingly */
+  --ds-color-accent-fg:      #ffffff;
+
+  --ds-color-bg:        #ffffff;
+  --ds-color-surface:   #f9fafb;
+  --ds-color-surface-2: #f3f4f6;
+  --ds-color-border:    #e5e7eb;
+  --ds-color-fg:        #111827;
+  --ds-color-fg-muted:  #6b7280;
+
+  --ds-color-success:     #15803d;
+  --ds-color-warning:     #b45309;
+  --ds-color-error:       #b91c1c;
+  --ds-color-info:        #4f46e5;
+  --ds-color-on-semantic: #ffffff;
+
+  --ds-shadow-1: 0 1px 2px rgba(17, 24, 39, 0.06), 0 1px 3px rgba(17, 24, 39, 0.05);
+  --ds-shadow-2: 0 4px 12px rgba(17, 24, 39, 0.08), 0 2px 4px rgba(17, 24, 39, 0.05);
+}
+
+/* ── Theme: Classic (Warm Editorial) ──────────────────────────────────────── */
+[data-theme="classic"] {
+  --ds-color-primary:        #1c1917;   /* warm ink                          */
+  --ds-color-primary-hover:  #292524;
+  --ds-color-primary-fg:     #fafaf9;
+  --ds-color-accent:         #b45309;   /* refined amber / clay              */
+  --ds-color-accent-fg:      #ffffff;
+
+  --ds-color-bg:        #fafaf9;
+  --ds-color-surface:   #f5f5f4;
+  --ds-color-surface-2: #eeece9;
+  --ds-color-border:    #e7e5e4;
+  --ds-color-fg:        #1c1917;
+  --ds-color-fg-muted:  #78716c;
+
+  --ds-color-success:     #4d7c0f;
+  --ds-color-warning:     #b45309;
+  --ds-color-error:       #b91c1c;
+  --ds-color-info:        #b45309;
+  --ds-color-on-semantic: #ffffff;
+
+  --ds-shadow-1: 0 1px 2px rgba(28, 25, 23, 0.06), 0 1px 3px rgba(28, 25, 23, 0.05);
+  --ds-shadow-2: 0 6px 16px rgba(28, 25, 23, 0.10), 0 2px 4px rgba(28, 25, 23, 0.06);
+}
+
+/* ── Base element styles (theme-agnostic; consume the tokens above) ────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ds-color-bg);
+  color: var(--ds-color-fg);
+  font-family: var(--ds-font-sans);
+  font-size: var(--ds-text-base);
+  line-height: var(--ds-leading-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 { margin: 0 0 var(--ds-space-3); line-height: var(--ds-leading-tight); font-weight: var(--ds-weight-bold); }
+h1 { font-size: var(--ds-text-3xl); }
+h2 { font-size: var(--ds-text-2xl); }
+h3 { font-size: var(--ds-text-xl); }
+h4 { font-size: var(--ds-text-lg); }
+p  { margin: 0 0 var(--ds-space-4); }
+small { font-size: var(--ds-text-sm); color: var(--ds-color-fg-muted); }
+a { color: var(--ds-color-accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code, kbd, pre { font-family: var(--ds-font-mono); font-size: 0.9em; }
+hr { border: none; border-top: 1px solid var(--ds-color-border); margin: var(--ds-space-5) 0; }

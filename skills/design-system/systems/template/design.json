@@ -1,0 +1,14 @@
+{
+  "_instructions": "Fill in your brand values, then run /cc:setup:design (or bash scripts/cc-apply.sh --apply). Remove this _instructions key when done. Colors/font default to the neutral tokens in tokens/tokens.css until set.",
+  "system_name": "[YOUR DESIGN SYSTEM NAME]",
+  "font_family": "[BRAND_FONT]",
+  "primary_color": "[PRIMARY_COLOR_HEX]",
+  "accent_color": "[ACCENT_COLOR_HEX]",
+  "background_color": "[BACKGROUND_COLOR_HEX]",
+  "density": "comfortable",
+  "theme": "modern",
+  "theme_options": ["modern", "classic"],
+  "adapters": ["vanilla", "tailwind-daisyui", "react", "vue"],
+  "icon_set": null,
+  "tokens_css": "tokens/tokens.css"
+}

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Design System — Vanilla component gallery</title>
+  <link rel="stylesheet" href="../../tokens/tokens.css">
+  <link rel="stylesheet" href="components.css">
+  <style>
+    .wrap { max-width: 1100px; margin: 0 auto; padding: var(--ds-space-6); }
+    .row { display: flex; gap: var(--ds-space-3); flex-wrap: wrap; align-items: center; margin-bottom: var(--ds-space-5); }
+    section { margin-bottom: var(--ds-space-7); }
+    .eyebrow { font-size: var(--ds-text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--ds-color-fg-muted); margin-bottom: var(--ds-space-2); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Component gallery</h1>
+    <p><small>Toggle dark mode: set <code>data-theme="dark"</code> on &lt;html&gt;. Every component below is token-driven.</small></p>
+
+    <section>
+      <div class="eyebrow">Buttons</div>
+      <div class="row">
+        <button class="ds-btn ds-btn--primary">Primary</button>
+        <button class="ds-btn">Default</button>
+        <button class="ds-btn ds-btn--accent">Accent</button>
+        <button class="ds-btn ds-btn--success">Success</button>
+        <button class="ds-btn ds-btn--error">Error</button>
+        <button class="ds-btn ds-btn--outline">Outline</button>
+        <button class="ds-btn ds-btn--ghost">Ghost</button>
+        <button class="ds-btn ds-btn--primary ds-btn--sm">Small</button>
+        <button class="ds-btn ds-btn--primary" disabled>Disabled</button>
+      </div>
+      <div class="row">
+        <span class="ds-join">
+          <button class="ds-btn">Day</button><button class="ds-btn ds-btn--primary">Week</button><button class="ds-btn">Month</button>
+        </span>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Badges &amp; links</div>
+      <div class="row">
+        <span class="ds-badge">Neutral</span>
+        <span class="ds-badge ds-badge--primary">Primary</span>
+        <span class="ds-badge ds-badge--success">Success</span>
+        <span class="ds-badge ds-badge--warning">Warning</span>
+        <span class="ds-badge ds-badge--error">Error</span>
+        <span class="ds-badge ds-badge--lg ds-badge--primary">Large</span>
+        <a class="ds-link" href="#">A text link →</a>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Stats</div>
+      <div class="ds-stats">
+        <div class="ds-stat"><div class="ds-stat__label">Revenue</div><div class="ds-stat__value">$48.2k</div></div>
+        <div class="ds-stat"><div class="ds-stat__label">Open items</div><div class="ds-stat__value">17</div></div>
+        <div class="ds-stat"><div class="ds-stat__label">Matched</div><div class="ds-stat__value">93%</div></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Card</div>
+      <div class="ds-card" style="max-width:360px">
+        <div class="ds-card__body">
+          <h3 class="ds-card__title">Card title</h3>
+          <p><small>A surface for grouped content, using <code>--ds-shadow-1</code> and radius <code>lg</code>.</small></p>
+          <button class="ds-btn ds-btn--primary ds-btn--sm">Action</button>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Tabs</div>
+      <div class="ds-tabs">
+        <button class="ds-tab is-active">Overview</button>
+        <button class="ds-tab">Activity</button>
+        <button class="ds-tab">Settings</button>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Form controls</div>
+      <div class="row" style="max-width:520px; align-items:flex-end">
+        <div style="flex:1"><label class="ds-label">Name</label><input class="ds-input" placeholder="Jane Doe"></div>
+        <div style="flex:1"><label class="ds-label">Type</label><select class="ds-select"><option>Invoice</option><option>Receipt</option></select></div>
+      </div>
+      <div class="row">
+        <label class="ds-label"><input type="checkbox" class="ds-checkbox" checked> Reconciled</label>
+        <label class="ds-toggle"><input type="checkbox" checked><span class="ds-toggle__track"></span></label>
+        <span><span class="ds-spinner"></span> Loading…</span>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Alerts</div>
+      <div class="row" style="flex-direction:column; align-items:stretch; max-width:520px">
+        <div class="ds-alert ds-alert--success">Saved successfully.</div>
+        <div class="ds-alert ds-alert--warning">Two items need review.</div>
+        <div class="ds-alert ds-alert--error">Could not connect.</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Data table</div>
+      <div class="ds-table-card">
+        <div class="ds-table-toolbar"><strong>Transactions</strong><span class="ds-table-count">3 rows</span></div>
+        <table class="ds-table">
+          <thead><tr><th data-sort class="is-asc">Date</th><th data-sort>Description</th><th data-sort>Amount</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>2026-06-01</td><td>Office supplies</td><td>$124.00</td><td><span class="ds-badge ds-badge--success">Matched</span></td></tr>
+            <tr><td>2026-06-03</td><td>Cloud hosting</td><td>$89.00</td><td><span class="ds-badge">Pending</span></td></tr>
+            <tr><td>2026-06-05</td><td>Travel</td><td>$612.40</td><td><span class="ds-badge ds-badge--error">Unmatched</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Empty state</div>
+      <div class="ds-empty">No receipts yet — upload one to get started.</div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Modal (static preview)</div>
+      <div class="ds-modal" style="position:static; width:420px">
+        <div class="ds-modal__header">Confirm match</div>
+        <div class="ds-modal__body"><p style="margin:0"><small>Link this receipt to the selected transaction?</small></p></div>
+        <div class="ds-modal__footer"><button class="ds-btn ds-btn--ghost">Cancel</button><button class="ds-btn ds-btn--primary">Confirm</button></div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
