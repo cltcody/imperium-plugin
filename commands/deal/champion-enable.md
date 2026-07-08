@@ -7,21 +7,14 @@ Build the champion enablement kit for: **$ARGUMENTS**
 
 Paste context: champion name + title, Economic Buyer name + title, key pains confirmed in discovery, value case summary, current deal stage.
 
-Your champion is your internal salesperson. When you're not in the room, they carry the deal.
-This kit gives them everything they need to brief the Economic Buyer confidently.
-The simpler and clearer this is, the more likely they'll actually use it.
-
----
+Your champion is your internal salesperson — when you're not in the room, they carry the deal. This kit gives them what they need to brief the Economic Buyer confidently; the simpler and clearer it is, the more likely they'll use it.
 
 ## Champion Enablement Kit — [Account]
 ### Champion: [Name, Title] → Economic Buyer: [Name, Title]
 
----
-
 ### Part 1 — The one-line opener
 
-The single sentence your champion needs to start the internal conversation.
-Practise this with them — it's all they need to get the meeting.
+The single sentence your champion needs to start the internal conversation. Practise it with them — it's all they need to get the meeting.
 
 ```
 "We've been evaluating [${user_config.company} product(s)] and I think it addresses [Pain 1 in plain language]
@@ -30,12 +23,9 @@ and [Pain 2 in plain language]. I'd like 20 minutes to walk you through what we'
 
 That's it. No deck. No long email first. One sentence + a meeting request.
 
----
-
 ### Part 2 — The internal business case (in plain language)
 
-Give the champion business language that works in their company — no product names, no technical terms.
-They need to be able to repeat this naturally to a senior leader.
+Give the champion business language that works in their company — no product names, no technical terms — that they can repeat naturally to a senior leader.
 
 ```
 THE PROBLEM WE'RE SOLVING
@@ -70,11 +60,9 @@ WHAT I'M ASKING FOR
 [Specific — a go/no-go decision, a budget sign-off, an intro to procurement, a sponsor commitment]
 ```
 
----
-
 ### Part 3 — Likely questions from the Economic Buyer
 
-Prepare your champion for what the EB will ask. They should not be surprised by any of these.
+Prepare your champion for what the EB will ask — they should not be surprised by any of these.
 
 ```
 Q: "Have we tried solving this ourselves?"
@@ -96,12 +84,9 @@ Q: "Who else in the company has done this?"
 Champion's answer: [Reference customers the EB would know — use approved references only]
 ```
 
----
-
 ### Part 4 — The forward email your champion can send
 
-A ready-to-use email they can forward to request the EB meeting.
-Tell them: personalise the first line. The rest is ready to go.
+A ready-to-use email they can forward to request the EB meeting. Tell them: personalise the first line; the rest is ready to go.
 
 ```
 Subject: 20 minutes on [compliance/classification/screening] — worth your time
@@ -119,8 +104,6 @@ I'll keep it focused on the business case, not the technology.
 
 [Champion name]
 ```
-
----
 
 ### Part 5 — The SC coaching conversation (15 minutes before the EB meeting)
 
@@ -150,8 +133,6 @@ COACHING AGENDA
 5. Ask: does the EB have any history with vendors like ${user_config.company} or ${user_config.company}?
    Better to know before the meeting than to be surprised in the room.
 ```
-
----
 
 ## SC checklist
 

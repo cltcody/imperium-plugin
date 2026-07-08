@@ -15,9 +15,8 @@ and config inspection is driven by the project's `STACK.md`, not hardcoded paths
 Read the project's `STACK.md` and resolve per
 `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md`. For each `component`, note its
 `working_dir` (where its `.env` / `.env.example` and config live) and `language` (which
-source file extension and settings idiom to inspect). If there is no `STACK.md`,
-auto-detect components once from project markers and recommend the user run
-`/cc:setup:stack` to persist a manifest. The `.env` and secret-scanning steps below stay
+source file extension and settings idiom to inspect). No `STACK.md` → auto-detect
+components once and recommend `/cc:setup:stack`. The `.env` and secret-scanning steps below stay
 stack-neutral; only the config-validation step (step 4) adapts to each component's
 `language`.
 

@@ -8,15 +8,14 @@ allowed-tools: Read, Grep, Bash, Agent, SlashCommand
 
 Run the whole verification sweep in one shot and report a single scorecard. This is a
 **thin orchestrator, not a reimplementation** — every check below is an existing
-`/cc:verify:*` (or `/cc:release:*`) command invoked via the `SlashCommand` tool. This file
-adds no new checks of its own; it only sequences, parallelizes, and aggregates.
+`/cc:verify:*` (or `/cc:release:*`) command invoked via the `SlashCommand` tool; it only
+sequences, parallelizes, and aggregates.
 
 **Relationship to `/cc:release:validate`:** `/cc:release:validate` *is* the resolved gate for
-a release — tests, types, lint, build, local server, container. `/cc:verify:all` is gate +
-reviews: at `--release` tier its gate step resolves to `/cc:release:validate` itself (a
-strict superset of `/cc:verify:run`), then layers the review commands on top. Use
-`/cc:release:validate` alone when you only need the gate; use `/cc:verify:all` when you want
-the gate plus a one-shot review sweep with a single verdict.
+a release (tests, types, lint, build, local server, container). `/cc:verify:all` is gate +
+reviews: at `--release` tier its gate resolves to `/cc:release:validate` (a strict superset of
+`/cc:verify:run`), then layers reviews on top. Use `/cc:release:validate` alone for just the
+gate; use `/cc:verify:all` for the gate plus a one-shot review sweep with a single verdict.
 
 ## Tiers
 
@@ -30,8 +29,8 @@ the gate plus a one-shot review sweep with a single verdict.
 
 ### 1. Resolve the tier
 
-Parse `$ARGUMENTS` for `--quick`, `--full`, or `--release`. Default to `--quick` if none is
-given or the flag is unrecognized. State the resolved tier and scope before running anything.
+Parse `$ARGUMENTS` for `--quick`, `--full`, or `--release`; default to `--quick` if none or
+unrecognized. State the resolved tier and scope before running anything.
 
 ### 2. Run the gate first — fail-fast
 
@@ -51,9 +50,8 @@ Only proceed to step 3 if the gate is GREEN/PASS.
 
 ### 3. Run the tier's reviews — in parallel where there's more than one
 
-The reviews in a tier are independent of each other (a security scan doesn't need the code
-review's output, dependency audit doesn't need coverage's) — run them concurrently instead
-of burning wall-clock time in series.
+The reviews in a tier are independent of each other — run them concurrently instead of
+burning wall-clock time in series.
 
 - **`--quick`** — only one review (`/cc:verify:code`, default diff scope). Invoke it directly
   via `SlashCommand`; no parallelization needed for a single check.
@@ -71,9 +69,8 @@ of burning wall-clock time in series.
     "CLEAN" here often means "all heads N/A (no UX/AI/systems surface in the diff)".
 
   This works because `/cc:verify:code`, `/cc:verify:security`, and `/cc:verify:design` already
-  delegate their heavy lifting to the `code-reviewer` / `security-auditor` /
-  `ux-reviewer`+`ai-architect`+`systems-architect` subagents internally — running them as
-  sibling `Agent` calls costs nothing extra in depth and cuts wall-clock time roughly 5x.
+  delegate their heavy lifting to subagents internally — running them as sibling `Agent` calls
+  costs nothing extra in depth and cuts wall-clock time roughly 5x.
 - **`--release`** — the same 5 reviews, plus `/cc:verify:pr`, dispatched the same way (6
   parallel `Agent` calls). Pass `/cc:verify:code` the `branch` argument so it diffs against
   `main` instead of just uncommitted work. `/cc:verify:security`'s diff scope already unions
@@ -94,8 +91,8 @@ Collect every check that ran (gate + reviews) into one table: check, scope, verd
 finding. Compute the overall verdict:
 
 - **GO** — gate GREEN/PASS and every review is clean (no CRITICAL/HIGH findings, no CVEs at
-  HIGH+, no `NEEDS CHANGES` from `/cc:verify:pr`). Coverage gaps below target are reported but
-  don't alone block GO — they're advisory, not a pass/fail gate.
+  HIGH+, no `NEEDS CHANGES` from `/cc:verify:pr`). Coverage gaps below target are advisory,
+  not a pass/fail gate — reported but don't alone block GO.
 - **FIX FIRST** — gate RED (already stopped at step 2), or any review surfaces a
   CRITICAL/HIGH finding, a CRITICAL/HIGH dependency CVE, or `/cc:verify:pr` returns
   `NEEDS CHANGES`.
@@ -118,8 +115,7 @@ Overall: 🔴 FIX FIRST — verify:dependencies (1 CRITICAL CVE) blocks
          🟢 GO — ready for /cc:release:commit
 ```
 
-Adapt rows to whatever checks the resolved tier actually ran; a `--quick` run has only two
-rows (`verify:run`, `verify:code`).
+Adapt rows to whatever checks the resolved tier ran; a `--quick` run has only two rows.
 
 ## Quality checklist
 
@@ -146,7 +142,7 @@ the same tier to confirm.
 `/cc:verify:code-review-fix` for findings or `/cc:verify:debug` for gate failures — this
 command never fixes anything itself.
 
-**Abort rules:** a RED/FAIL gate stops the chain before any review runs — never run reviews
-against a broken build. Any CRITICAL finding from a parallel review forces `FIX FIRST`
-regardless of what the other reviews returned. If a review's `Agent` dispatch fails or times
-out, report that check as `⚠️ NOT RUN` in the scorecard — never mark it clean by omission.
+**Abort rules:** a RED/FAIL gate stops the chain before any review runs. Any CRITICAL finding
+from a parallel review forces `FIX FIRST` regardless of the other reviews. If a review's
+`Agent` dispatch fails or times out, report that check as `⚠️ NOT RUN` — never mark it clean
+by omission.

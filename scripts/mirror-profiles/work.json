@@ -1,0 +1,25 @@
+{
+  "_comment": "Dev + sales install/distribution profile — everything EXCEPT the personal life-decision pack (commands/life + the 9 life-council skills). This is the 'work machine' profile: full presales/GTM toolkit alongside the dev workflow, with no personal-finance/health/home content bleeding into a work install. Design skills stay in (used by both sales output and dev docs). Consumed by both install.sh --profile work (local filter, ignores rename fields) and cc-mirror.sh --profile work (public distribution, if ever published).",
+  "pluginName": "cc-work",
+  "pluginDescription": "Dev + sales toolkit — developer workflow plus presales methodology, minus the personal life-decision pack",
+  "marketplaceName": "imperium-work",
+  "marketplaceDescription": "Curated Command Center plugin for work machines (dev + sales, no personal content)",
+  "tags": [
+    "development",
+    "sales",
+    "presales",
+    "piv-loop"
+  ],
+  "exclude": [
+    "skills/benefits-navigator",
+    "skills/big-purchase-council",
+    "skills/council",
+    "skills/family-council",
+    "skills/finance-council",
+    "skills/health-council",
+    "skills/home-council",
+    "skills/insurance-review",
+    "skills/subscriptions-audit",
+    "commands/life"
+  ]
+}

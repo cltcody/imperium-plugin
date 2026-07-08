@@ -6,33 +6,30 @@ description: Review the API design for consistency, correctness, and developer e
 
 Review the API design for consistency, correctness, and developer experience — run before
 releasing a new API surface. This review is **stack-agnostic**: it inspects whatever API
-layer the project actually has, and any concrete command (starting the server, smoke check)
-comes from the project's `STACK.md`, not from this file.
+layer the project has, and any concrete command (starting the server, smoke check) comes from
+the project's `STACK.md`, not from this file.
 
 ## Resolve the stack
 
 Before probing anything that runs, read the project's `STACK.md` and resolve commands per
-`${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md`. The component that exposes the
-API (typically a backend/API component) declares its `working_dir`, `package_manager`, and
-mapped steps — use those instead of assuming a framework. To bring the API up so you can
-probe live endpoints, run that component's `dev` step from its `working_dir`. To confirm the
-app loads before probing, run its `smoke` step. Skip any step the component does not map. If
-there is no `STACK.md`, auto-detect once from project markers and recommend the user run
-`/cc:setup:stack` to persist a manifest.
+`${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md`. The API-exposing component
+declares its `working_dir`, `package_manager`, and mapped steps — use those instead of
+assuming a framework. Run its `dev` step from its `working_dir` to bring the API up for live
+probing, and its `smoke` step to confirm the app loads first. Skip any unmapped step. No
+`STACK.md` → auto-detect once and recommend `/cc:setup:stack`.
 
 The grep snippets below are illustrative; adapt the route-declaration pattern, file
-extensions, and framework idioms (response-model declaration, error type, pagination
-helpers, auth dependency) to the API component's actual language and framework as found in
-its source tree.
+extensions, and framework idioms (response-model declaration, error type, pagination helpers,
+auth dependency) to the API component's actual language and framework.
 
 ## Steps
 
 ### 1. Map all routes
 
-Locate the API component's source tree (its `working_dir`) and enumerate every route
-declaration. Use `Grep` + `Read` to find the framework's route/handler registration
-idiom (e.g. a decorator, a router registration, or a route table) across that tree's source
-files, excluding tests and comments. For example, for a decorator-based framework:
+In the API component's source tree (its `working_dir`), enumerate every route declaration —
+use `Grep` + `Read` to find the framework's route/handler registration idiom (decorator,
+router registration, or route table) across its source files, excluding tests and comments.
+For example, for a decorator-based framework:
 
 ```bash
 # Run from the API component's working_dir; adapt the pattern + file glob to its language
@@ -80,8 +77,7 @@ grep -rn "<status-code-idiom>" <source-dir> --include="<source-glob>" | grep -v 
 grep -rn "<route-declaration-pattern>" <source-dir> --include="<source-glob>" | grep -v "<response-model-idiom>\|test"
 ```
 
-Every route must declare a response model/output schema. This validates output and strips
-unexpected fields.
+Every route must declare a response model/output schema — this validates output and strips unexpected fields.
 
 ### 5. Error consistency
 
@@ -90,8 +86,7 @@ unexpected fields.
 grep -rn "<error-raising-idiom>" <source-dir> --include="<source-glob>" | grep -v "test\|#"
 ```
 
-Check: are 404, 422, 409 errors consistent? Do they all use a single shared error-response
-shape?
+Check: are 404, 422, 409 errors consistent, all using a single shared error-response shape?
 
 ### 6. Pagination
 
@@ -100,8 +95,7 @@ shape?
 grep -rn "<collection-get-idiom>" <source-dir> --include="<source-glob>" -A 5 | grep -v "<pagination-idiom>\|{id}\|health"
 ```
 
-Any GET endpoint returning multiple items must use the project's pagination params + a
-paginated response wrapper.
+Any GET endpoint returning multiple items must use the project's pagination params + wrapper.
 
 ### 7. Auth coverage
 
@@ -110,33 +104,23 @@ paginated response wrapper.
 grep -rn "<route-declaration-pattern>" <source-dir> --include="<source-glob>" -A 3
 ```
 
-Mark each route: public, authenticated, or admin. Flag any route that should be protected
-but isn't.
+Mark each route public, authenticated, or admin. Flag any route that should be protected but isn't.
 
 ### 8. OpenAPI documentation quality
 
-Use `Read` on route files. Check each route has:
-- `summary` or descriptive route name
-- `tags` set on the router/route group
-- Response descriptions for non-200 status codes
+Use `Read` on route files. Check each route has a `summary` or descriptive route name, `tags`
+on the router/route group, and response descriptions for non-200 status codes.
 
-If the framework serves a live schema (OpenAPI/Swagger) and you need to inspect it, bring
-the API up with the component's `dev` step (resolved above) and read the served schema
-endpoint; otherwise inspect the source declarations directly.
+If the framework serves a live schema (OpenAPI/Swagger) and you need to inspect it, bring the
+API up with the component's `dev` step and read the served schema endpoint; otherwise inspect
+the source declarations directly.
 
 ## Output
-
-An API review report in this format:
 
 ```
 API REVIEW
 ──────────
-Total endpoints: <n>
-  GET:    <n>
-  POST:   <n>
-  PUT:    <n>
-  PATCH:  <n>
-  DELETE: <n>
+Total endpoints: <n>  (GET <n> · POST <n> · PUT <n> · PATCH <n> · DELETE <n>)
 
 🔴 BLOCKING  — file:line — description
 🟡 WARNING   — file:line — description
@@ -156,8 +140,8 @@ Production Ready: YES / NEEDS WORK
 
 ## Handoff
 
-**Chain:** If findings exist, invoke `/cc:verify:code-review-fix` to auto-fix the correctable issues (or apply fixes manually), then re-run `/cc:verify:api`. If clean, continue to the next step in the chain.
+**Chain:** If findings exist, invoke `/cc:verify:code-review-fix` to auto-fix correctable issues (or fix manually), then re-run `/cc:verify:api`. If clean, continue to the next chain step.
 
-**Solo:** Report the review. On findings, suggest fixes followed by `/cc:verify:run`; on clean, suggest continuing with `/cc:verify:run` or `/cc:release:commit`.
+**Solo:** Report the review. On findings, suggest fixes followed by `/cc:verify:run`; on clean, suggest `/cc:verify:run` or `/cc:release:commit`.
 
-**Abort rules:** Any 🔴 BLOCKING finding means the API surface is not production-ready — do not proceed to release steps until it is resolved and the review is re-run. If the contract itself is ambiguous (not just the implementation), route back to `/cc:plan:api`.
+**Abort rules:** Any 🔴 BLOCKING finding means the API surface is not production-ready — resolve it and re-run before any release step. If the contract itself is ambiguous (not just the implementation), route back to `/cc:plan:api`.

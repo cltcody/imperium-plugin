@@ -1,9 +1,9 @@
 ---
 name: security-audit
 description: |
-  Full defensive security audit of a codebase or change-set — officer-ready clearance report with
-  severity-rated findings and a prioritized remediation backlog. Use on "security audit", "is this
-  secure", "check for vulnerabilities", or before a release or compliance sign-off.
+  Full defensive security audit of a codebase or change-set with severity-rated findings. Use on
+  "security audit", "is this secure", "check for vulnerabilities", or before a release or
+  compliance sign-off.
 context: fork
 agent: general-purpose
 ---

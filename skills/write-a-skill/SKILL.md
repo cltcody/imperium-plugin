@@ -6,6 +6,7 @@ description: |
   files, updating INVENTORY.md, and installing via `bash install.sh` from the imperium root.
   Use when you say "write a skill", "create a skill", "add a skill", or "how do I add a
   skill".
+disable-model-invocation: true
 ---
 
 # Write a Skill

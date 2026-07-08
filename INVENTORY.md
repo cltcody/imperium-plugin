@@ -19,8 +19,10 @@
 | `/cc:implement:execute` | implement | Core Execute — turn a spec or plan into working, validated code, task by task |
 | `/cc:implement:migrate` | implement | Guided Alembic migration — generate, review line-by-line, test up→down→up, apply safely |
 | `/cc:implement:refactor` | implement | Restructure code without changing behaviour — baseline green, small reversible steps, re-validate each step |
+| `/cc:verify:a11y` | verify | Accessibility audit of the change-set or full repo — static WCAG checks plus optional runtime axe pass, severity-rated findings, PASS/WARNINGS/FAIL verdict |
 | `/cc:verify:all` | verify | One-shot "run everything" verification orchestrator — sequences the verify:* gate and reviews, then reports a single scorecard with a GO / FIX FIRST verdict |
 | `/cc:verify:api` | verify | Review the API design for consistency, correctness, and developer experience |
+| `/cc:verify:bundle` | verify | Build-artifact budget audit — build what ships (route JS, chunks, assets, images, container), measure it against STACK.md budgets, and report trend deltas with a PASS/WARNINGS/FAIL verdict |
 | `/cc:verify:code` | verify | Technical code review of uncommitted or branch changes, with severity-rated findings saved to ${user_config.workspace_dir}/code-reviews/ |
 | `/cc:verify:code-review-fix` | verify | Auto-fix CRITICAL/HIGH and obvious MEDIUM findings from the latest code review, then re-validate |
 | `/cc:verify:codebase` | verify | Full codebase scan — static analysis, AI-smell detection, and security spot-check across all source files. Use periodically, before a major release, or when onboarding to a codebase. |
@@ -39,6 +41,7 @@
 | `/cc:verify:system` | verify | Post-commit system review — analyze plan adherence across the loop and improve the process itself |
 | `/cc:verify:system-health` | verify | Holistic system health check before release, on schedule, or post-deployment |
 | `/cc:verify:test` | verify | Author tests for the changed code — detect the project's framework, cover the diff with happy-path, edge, and failure cases, and run them green |
+| `/cc:verify:test-quality` | verify | Audit whether the tests actually catch bugs — nine test-smell checks (assertion-free, mock-the-subject, snapshot-only, flaky waits, …) plus an optional guarded mutation-lite probe, with a PASS/WARNINGS/FAIL verdict |
 | `/cc:verify:type-ignores` | verify | Audit all type/lint suppressions — find every suppression, investigate why it exists, recommend resolution |
 | `/cc:release:changelog` | release | Generate or refresh CHANGELOG.md from commits since the last tag, in Keep a Changelog format |
 | `/cc:release:cleanup` | release | Find and remove dead code, debug artifacts, and stale content — with confidence classification and confirmation before deleting |
@@ -49,6 +52,7 @@
 | `/cc:release:rollback` | release | Incident rollback playbook — classify the failure, return to the last known-good state safely, verify health, capture the timeline |
 | `/cc:release:ship` | release | End-to-end ship pipeline for an already-implemented feature branch — full verify gate, diff review, QA, and the commit gate — then hands off to the PR/merge step |
 | `/cc:release:validate` | release | Full pre-release validation — tests, types, lint, local server, and Docker deployment |
+| `/cc:git:guide` | git | Interactive git mentor — describe what happened (or what you want), get a diagnosis from real repo state, the exact commands with safety tiers, and the why behind them |
 | `/cc:github:digest` | github | Sweep your open PRs (and stale local branches) into a needs-you-now / ready-to-merge / in-flight board |
 | `/cc:github:draft` | github | Open a draft pull request for early feedback while implementation is still in progress |
 | `/cc:github:fix` | github | Fast-path bug fix from a GitHub issue — reproduce, minimal fix, validate, PR |
@@ -62,7 +66,7 @@
 | `/cc:radar:impact` | radar | Assess whether a trade-regulatory change touches this codebase's reference data, fixtures, or rate tables, and scope the fix. Use when the ask is "does this tariff/sanctions change break anything here" or you're handed a /cc:radar:scan digest entry |
 | `/cc:radar:scan` | radar | Scan the curated trade-regulatory source map for MAJOR/ROUTINE changes since the last run and produce a triaged digest. Use when the ask is "what changed in trade regs this week" or "run the regulatory radar" |
 | `/cc:debug:logs` | debug | Parse and analyse structured logs — error clusters, request_id tracing, timeline, correlation with recent changes |
-| `/cc:find` | entry | Find the right cc command or skill from a plain-language description of what you want to do. |
+| `/cc:find` | entry | Find the right cc command or skill from a plain-language description of what you want to do. Use when the user asks "what should I use for…", "which command/skill does X", "how do I … with cc", "is there a tool for…", "what's the command to…", "help me find the right tool", or simply describes a goal without naming a command. Routes across dev, sales, life, and setup, and hands off to /cc:guide (sales depth) or /cc:next (dev cycle) when those fit better. |
 | `/cc:guide` | entry | Interactive router — find the right skill or command for your situation, or browse the full phase map |
 | `/cc:memory` | entry | One-glance status of every memory/context-persistence surface for this project — session cursor, cross-machine store, task-list, native auto-memory |
 | `/cc:next` | entry | Diagnose where you are in the PIV cycle and run (or recommend) the right next step |
@@ -76,7 +80,9 @@
 | `/cc:setup:stack` | setup | Detect the current project's stack and generate an editable STACK.md the dev commands read |
 | `/cc:maintain:audit` | maintain | Health check for the cc plugin — placeholders, broken refs, frontmatter, inventory drift |
 | `/cc:maintain:deps` | maintain | Dependency UPDATE loop — apply verify:dependencies findings in risk tiers (security, then patch/minor, majors only with --major), each tier gated by STACK.md's verify steps and rolled back independently on red |
-| `/cc:maintain:specify` | maintain | Archive completed workspace docs — move finished plans, reports, and reviews out of the active [WORKSPACE_DIR] folders into [WORKSPACE_DIR]/completed/ when a feature ships |
+| `/cc:maintain:lessons` | maintain | Re-harvest project LESSONS.md files into the shared lessons-learned reference — additive, generalized, dated |
+| `/cc:maintain:release` | maintain | Publish the next plugin version — bump manifests, write the CHANGELOG entry, tag, and snapshot-publish the mirror, with one approval gate before anything irreversible |
+| `/cc:maintain:specify` | maintain | Archive completed workspace docs — move finished plans, reports, and reviews out of the active [WORKSPACE_DIR] folders into [WORKSPACE_DIR]/completed/ when a feature ships, or run the `sweep` mode to auto-archive every Status-closed, PR-merged plan into [WORKSPACE_DIR]/archive/<year>/ |
 | `/cc:life:benefits-navigator` | life | US government & admin process navigator — which agency, forms, documents, deadlines, costs, and pitfalls for a bureaucratic task (SSA / IRS / USCIS / DMV / state benefits / VA). Orientation only, confirm on the official .gov site. |
 | `/cc:life:big-purchase-council` | life | A quick council for a significant purchase — total-cost-of-ownership / need-vs-want / timing-&-financing / risk-&-regret hats give a buy / wait / skip / alternative call |
 | `/cc:life:council` | life | Convene a personal decision council for any dilemma — assemble the right expert hats, reason from each lens, resolve the conflicts into one prioritized recommendation |
@@ -128,88 +134,100 @@
 
 ---
 
-## Dev Skills (11)
+## Dev Skills
 
 These are brand-neutral and need no configuration.
 
 <!-- BEGIN GENERATED: dev-skills -->
 | Skill | Description |
 |-------|-------------|
-| `architecture-board` | Pre-deploy architecture board — UX, AI, and systems heads review the release together, resolve |
+| `architecture-board` | Pre-deploy architecture board — UX, AI, and systems heads review the release together and return one GO/NO-GO (decision support, not a substitute for the team's call). Use on "architecture review", "deploy board", "are we ready to ship", or from /cc:release:deploy. |
 | `archon` | Run Archon CLI workflows in isolated git worktrees, or set up / configure Archon. Use on "use/run/ask archon to", "set up archon", "archon config/settings". Only for delegating to the Archon CLI, not direct Claude Code work. |
-| `benefits-navigator` | US government and admin process navigator — which agency, forms, documents, deadlines, costs, and pitfalls (SSA, IRS, USCIS, DMV, Medicaid/SNAP, ACA, VA). Orientation only, NOT legal advice — confirm on the official .gov site. Use for "how do I apply for [benefit]", "what forms do I need", "deal with the DMV/IRS". |
-| `big-purchase-council` | Council for a significant purchase — four hats (total cost of ownership, need-vs-want, timing & |
-| `council` | Convene a personal decision council for any dilemma — assemble expert "hats", reason from each lens, resolve the conflicts into one prioritized recommendation. Use on "help me decide", "should I…", "I'm torn between", or any genuine trade-off. Money, purchases, home, and recurring costs have dedicated councils — prefer those. |
-| `diagram` | Generate software architecture and flow diagrams in Excalidraw format. For a company's supply-chain / logistics map use the `supply-chain-map` skill instead; for Theory-of-Constraints thinking-process trees and clouds use `toc-bbit-expert`. |
-| `family-council` | Family decision council — communication, values, practical, and conflict-repair hats weigh a family decision, then resolve the tensions into a fair path forward. Decision preparation, NOT therapy or counseling. Use for "help our family decide", "we disagree about", "talk through a decision with my partner". |
-| `feature-interview` | Lightweight feature-planning interview — one question at a time, no repo access needed — |
-| `finance-council` | Personal finance advisory council (US) — investment / budget / planner / tax hats weigh a money decision, then resolve the conflicts into prioritized next steps. Decision preparation, NOT financial or tax advice. Use for "should I invest / pay down debt / buy vs rent", "Roth conversion", "money decision", "finance council". |
-| `gdpr-check` | GDPR compliance assessment of a project or feature — officer-ready report with status dashboard, |
-| `health-council` | Personal health decision council (US) — several lenses prepare you to talk to your clinician. STRICTLY decision preparation, NOT medical advice, diagnosis, or treatment; emergencies → 911. Use for "help me think through this health decision", "what should I ask my doctor", "weigh treatment options", "second opinion". |
-| `home-council` | Housing decision council (US) — money / life-fit / property / market-timing hats weigh buy-vs-rent, renovate, relocate, or refinance, resolved into one prioritized recommendation. Decision preparation, NOT financial or real-estate advice. Use for "should I buy or rent", "renovate or move", "home council", "is this house worth it". |
-| `humanize` | Strip AI tells from user-facing prose — em-dash overuse, stock AI vocabulary, rule-of-three |
-| `insurance-review` | Insurance coverage review (US) — health, auto, home/renters, life, disability, umbrella — for |
-| `piv-orchestrator` | Diagnoses where you are in the PIV development cycle from actual project state (git, plans, |
-| `rulecheck` | Autonomous rule adherence checker. Scans the codebase for rule violations, |
+| `diagram` | Generate architecture, flow, and process diagrams in Excalidraw format — system architecture, data flows, sequence and state diagrams, business process maps, decision trees. Not for supply-chain maps (use `supply-chain-map`) or Theory-of-Constraints trees (use `toc-bbit-expert`). |
+| `feature-interview` | Lightweight feature-planning interview producing a structured Feature Brief that /cc:plan:feature turns into a full implementation plan. Use on "I have a feature idea", "help me plan/spec a feature", or "feature brief". |
+| `gdpr-check` | GDPR compliance assessment of a project or feature — officer-ready report with gap analysis and remediation backlog. Use on "GDPR check", "privacy review", "DPIA", or whether a feature processes personal data lawfully. |
+| `humanize` | Strip AI tells from user-facing prose — em-dash overuse, stock AI vocabulary, rule-of-three stacking, "not just X, but Y" — with separate English and German rulebooks. Use on "humanize this", "sounds like AI", "remove em dashes", "klingt nach KI". |
+| `piv-orchestrator` | Diagnoses where you are in the PIV development cycle from actual project state (git, plans, reports, reviews) and routes to — or launches — the right command, skill, or agent. Use on "what should I do next", "where was I", "I'm stuck", "PIV status", or "continue where we left off". |
+| `premerge-checklist` | Pre-merge checklist for known burns a regex gate can't catch: client-side API key exposure, platform/deploy config drift, mobile (EAS) credentials, OAuth token storage, git & branch hygiene, validation honesty. Use on "pre-merge check", "known burns", "before I merge", "am I safe to merge". |
+| `rulecheck` | Autonomous rule adherence checker. Scans the codebase for rule violations, fixes the highest-impact ones in an isolated worktree, runs full validation, creates a PR. Uses memory to track progress across runs. |
 | `save-task-list` | Save current task list for reuse across sessions |
-| `security-audit` | Full defensive security audit of a codebase or change-set — officer-ready clearance report with |
-| `ship-pr` | Autonomous PR autopilot — create the PR, validate (project checks + independent review), resolve |
-| `skill-creator` | Guide for creating or updating skills in this project — structure, frontmatter, triggering, and |
-| `sop-creator` | Create runbooks, playbooks, and technical documentation for engineering teams. Use on "create a |
-| `subscriptions-audit` | Audit recurring costs and subscriptions (US) for waste, duplicates, forgotten trials, and renewal traps; produce a prioritized savings and cancellation plan with a template. Use for "audit my subscriptions", "where can I cut costs", "lower my monthly bills", "subscription creep", "free trial about to renew". |
-| `triage` | Triage GitHub issues by applying type, effort, priority, and area labels. |
+| `security-audit` | Full defensive security audit of a codebase or change-set with severity-rated findings. Use on "security audit", "is this secure", "check for vulnerabilities", or before a release or compliance sign-off. |
+| `ship-pr` | Autonomous PR autopilot — create the PR, validate (project checks + independent review), resolve EVERY finding, re-validate until clean, then squash-and-merge. Irreversible; explicitly invoked only, never auto-run. Use on "ship this PR" or "run the ship flow". |
+| `skill-creator` | Guide for creating or updating skills in this project — structure, frontmatter, triggering, and packaging. Use on "create a skill", "add a skill", "new skill for", or "improve the skill". |
+| `sop-creator` | Create SOPs, runbooks, playbooks, and process documentation. Use on "write an SOP", "create a runbook", "document this process", "escalation procedure", "write a playbook", or any repeatable-procedure documentation request. |
+| `triage` | Triage GitHub issues by applying type, effort, priority, and area labels. Runs in an isolated context to avoid polluting the main conversation with issue details. Delegates to a specialized triage agent with label validation hooks. |
 <!-- END GENERATED: dev-skills -->
 
 ---
 
-## Sales Skills (28)
+## Sales Skills
 
 Skills marked **⚙** contain `[COMPANY]` / `[PRODUCT_X]` placeholders sourced from `cc.config.json`. Populate them with `/cc:setup:configure` (or `bash scripts/cc-apply.sh --apply`) before first use; unmarked skills work out of the box. See `WHAT_TO_UPDATE.md` for the full placeholder list.
 
 <!-- BEGIN GENERATED: sales-skills -->
 | Skill | Config | Description |
 |-------|:------:|-------------|
-| `account-intelligence` |  | Full account intelligence pipeline — runs supply-chain mapping and ${user_config.company} |
-| `business-case-stress-tester` |  | Pressure-tests a business case or ROI model before the customer's finance team does — challenges |
-| `champion-health` |  | Diagnoses champion strength in a live deal — separates friendly contacts from advocates actively |
-| `competitive-battlecard` |  | Rapid competitive positioning card against any named competitor in trade compliance, supply |
-| `confidence-tagger` | ⚙ | Applies the ${user_config.company} confidence-tagging standard to presales output — every claim |
-| `critical-business-issue-finder` |  | Surfaces the Critical Business Issues hiding in a discovery summary, meeting notes, or account |
-| `demo-dryrun-coach` |  | Coaches a demo dry-run before a major session — checks Tell-Show-Tell compliance, pain-to-module |
-| `demo-storyboard` |  | Builds a Tell-Show-Tell demo storyboard with Limbic Persona-Based Selling and Pain-Capability- |
-| `discovery` | ⚙ | Full-lifecycle discovery for ${user_config.company} solutions — researches (Salesforce + |
-| `exec-briefing-prep` |  | Preps the SC and AE for a C-suite meeting — tight agenda, persona-calibrated talking points |
-| `field-comms-writer` |  | Writes customer-facing follow-up emails, recaps, and Slack messages after calls, demos, or key |
-| `grill-me` |  | Interviews the user relentlessly about a plan or design until reaching shared |
+| `account-intelligence` |  | Full account intelligence pipeline — supply-chain mapping plus ${user_config.company} solution-fit qualification for any named company. Use on "full account analysis for [company]", "map and qualify [company]", or "prep me for a call with [company]". |
+| `business-case-stress-tester` |  | Pressure-tests a business case or ROI model before the customer's finance team does. Use on "stress-test this business case", "challenge the ROI", "CFO prep", or a pasted ROI model. |
+| `champion-health` |  | Diagnoses champion strength in a live deal — separates friendly contacts from advocates actively selling for you, and flags at-risk champions. Use on "how strong is my champion", "is my champion real", or "champion health check". |
+| `competitive-battlecard` |  | Rapid competitive positioning card against any named competitor — where we win, their attacks, counter-plays. Use on "battlecard", "how do we beat [competitor]", or "how do we compare to X". |
+| `confidence-tagger` | ⚙ | Applies the ${user_config.company} confidence-tagging standard to team output — every claim labelled 🟢 Confirmed, 🟡 Inferred, or 🔴 Unknown. Use on "tag this", "confidence check", or "what do we actually know". |
+| `critical-business-issue-finder` |  | Surfaces the Critical Business Issues hiding in a discovery summary, meeting notes, or account brief — separating CBIs from symptoms. Use on "find the CBIs", "what's the real pain here", or "what's driving this deal". |
+| `demo-dryrun-coach` |  | Coaches a demo dry-run before a major session — Tell-Show-Tell compliance, pain-to-module mapping, timing, objections. Use on "dry run my demo", "practice this demo", "review my storyboard", or "feedback on my demo". |
+| `demo-storyboard` |  | Builds a Tell-Show-Tell demo storyboard with Limbic Persona-Based Selling and Pain-Capability-Value logic for any ${user_config.company} GTM product. Use on "demo prep", "storyboard", "demo script", or "build a demo flow". |
+| `discovery` | ⚙ | Full-lifecycle discovery for ${user_config.company} solutions — research, the FTD opening framework, and a branded pre-discovery questionnaire or post-call summary. Use on "discovery prep", "FTD", "call prep", or "discovery summary". |
+| `exec-briefing-prep` |  | Preps the team for a single C-suite meeting — persona-calibrated talking points (CEO/CFO/COO/CPO). Use on "exec briefing prep" or "briefing the CFO"; for a multi-day EBC or workshop agenda use `workshop-agenda-builder`. |
+| `field-comms-writer` |  | Writes standalone customer-facing emails and Slack messages — chasers, confirmations, executive outreach, follow-ups; pulls Salesforce context when connected. Use on "write a follow-up email" or "draft an email to [customer]"; to structure raw meeting notes use `meeting-notes-structurer`. |
+| `grill-me` |  | Interviews the user relentlessly about a plan or design until reaching shared understanding. Use when the user wants to brainstorm, stress-test an idea, get grilled on their design, or says "grill me" or "let's discuss an idea". |
 | `handoff` |  | Compact the current conversation into a handoff document for another agent to pick up. |
-| `integration-complexity` |  | Assesses a prospect's integration landscape and rates the complexity and risk of connecting to |
-| `linkedin-post` | ⚙ | LinkedIn content engine — ideate, posts, articles, Live scripts, podcast notes, and style reviews, with config-driven voice profiles (personal or company). Use on "write a LinkedIn post/article", "turn this into a post", "draft a Live script", "topic ideas", "review this post". |
-| `meeting-notes-structurer` |  | Structures raw customer-meeting notes into an action-oriented summary — |
-| `negotiation-prep` |  | Builds a negotiation brief before any commercial discussion — walk-away point, trade levers, |
-| `osd-architect` |  | Generates a full Optimal Solution Design from discovery notes and POC results per the |
-| `presales-coach` |  | Situational presales coach — diagnoses the real deal constraint via |
-| `pricing-positioning` |  | Structures how to introduce and defend pricing — value sandwich, ROI anchoring, "too expensive" |
-| `rfx-navigator` |  | Entry-point skill for any RFX document -- RFI, RFP, RFQ, ITT, or tender -- identifies the |
-| `supply-chain-map` |  | Builds a structured visual supply chain map for any named company from public research — |
-| `tactical-empathy-coach` |  | Coaches objection handling with tactical empathy (Voss: labels, mirrors, calibrated questions, |
-| `toc-bbit-expert` |  | Theory of Constraints + Black Belt in Thinking coach — full BBiT process (UDEs, CRT, Evaporation |
-| `video-demo-creator` | ⚙ | Guides the full presales demo-video lifecycle — brief, Tell-Show-Tell script, recording |
-| `win-loss-analyzer` |  | Structured win/loss debrief on any closed deal — the real reason for the decision, what to |
-| `workshop-agenda-builder` |  | Builds a time-boxed customer workshop or EBC agenda from a modular section library, plus |
-| `write-a-skill` |  | Creates a new Claude skill for the Industry Solutions Skills library -- guides |
+| `integration-complexity` |  | Assesses a prospect's integration landscape and rates the risk of connecting to ${user_config.company} — maps ERP/WMS/TMS/carrier/customs systems. Use on "assess integration complexity" or "map their integrations". |
+| `linkedin-post` | ⚙ | LinkedIn content engine — ideate, posts, articles, Live scripts, podcast notes, style reviews. Use on "write a LinkedIn post/article", "turn this into a post", "draft a Live script", "topic ideas", "review this post". |
+| `meeting-notes-structurer` |  | Structures raw customer-meeting notes — ${user_config.qualification_framework} updates, next steps, red flags, and a follow-up email. Use on "structure these notes", "what are the action items", or pasted call notes. |
+| `negotiation-prep` |  | Builds a negotiation brief BEFORE the meeting for commercial, scope, or renewal discussions. Use on "negotiation prep", "discount request", or "getting ready to negotiate"; for live in-conversation moves use `tactical-empathy-coach`. |
+| `osd-architect` |  | Generates a full Optimal Solution Design per the ${user_config.company} OSD template — every claim tagged 🟢 Confirmed / 🟡 Proposed / 🔴 Assumption. Use at technical win, for the PS handover, or on "OSD", "solution design", "technical proposal". |
+| `presales-coach` |  | Situational presales coach — diagnoses the real deal constraint via ${user_config.qualification_framework} and the ${user_config.company} Playbook stages. Use on "I'm stuck on a deal", "coach me", or "prospect has gone quiet". |
+| `pricing-positioning` |  | Structures how to introduce and defend pricing — value sandwich, ROI anchoring, "too expensive" pushback. Use on "pricing conversation", "how to position our price", "price objection", or "defend the price". |
+| `rfx-navigator` |  | Entry-point skill for any RFX document -- RFI, RFP, RFQ, ITT, or tender -- identifies the type and does a rapid fit assessment. Use when you say "we got an RFP", "RFQ just came in", "an RFX arrived", "should we bid", or "bid or no bid". |
+| `supply-chain-map` |  | Builds a visual supply chain map for any named company — manufacturing networks, distribution, logistics flows, CMO vs owned plants, freight modes, sourcing. Use on "map / diagram / analyse the supply chain of X". Not for code diagrams — use `diagram`. |
+| `tactical-empathy-coach` |  | Coaches live conversational moves with tactical empathy (Voss: labels, mirrors, calibrated questions, accusation audit) and NVC. Use on "objection", "they pushed back", "how do I respond to this objection", or to rehearse a high-stakes call; to build a brief beforehand use `negotiation-prep`. |
+| `toc-bbit-expert` |  | Theory of Constraints + Black Belt in Thinking coach (UDEs, CRT, Evaporation Cloud, FRT, Transition Tree), with Excalidraw diagrams. Use for stuck deals, broken processes, team conflict, or "what's the real constraint", "draw a cloud". |
+| `video-demo-creator` | ⚙ | Guides the full presales demo-video lifecycle — brief, Tell-Show-Tell script, recording, editing, validation; integrates Descript, Synthesia, goConsensus. Use on "create a demo video", "video brief", or "Synthesia script". |
+| `win-loss-analyzer` |  | Structured win/loss debrief on any closed deal — the real reason, what to repeat or change, competitive intel; wins, losses, no-decisions. Use on "debrief this win", "why did we lose", or "post-mortem on this deal". |
+| `workshop-agenda-builder` |  | Builds a time-boxed customer workshop or multi-day EBC agenda, half-day to 3-day. Use on "build a workshop agenda", "plan an EBC" (multi-day), or "customer discovery day"; for a single exec meeting use `exec-briefing-prep`. |
+| `write-a-skill` |  | Creates a new Claude skill for the Industry Solutions Skills library -- guides requirements gathering, authoring a correctly-structured SKILL.md, placing reference files, updating INVENTORY.md, and installing via `bash install.sh` from the imperium root. Use when you say "write a skill", "create a skill", "add a skill", or "how do I add a skill". |
 <!-- END GENERATED: sales-skills -->
 
 ---
 
-## Design Skills (4)
+## Design Skills
 
 These read brand tokens before generating any artefact. Configure your brand via `/cc:setup:configure` (writes `cc.config.json` → `skills/brand/brands/template/brand.json`); see `BRAND_SETUP.md` for logo assets and fonts. For UI/front-end work, configure the design system via `/cc:setup:design`.
 
 <!-- BEGIN GENERATED: design-skills -->
 | Skill | Config | Notes |
 |-------|:------:|-------|
-| `brand` |  | Shared brand registry read by output skills (pptx-generator, docx-generator) before any branded |
-| `design-system` |  | Generate on-brand UI from a neutral, config-driven design system — brand tokens plus a component kit in vanilla CSS, Tailwind/DaisyUI, React, and Vue adapters. Use when building or restyling UI, prototypes, or components: "design system", "UI kit", "style this page", "theme the app", "make a button/card/modal". |
-| `docx-generator` |  | Generates on-brand Word documents (.docx) — proposals, executive summaries, solution designs, |
-| `pptx-generator` |  | Generates and edits professional presentation slides as PPTX files, compatible with |
+| `brand` |  | Shared brand registry read by output skills (pptx-generator, docx-generator) before any branded artefact — color tokens, fonts, logo paths, templates. Configure in brands/template/brand.json. |
+| `design-system` |  | On-brand UI from a config-driven design system — brand tokens plus a component kit in vanilla CSS, Tailwind/DaisyUI, React, and Vue adapters. Use when building or restyling UI, prototypes, or components: "design system", "UI kit", "style this page", "theme the app", "make a button/card/modal". |
+| `docx-generator` |  | Generates on-brand Word documents (.docx) — proposals, executive summaries, solution designs, handover docs, ROI cases. Use on "generate a word doc", "docx", "create a proposal document", or "branded document". |
+| `pptx-generator` |  | Generates and edits presentation slides as PPTX files, compatible with PowerPoint, Google Slides, and Keynote -- including PDF carousels for LinkedIn. Use when you say "create slides", "make a deck", "generate presentation", "build a slide deck", or "create a carousel". |
 <!-- END GENERATED: design-skills -->
+
+---
+
+## Life Skills
+
+Personal decision-support councils and checklists (US-anchored, brand-neutral). All instantiate the shared council pattern (`references/life/council-pattern.md`); health/finance/family carry a "decision prep, not professional advice" frame.
+
+<!-- BEGIN GENERATED: life-skills -->
+| Skill | Description |
+|-------|-------------|
+| `benefits-navigator` | US government and admin process navigator — which agency, forms, documents, deadlines, costs, and pitfalls (SSA, IRS, USCIS, DMV, Medicaid/SNAP, ACA, VA). Orientation only, NOT legal advice — confirm on the official .gov site. Use for "how do I apply for [benefit]", "what forms do I need", "deal with the DMV/IRS". |
+| `big-purchase-council` | Council for a significant purchase — four hats weigh it; a moderator calls buy / wait / skip / alternative. Use for "should I buy [X]", "is it worth it", "buy vs lease", "new vs used", "talk me out of buying". |
+| `council` | Convene a personal decision council for any dilemma — assemble expert "hats", resolve the conflicts into one recommendation. Use on "help me decide", "should I…", "I'm torn between", or any genuine trade-off. Money, purchases, home, and recurring costs have dedicated councils — prefer those. |
+| `family-council` | Family decision council — communication, values, practical, and conflict-repair hats weigh a family decision. Decision prep, NOT therapy or counseling. Use for "help our family decide", "we disagree about", "talk through a decision with my partner". |
+| `finance-council` | Personal finance advisory council (US) — investment / budget / planner / tax hats weigh a money decision. Decision prep, NOT financial or tax advice. Use for "should I invest / pay down debt / buy vs rent", "Roth conversion", "money decision", "finance council". |
+| `health-council` | Personal health decision council (US) — several lenses prepare you to talk to your clinician. STRICTLY decision prep, NOT medical advice, diagnosis, or treatment; emergencies → 911. Use for "help me think through this health decision", "what should I ask my doctor", "weigh treatment options", "second opinion". |
+| `home-council` | Housing decision council (US) — money / life-fit / property / market-timing hats weigh buy-vs-rent, renovate, relocate, or refinance. Decision prep, NOT financial or real-estate advice. Use for "should I buy or rent", "renovate or move", "home council", "is this house worth it". |
+| `insurance-review` | Insurance coverage review (US) — health, auto, home/renters, life, disability, umbrella — for gaps, over-insurance, wrong limits, and duplicates. Decision prep, NOT insurance advice. Use on "review my insurance", "insurance gaps", "am I over-insured". |
+| `subscriptions-audit` | Audit recurring costs and subscriptions (US) for waste, duplicates, forgotten trials, and renewal traps; produce a savings and cancellation plan. Use for "audit my subscriptions", "where can I cut costs", "lower my monthly bills", "subscription creep", "free trial about to renew". |
+<!-- END GENERATED: life-skills -->

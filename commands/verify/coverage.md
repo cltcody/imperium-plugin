@@ -19,9 +19,8 @@ step **for each component** from that component's `working_dir`; if a component 
 `coverage`, fall back to its `test` step (coverage numbers will be unavailable for that
 component — note it).
 
-Skip any component that maps neither `coverage` nor `test` (not an error). If there is no
-`STACK.md`, auto-detect once from project markers and recommend the user run
-`/cc:setup:stack` to persist a manifest.
+Skip any component that maps neither `coverage` nor `test` (not an error). No `STACK.md` →
+auto-detect once and recommend `/cc:setup:stack`.
 
 ### 2. Run the coverage report
 

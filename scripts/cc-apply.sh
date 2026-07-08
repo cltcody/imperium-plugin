@@ -10,6 +10,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+# shellcheck source=global/scripts/lib/cc-filter.sh
+source "$SCRIPT_DIR/lib/cc-filter.sh"
 # Prefer a local, gitignored override (your real values) over the tracked template.
 CONFIG="$ROOT/cc.config.json"
 [[ -f "$ROOT/cc.config.local.json" ]] && CONFIG="$ROOT/cc.config.local.json"
@@ -25,36 +27,8 @@ if ! command -v python3 &>/dev/null; then
 fi
 
 # ── Read substitution map from config ────────────────────────────────────────
-# Produces lines: PLACEHOLDER<TAB>value
-SUBS=$(python3 - "$CONFIG" <<'PYEOF'
-import json, sys
-
-with open(sys.argv[1]) as f:
-    cfg = json.load(f)
-
-def resolve(cfg, path):
-    keys = path.split(".")
-    val = cfg
-    for k in keys:
-        val = val[k]
-    return val
-
-placeholders = cfg.get("placeholders", {})
-for placeholder, path in placeholders.items():
-    try:
-        value = resolve(cfg, path)
-        print(f"{placeholder}\t{value}")
-        # Skills/commands reference config as ${user_config.<key>} (the plugin
-        # userConfig mechanism); bake those too for clone installs. Key = last
-        # segment of the config path. Skip unfilled values here so the unfilled
-        # warning below doesn't fire twice per entry.
-        if not str(value).startswith("["):
-            key = path.split(".")[-1]
-            print(f"${{user_config.{key}}}\t{value}")
-    except (KeyError, TypeError):
-        pass
-PYEOF
-)
+# Produces lines: PLACEHOLDER<TAB>value (see lib/cc-filter.sh).
+SUBS=$(cc_build_substitution_map "$CONFIG")
 
 if [[ -z "$SUBS" ]]; then
   echo "No substitutions found in $CONFIG"; exit 0
@@ -98,19 +72,8 @@ for file in "${FILES[@]}"; do
   [[ "$file" == *"/commands/maintain/"* ]] && continue
 
   original=$(cat "$file")
-  updated="$original"
-
-  while IFS=$'\t' read -r placeholder value; do
-    # Skip unfilled values
-    [[ "$value" == \[* ]] && continue
-    # Escape sed-special characters in the pattern (brackets for [TOKEN]s,
-    # $ and . for ${user_config.key} references). Braces stay UNESCAPED —
-    # in BRE, \{ opens a repetition interval; a bare { is the literal.
-    escaped_ph=$(printf '%s' "$placeholder" | sed 's/[][$.^*\/]/\\&/g')
-    # Escape value for sed replacement (& has special meaning)
-    escaped_val=$(printf '%s' "$value" | sed 's/[&/\]/\\&/g')
-    updated=$(printf '%s' "$updated" | sed "s/$escaped_ph/$escaped_val/g")
-  done <<< "$SUBS"
+  # Apply the substitution map (escaping/skip-unfilled quirks live in the lib).
+  updated=$(cc_substitute_tokens "$original" "$SUBS")
 
   if [[ "$updated" != "$original" ]]; then
     rel="${file#$ROOT/}"

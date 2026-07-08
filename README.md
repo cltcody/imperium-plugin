@@ -207,6 +207,14 @@ Full catalogue: [`INVENTORY.md`](INVENTORY.md). When-to-use map: [`CHEATSHEET.md
 
 **References**: `dev/` (stack resolution + profiles; model routing; [scheduling](references/dev/scheduling.md) — how to run a cc command recurringly; the [severity ladder](references/dev/severity-and-rubrics.md) every review runs on; [exemplars](references/dev/exemplars/) — gold-standard outputs; plus distilled pattern references: PIV methodology, context engineering, agent design, AI project setup, RAG/knowledge patterns), `piv/` (PIV loop cheatsheet + numbered project convention files), `presales/` (sales methodology).
 
+**Install profiles** (`scripts/mirror-profiles/*.json`): every install names a profile —
+`full` (default), `work` (dev+sales, no life pack), `dev` (dev workflow + generic session
+tools), `business` (18-skill chat catalog). `install.sh --profile <name>` filters the
+installed cache copy post-publish via `scripts/cc-profile-filter.sh` (the marketplace
+registration stays pinned to this repo); the same JSON definitions drive
+`cc-mirror.sh --profile` for public distribution variants. Definitions are validated by
+`cc-audit.sh` (rule 10). See ADR-002 D2.
+
 **Hooks** (plugin `hooks/hooks.json`): a `PreToolUse` guardrail (`block-secrets.py`) that
 pattern-matches Read/Bash/Grep/Edit/Write/Glob calls to catch common *accidental* exposure of
 `.env` files, credentials, SSH keys, and similar secrets. It ships with the plugin, so it's active
@@ -220,6 +228,16 @@ overwrites a real `/cc:pause` file, writing to `session.auto.md` instead when on
 See `references/dev/context-engineering.md` → "Native memory & caching" and `/cc:memory` (below)
 for the full picture of where project memory lives.
 
+**Statusline** (`scripts/cc-statusline.sh`, opt-in): a lean Claude Code statusline —
+`model | repo ⎇ branch±dirty | PIV phase → next`. It parses the statusline JSON Claude Code
+pipes on stdin (jq → python3 → grep/sed fallback, whichever is available) and shells out once
+to `hooks/piv_state.py` for the PIV segment, so the statusline and the SessionStart PIV hook
+read the same source of truth and can never disagree. Non-git directories print just the
+model; non-PIV directories (no `.specify/`) omit the PIV segment entirely. Deliberately lean —
+no drift flag, context-%, or cost segment (see ADR-002 decision D7). Wire it with
+`bash install.sh --with-statusline`, which merges a `statusLine` entry into
+`~/.claude/settings.json` (backing up the existing file to `settings.json.bak` first).
+
 ## Where things work (Claude Code vs claude.ai chat)
 
 The two component types have different reach — this is Claude platform behavior, not a cc
@@ -227,8 +245,12 @@ setting, and there is no flag that changes it:
 
 | Component | Claude Code (CLI · desktop · web) | claude.ai chat / Cowork |
 |---|---|---|
-| **Commands** (`commands/`, typed `/cc:...`) | ✅ typed or model-invoked | ❌ never loaded |
+| **Grouped commands** (`commands/<group>/`, typed `/cc:group:name`) | ✅ typed or model-invoked | ❌ never loaded |
+| **Top-level commands** (`commands/*.md`, e.g. `find`, `guide`, `prime`) | ✅ | ✅ listed in the plugin picker |
 | **Skills** (`skills/`, triggered by description) | ✅ | ✅ |
+
+Note: `disable-model-invocation: true` stops Claude from auto-invoking a command; it does
+**not** hide the entry from the chat plugin picker (verified 2026-07-07 on a live install).
 
 Two practical consequences:
 

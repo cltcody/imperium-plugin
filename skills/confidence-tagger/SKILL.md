@@ -1,9 +1,9 @@
 ---
 name: confidence-tagger
 description: |
-  Applies the ${user_config.company} confidence-tagging standard to presales output — every claim
-  labelled 🟢 Confirmed, 🟡 Inferred, or 🔴 Unknown — as a final quality pass before material leaves
-  the team. Use on "tag this", "confidence check", or "what do we actually know".
+  Applies the ${user_config.company} confidence-tagging standard to team output — every claim
+  labelled 🟢 Confirmed, 🟡 Inferred, or 🔴 Unknown. Use on "tag this", "confidence check", or "what
+  do we actually know".
 ---
 
 # Confidence Tagger

@@ -1,11 +1,9 @@
 ---
 name: pptx-generator
 description: |
-  Generates and edits professional presentation slides as PPTX files, compatible with
-  PowerPoint, Google Slides, and Keynote -- including PDF carousels for LinkedIn (square 1:1
-  format).
-  Use when you say "create slides", "make a deck", "generate presentation", "build a slide
-  deck", or "create a carousel".
+  Generates and edits presentation slides as PPTX files, compatible with PowerPoint, Google
+  Slides, and Keynote -- including PDF carousels for LinkedIn. Use when you say "create slides",
+  "make a deck", "generate presentation", "build a slide deck", or "create a carousel".
 ---
 
 # PPTX Slide Generator
@@ -61,33 +59,24 @@ Apply the brand's tone-of-voice rules to all generated copy, not just colors.
 
 ### Create Brand Files
 
-1. Create `${CLAUDE_PLUGIN_ROOT}/skills/pptx-generator/brands/{brand-name}/brand.json`:
+1. Create the brand in the **central registry** — `${CLAUDE_PLUGIN_ROOT}/skills/brand/brands/{brand-name}/brand.json`, using the registry's schema (see `skills/brand/SKILL.md`; copy `skills/brand/brands/template/`):
 ```json
 {
-  "name": "Brand Name",
-  "colors": {
-    "background": "hex-without-hash",
-    "background_alt": "hex-without-hash",
-    "text": "hex-without-hash",
-    "text_secondary": "hex-without-hash",
-    "accent": "hex-without-hash",
-    "accent_secondary": "hex-without-hash",
-    "accent_tertiary": "hex-without-hash",
-    "code_bg": "hex-without-hash",
-    "card_bg": "hex-without-hash",
-    "card_bg_alt": "hex-without-hash"
-  },
-  "fonts": {
-    "heading": "Font Name",
-    "body": "Font Name",
-    "code": "Courier New"
-  },
-  "assets": {
-    "logo": "assets/logo.png",
-    "logo_dark": null
-  }
+  "company_name": "Brand Name",
+  "primary_color": "#000000",
+  "accent_color": "#0066CC",
+  "background_color": "#FFFFFF",
+  "font_family": "Inter",
+  "font_weights": [400, 600, 700],
+  "logo_dark": "assets/logo-dark.svg",
+  "logo_light": "assets/logo-light.svg",
+  "docx_template": null,
+  "pptx_template": null,
+  "tone_rules": ["Active voice preferred"],
+  "sign_off": "Your standard sign-off"
 }
 ```
+Place logo files in `skills/brand/brands/{brand-name}/assets/`.
 
 2. Create `${CLAUDE_PLUGIN_ROOT}/skills/pptx-generator/brands/{brand-name}/config.json`:
 ```json
@@ -117,10 +106,10 @@ Apply the brand's tone-of-voice rules to all generated copy, not just colors.
 
 ### Step 1: Brand Loading
 
-Brand was already selected in the prerequisite step. Load all three files:
-1. `brands/{chosen-brand}/brand.json` — colors and fonts
-2. `brands/{chosen-brand}/config.json` — output settings
-3. `brands/{chosen-brand}/tone-of-voice.md` — copy rules and vocabulary
+Brand was already selected in the prerequisite step. Load:
+1. `${CLAUDE_PLUGIN_ROOT}/skills/brand/brands/{chosen-brand}/brand.json` — colors, fonts, logos (central registry)
+2. `brands/{chosen-brand}/config.json` — output settings (this skill, optional)
+3. `brands/{chosen-brand}/tone-of-voice.md` — copy rules and vocabulary (this skill, optional; `tone_rules` in brand.json otherwise)
 
 Apply tone-of-voice guidance to every text element, not just slide titles.
 
@@ -213,7 +202,7 @@ def hex_to_rgb(hex_color):
     h = hex_color.lstrip("#")
     return RGBColor(int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
 
-BRAND_BG = "REPLACE_WITH_BRAND_BACKGROUND"  # e.g., from brand.json colors.background
+BRAND_BG = "REPLACE_WITH_BRAND_BACKGROUND"  # e.g., from brand.json background_color
 
 output_dir = Path("output/{brand-name}")
 part_files = sorted(output_dir.glob("{name}-part*.pptx"))
@@ -279,14 +268,14 @@ from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.util import Inches, Pt
 ```
 
-**Brand color mapping (from brand.json):**
+**Brand color mapping (from the central registry's brand.json):**
 
-| Layout Placeholder | brand.json Path |
+| Layout Placeholder | brand.json Key |
 |--------------------|-----------------|
-| `BRAND_BG` | `colors.background` |
-| `BRAND_TEXT` | `colors.text` |
-| `BRAND_ACCENT` | `colors.accent` |
-| `BRAND_HEADING_FONT` | `fonts.heading` |
-| `BRAND_BODY_FONT` | `fonts.body` |
+| `BRAND_BG` | `background_color` |
+| `BRAND_TEXT` | `primary_color` |
+| `BRAND_ACCENT` | `accent_color` |
+| `BRAND_HEADING_FONT` | `font_family` |
+| `BRAND_BODY_FONT` | `font_family` |
 
-All color values in brand.json are hex **WITHOUT** the `#` prefix.
+Registry color values are hex **WITH** the `#` prefix — strip it before passing to python-pptx (`RGBColor.from_string` takes bare hex).

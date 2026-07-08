@@ -7,57 +7,44 @@ disable-model-invocation: true
 
 # Add a Service
 
-Add a new service to this project (database, cache, auth, AI/RAG, storage, email, etc.) and wire it into config, health checks, and Docker.
+Add a new service (database, cache, auth, AI/RAG, storage, email, etc.) and wire it into config, health checks, and Docker.
 
-> **Stack scope:** This command targets a **Python / FastAPI** vertical-slice backend — its config, dependency-injection, health-check, and Docker wiring steps are framework-specific. For other stacks, adapt to your framework's config/DI conventions (or use `/cc:plan:feature`). Any validation it runs still resolves from the project's `STACK.md`.
+> **Stack scope:** Targets a **Python / FastAPI** vertical-slice backend — the config, dependency-injection, health-check, and Docker wiring steps are framework-specific. For other stacks, adapt to your framework's config/DI conventions (or use `/cc:plan:feature`). Any validation it runs still resolves from the project's `STACK.md`.
 
 ## Steps
 
 ### 1. Identify the service
 
-Ask: **What service do you want to add?**
-
-Common options:
+Ask: **What service do you want to add?** Common options:
 - `supabase` — managed PostgreSQL + auth + storage + realtime
 - `pgvector` — vector search inside existing PostgreSQL (for RAG)
 - `qdrant` — standalone vector database (for RAG at scale)
 - `redis` — caching, sessions, rate limiting, queues
-- `clerk` / `auth0` — managed auth with UI
-- `jwt` — custom auth with JSON Web Tokens (DIY)
-- `s3` / `r2` — file storage
-- `resend` / `sendgrid` — transactional email
+- `clerk` / `auth0` — managed auth with UI; `jwt` — custom auth with JSON Web Tokens (DIY)
+- `s3` / `r2` — file storage; `resend` / `sendgrid` — transactional email
 - `openai` / `anthropic` — AI completions
 - `arq` — async background job queue (Redis-backed)
 
 ### 2. Read the reference pattern
 
-```
-reference/patterns/database-options.md   ← for databases and vector stores
-reference/patterns/auth-patterns.md      ← for auth services
-```
+- `reference/patterns/database-options.md` — for databases and vector stores
+- `reference/patterns/auth-patterns.md` — for auth services
 
-### 3. Make the changes
-
-For each service, do ALL of the following:
+### 3. Make the changes — for each service, do ALL of the following
 
 #### 3.1 Update STACK.md
 Mark the service as `STATUS=active` and add notes.
 
 #### 3.2 Update docker-compose.yml (if self-hosted)
 
-Examples:
+Examples (add any new volume to the `volumes:` section at the bottom):
 
-**Redis:**
 ```yaml
   redis:
     image: redis:7-alpine
     ports:
       - "6379:6379"
     restart: unless-stopped
-```
-
-**Qdrant:**
-```yaml
   qdrant:
     image: qdrant/qdrant:latest
     ports:
@@ -67,8 +54,6 @@ Examples:
     restart: unless-stopped
 ```
 
-Add volume to the `volumes:` section at the bottom.
-
 #### 3.3 Update backend/.env.example
 
 Add the required env vars for the service:
@@ -76,11 +61,9 @@ Add the required env vars for the service:
 ```bash
 # Redis
 REDIS_URL=redis://localhost:6379
-
 # Qdrant
 QDRANT_URL=http://localhost:6333
 QDRANT_COLLECTION=my_collection
-
 # Supabase (replaces DATABASE_URL)
 DATABASE_URL=postgresql+asyncpg://postgres:[password]@db.[project].supabase.co:5432/postgres
 SUPABASE_URL=https://[project].supabase.co
@@ -90,11 +73,7 @@ SUPABASE_SERVICE_KEY=...
 
 #### 3.4 Create the integration module
 
-Create `backend/app/core/<service>.py` with:
-- Connection setup (client init, connection pool)
-- Dependency function (like `get_db()` pattern)
-- Health check function (wire into `/health/ready`)
-- Structured logging on connect/disconnect
+Create `backend/app/core/<service>.py` with: connection setup (client init, connection pool); a dependency function (like the `get_db()` pattern); a health check function (wired into `/health/ready`); structured logging on connect/disconnect.
 
 #### 3.5 Update backend/app/core/health.py
 
@@ -112,26 +91,18 @@ Supabase IS PostgreSQL — your existing SQLAlchemy models work unchanged.
 4. Run `uv run alembic upgrade head` to apply your migrations
 5. Update `STACK.md`: Primary Database TYPE → Supabase (PostgreSQL)
 
-Optional Supabase extras:
-- Auth → use `gotrue` client or Supabase JS SDK in frontend
-- Storage → use `supabase-py` client
-- Realtime → use Supabase JS SDK in frontend
+Optional extras: Auth → `gotrue` client or Supabase JS SDK (frontend); Storage → `supabase-py` client; Realtime → Supabase JS SDK (frontend).
 
 #### pgvector specifics (RAG inside PostgreSQL)
 
-pgvector adds vector similarity search to your existing database. Best choice for most RAG use cases.
+pgvector adds vector similarity search to your existing database — best choice for most RAG use cases. Install: `cd backend && uv add pgvector sqlalchemy`
 
-```bash
-cd backend && uv add pgvector sqlalchemy
-```
-
-Enable extension in a migration:
 ```python
-# In alembic migration
+# In alembic migration — enable the extension
 op.execute("CREATE EXTENSION IF NOT EXISTS vector")
 ```
 
-Model example:
+Model + query example:
 ```python
 from pgvector.sqlalchemy import Vector
 
@@ -140,10 +111,7 @@ class Document(Base, TimestampMixin):
     id: Mapped[int] = mapped_column(primary_key=True)
     content: Mapped[str] = mapped_column(Text)
     embedding: Mapped[list[float]] = mapped_column(Vector(1536))  # dim depends on model
-```
 
-Query:
-```python
 # Cosine similarity search
 result = await db.execute(
     select(Document)
@@ -152,9 +120,8 @@ result = await db.execute(
 )
 ```
 
-### 5. Verify nothing broke
+### 5. Verify nothing broke — confirm the integration is green
 
-Confirm the integration is green:
 ```bash
 cd backend && uv run pytest -v
 cd backend && uv run mypy app/
@@ -176,7 +143,5 @@ The service is fully wired: `STACK.md` updated to `STATUS=active`, `docker-compo
 ## Handoff
 
 **Chain:** Invoke `/cc:verify:run` after wiring to confirm tests, types, and lint are all green.
-
 **Solo:** Suggest `/cc:verify:run`, then `/cc:release:env` if new secrets were introduced, and `/cc:plan:feature` to build the first feature that uses the service.
-
 **Abort rules:** If `STACK.md` shows `STATUS=not initialized` for the project itself, stop and route to `/cc:plan:setup` first. If `/cc:verify:run` is red after wiring and the failure cannot be fixed immediately, route to `/cc:verify:debug` — do not leave the service half-integrated.

@@ -1,7 +1,10 @@
 ---
 name: design-system
 description: >-
-  Generate on-brand UI from a neutral, config-driven design system — brand tokens plus a component kit in vanilla CSS, Tailwind/DaisyUI, React, and Vue adapters. Use when building or restyling UI, prototypes, or components: "design system", "UI kit", "style this page", "theme the app", "make a button/card/modal".
+  On-brand UI from a config-driven design system — brand tokens plus a component kit in vanilla
+  CSS, Tailwind/DaisyUI, React, and Vue adapters. Use when building or restyling UI, prototypes,
+  or components: "design system", "UI kit", "style this page", "theme the app", "make a
+  button/card/modal".
 user-invocable: true
 ---
 

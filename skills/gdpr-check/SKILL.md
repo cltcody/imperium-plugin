@@ -1,9 +1,9 @@
 ---
 name: gdpr-check
 description: |
-  GDPR compliance assessment of a project or feature — officer-ready report with status dashboard,
-  gap analysis, and prioritised remediation backlog. Use on "GDPR check", "privacy review",
-  "DPIA", or whether a feature processes personal data lawfully.
+  GDPR compliance assessment of a project or feature — officer-ready report with gap analysis and
+  remediation backlog. Use on "GDPR check", "privacy review", "DPIA", or whether a feature
+  processes personal data lawfully.
 context: fork
 agent: general-purpose
 ---

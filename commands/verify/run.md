@@ -20,9 +20,8 @@ order, **for every component** from that component's `working_dir`:
 smoke → test → typecheck → lint → format:check
 ```
 
-Skip any step a component does not map (not an error). If there is no `STACK.md`,
-auto-detect once from project markers and recommend the user run `/cc:setup:stack` to
-persist a manifest.
+Skip any step a component does not map (not an error). No `STACK.md` → auto-detect once and
+recommend `/cc:setup:stack`.
 
 For a large or slow suite, the `validation-runner` agent may be delegated to run the gate
 and return a compact, decision-ready result instead of the raw output — optional, not

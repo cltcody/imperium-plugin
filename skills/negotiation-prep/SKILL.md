@@ -1,9 +1,9 @@
 ---
 name: negotiation-prep
 description: |
-  Builds a negotiation brief before any commercial discussion — walk-away point, trade levers,
-  concession sequence, and responses to common tactics. Use on "negotiation prep", "they're
-  pushing back on price", "discount request", or "getting ready to negotiate".
+  Builds a negotiation brief BEFORE the meeting for commercial, scope, or renewal discussions. Use
+  on "negotiation prep", "discount request", or "getting ready to negotiate"; for live
+  in-conversation moves use `tactical-empathy-coach`.
 ---
 
 # Negotiation Prep

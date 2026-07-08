@@ -3,6 +3,7 @@ name: skill-creator
 description: |
   Guide for creating or updating skills in this project — structure, frontmatter, triggering, and
   packaging. Use on "create a skill", "add a skill", "new skill for", or "improve the skill".
+disable-model-invocation: true
 license: Complete terms in LICENSE.txt
 ---
 

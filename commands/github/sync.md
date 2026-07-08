@@ -45,7 +45,7 @@ Bring the current feature branch up to date with main before it drifts into a me
 
 4. **Escape hatch.** If a rebase becomes a mess: `git rebase --abort` returns to the pre-sync state; fall back to `git merge origin/main` (one conflict resolution instead of per-commit).
 
-5. **Re-validate.** Main's changes can break your branch even without textual conflicts. Invoke `/cc:verify:run` (which resolves the project's `STACK.md` per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md` and runs the gate per component). If there is no `STACK.md`, it auto-detects from project markers for this run — recommend `/cc:setup:stack` to persist a manifest. All mapped steps must come back green. Failures introduced by the sync → fix now, not at PR time. To find which upstream commit broke it: `git bisect start; git bisect bad HEAD; git bisect good origin/main~1`.
+5. **Re-validate.** Main's changes can break your branch even without textual conflicts. Invoke `/cc:verify:run` (which resolves the project's `STACK.md` per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md` and runs the gate per component). No `STACK.md` → it auto-detects for this run; recommend `/cc:setup:stack`. All mapped steps must come back green. Failures introduced by the sync → fix now, not at PR time. To find which upstream commit broke it: `git bisect start; git bisect bad HEAD; git bisect good origin/main~1`.
 
 6. **Push.** After a merge: `git push`. After a rebase, history changed:
    ```bash

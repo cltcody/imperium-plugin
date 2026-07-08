@@ -5,7 +5,8 @@
 > replace — the static `model:`/`effort:` frontmatter policy in `model-routing.md`: static
 > tags route *commands*; this document routes *tasks inside a chain*. Distilled from the
 > session-model-inherits principle plus the context-firewall patterns in
-> `piv-methodology.md` (subagents return summaries, never transcripts).
+> `piv-methodology.md` (subagents return summaries, never transcripts). For hand-dispatched
+> subagent fleets *outside* a chain, see `model-routing.md` → "Parallel subagent fan-out".
 
 ## Why
 

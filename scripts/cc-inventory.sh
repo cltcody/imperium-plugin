@@ -2,8 +2,8 @@
 # cc-inventory.sh — Generate the command/skill tables in INVENTORY.md from frontmatter.
 #
 # Regenerates the content between <!-- BEGIN GENERATED: X --> / <!-- END GENERATED: X -->
-# marker pairs in global/INVENTORY.md, using each command/skill file's frontmatter
-# `description:` (first line only). Everything outside the markers (headings, prose,
+# marker pairs in global/INVENTORY.md, using each command/skill file’s frontmatter
+# `description:` (full value, block scalars joined). Everything outside the markers (headings, prose,
 # `---` separators) is left untouched.
 #
 # Command grouping (dev vs sales table, and the `Group` column) is derived from the
@@ -49,7 +49,7 @@ import os, re, sys
 
 root, inventory_path, out_path = sys.argv[1], sys.argv[2], sys.argv[3]
 
-# ── Frontmatter: first line of `description:` ────────────────────────────────
+# ── Frontmatter: `description:` value (block scalars joined) ────────────────────────────────
 def first_description_line(path):
     try:
         with open(path, "r", encoding="utf-8", errors="strict") as fh:
@@ -70,12 +70,16 @@ def first_description_line(path):
         if line.startswith("description:"):
             remainder = line[len("description:"):].strip()
             if remainder in ("", ">", ">-", ">+", "|", "|-", "|+"):
-                # Block scalar — first non-blank following line is the description.
+                # Block scalar — join the full indented block (a bare first line
+                # truncates mid-sentence in the generated tables).
+                parts = []
                 for cont in block[i + 1:]:
+                    if cont and not cont[0].isspace():
+                        break  # next frontmatter key
                     stripped = cont.strip()
                     if stripped:
-                        return stripped
-                return None
+                        parts.append(stripped)
+                return " ".join(parts) if parts else None
             # Inline value — strip a matching pair of surrounding quotes.
             if len(remainder) >= 2 and remainder[0] == remainder[-1] and remainder[0] in "\"'":
                 remainder = remainder[1:-1]
@@ -88,7 +92,7 @@ def md_escape(text):
 
 
 # ── Commands ───────────────────────────────────────────────────────────────
-DEV_GROUP_ORDER = ["piv", "plan", "implement", "verify", "release", "github",
+DEV_GROUP_ORDER = ["piv", "plan", "implement", "verify", "release", "git", "github",
                     "radar", "debug", "monitor", "entry", "setup", "maintain", "life"]
 SALES_GROUP_ORDER = ["discovery", "account", "demo", "value", "deal", "rfp", "handover"]
 
@@ -146,7 +150,9 @@ sales_commands_table = build_command_table(sales_rows)
 DEV_SKILLS = [
     "piv-orchestrator", "security-audit", "gdpr-check", "skill-creator", "sop-creator",
     "archon", "rulecheck", "save-task-list", "triage", "diagram", "ship-pr",
-    "architecture-board", "humanize", "feature-interview",
+    "architecture-board", "humanize", "feature-interview", "premerge-checklist",
+]
+LIFE_SKILLS = [
     "council", "finance-council", "big-purchase-council", "subscriptions-audit",
     "home-council", "insurance-review",
     "health-council", "family-council", "benefits-navigator",
@@ -182,7 +188,7 @@ skills_dir = os.path.join(root, "skills")
 all_skill_names = sorted(os.listdir(skills_dir)) if os.path.isdir(skills_dir) else []
 all_skill_names = [n for n in all_skill_names if os.path.isdir(os.path.join(skills_dir, n))]
 
-categorized = set(DEV_SKILLS) | set(SALES_SKILLS) | set(DESIGN_SKILLS)
+categorized = set(DEV_SKILLS) | set(SALES_SKILLS) | set(DESIGN_SKILLS) | set(LIFE_SKILLS)
 uncategorized = sorted(set(all_skill_names) - categorized)
 if uncategorized:
     sys.stderr.write(
@@ -195,12 +201,16 @@ def skill_desc(name):
 
 def build_dev_skills_table(names):
     lines = ["| Skill | Description |", "|-------|-------------|"]
+    if not names:
+        lines.append("| _none in this variant_ | |")
     for name in names:
         lines.append(f"| `{name}` | {md_escape(skill_desc(name))} |")
     return "\n".join(lines)
 
 def build_config_skills_table(names, notes_header="Description"):
     lines = [f"| Skill | Config | {notes_header} |", "|-------|:------:|" + "-" * (len(notes_header) + 2) + "|"]
+    if not names:
+        lines.append("| _none in this variant_ | | |")
     for name in names:
         cfg = "⚙" if skill_has_config_tokens(os.path.join(skills_dir, name)) else ""
         lines.append(f"| `{name}` | {cfg} | {md_escape(skill_desc(name))} |")
@@ -209,10 +219,12 @@ def build_config_skills_table(names, notes_header="Description"):
 dev_skill_names = sorted(set(DEV_SKILLS) & set(all_skill_names)) + sorted(set(uncategorized))
 sales_skill_names = sorted(set(SALES_SKILLS) & set(all_skill_names))
 design_skill_names = sorted(set(DESIGN_SKILLS) & set(all_skill_names))
+life_skill_names = sorted(set(LIFE_SKILLS) & set(all_skill_names))
 
 dev_skills_table = build_dev_skills_table(dev_skill_names)
 sales_skills_table = build_config_skills_table(sales_skill_names)
 design_skills_table = build_config_skills_table(design_skill_names, notes_header="Notes")
+life_skills_table = build_dev_skills_table(life_skill_names)
 
 sections = {
     "dev-commands": dev_commands_table,
@@ -220,6 +232,7 @@ sections = {
     "dev-skills": dev_skills_table,
     "sales-skills": sales_skills_table,
     "design-skills": design_skills_table,
+    "life-skills": life_skills_table,
 }
 
 # ── Marker substitution ───────────────────────────────────────────────────────

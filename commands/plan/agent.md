@@ -3,6 +3,7 @@ description: Scaffold a Pydantic AI agent as a vertical slice in the FastAPI bac
 argument-hint: [agent name, e.g. research_agent]
 stack_scope: python-fastapi
 disable-model-invocation: true
+size-budget: exempt — full vertical-slice scaffold with embedded code templates (stack-scoped)
 ---
 
 # Scaffold New AI Agent Feature

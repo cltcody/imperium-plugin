@@ -1,8 +1,10 @@
 ---
 name: council
 description: >-
-  Convene a personal decision council for any dilemma — assemble expert "hats", reason from each lens, resolve the conflicts into one prioritized recommendation. Use on "help me decide", "should I…", "I'm torn between", or any genuine trade-off. Money, purchases, home, and recurring costs have dedicated councils — prefer those.
-
+  Convene a personal decision council for any dilemma — assemble expert "hats", resolve the
+  conflicts into one recommendation. Use on "help me decide", "should I…", "I'm torn between", or
+  any genuine trade-off. Money, purchases, home, and recurring costs have dedicated councils —
+  prefer those.
 ---
 
 # Personal Decision Council (general engine)

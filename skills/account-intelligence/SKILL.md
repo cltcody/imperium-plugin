@@ -1,10 +1,9 @@
 ---
 name: account-intelligence
 description: |
-  Full account intelligence pipeline — runs supply-chain mapping and ${user_config.company}
-  solution-fit qualification in sequence for any named company, producing the visual map AND the
-  fit assessment in one workflow. Use on "full account analysis for [company]", "map and qualify
-  [company]", or "prep me for a call with [company]".
+  Full account intelligence pipeline — supply-chain mapping plus ${user_config.company}
+  solution-fit qualification for any named company. Use on "full account analysis for [company]",
+  "map and qualify [company]", or "prep me for a call with [company]".
 ---
 
 # Account Intelligence Pipeline

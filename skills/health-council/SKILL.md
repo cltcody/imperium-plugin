@@ -1,8 +1,10 @@
 ---
 name: health-council
 description: >-
-  Personal health decision council (US) — several lenses prepare you to talk to your clinician. STRICTLY decision preparation, NOT medical advice, diagnosis, or treatment; emergencies → 911. Use for "help me think through this health decision", "what should I ask my doctor", "weigh treatment options", "second opinion".
-
+  Personal health decision council (US) — several lenses prepare you to talk to your clinician.
+  STRICTLY decision prep, NOT medical advice, diagnosis, or treatment; emergencies → 911. Use for "help me think through
+  this health decision", "what should I ask my doctor", "weigh treatment options", "second
+  opinion".
 ---
 
 # Health Council (US)

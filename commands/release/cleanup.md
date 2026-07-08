@@ -11,7 +11,7 @@ This command is **stack-agnostic**: the concrete validation, lint, and analysis 
 
 ## Steps
 
-1. **Establish a baseline.** Run `/cc:verify:run` (resolves `STACK.md` and runs `smoke → test → typecheck → lint → format:check` per component from each `working_dir`). If it fails before cleanup, report and stop — never clean on a red baseline. If there is no `STACK.md`, auto-detect once from project markers and recommend the user run `/cc:setup:stack` to persist a manifest.
+1. **Establish a baseline.** Run `/cc:verify:run` (resolves `STACK.md` and runs `smoke → test → typecheck → lint → format:check` per component from each `working_dir`). If it fails before cleanup, report and stop — never clean on a red baseline. No `STACK.md` → auto-detect once and recommend `/cc:setup:stack`.
 
 2. **Auto-fix safe lint issues first** (these need no approval — most linters apply only provably safe fixes, which typically includes unused-import removal). Resolve each component's `lint` (and formatter) step from `STACK.md` per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md`, run it in its auto-fix / write mode from the component's `working_dir`, then review the diff. For example, depending on the resolved toolchain:
    ```bash

@@ -1,11 +1,9 @@
 ---
 name: rfx-navigator
 description: |
-  Entry-point skill for any RFX document -- RFI, RFP, RFQ, ITT, or tender -- identifies the
-  document type, does a rapid first-cut fit assessment, and routes to the right command. Run
-  this first, before committing SC time.
-  Use when you say "we got an RFP", "RFQ just came in", "an RFX arrived", "should we bid",
-  or "bid or no bid".
+  Entry-point skill for any RFX document -- RFI, RFP, RFQ, ITT, or tender -- identifies the type
+  and does a rapid fit assessment. Use when you say "we got an RFP", "RFQ just came in", "an RFX
+  arrived", "should we bid", or "bid or no bid".
 ---
 
 # RFX Navigator

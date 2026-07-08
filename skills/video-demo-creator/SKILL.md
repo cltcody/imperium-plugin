@@ -1,9 +1,9 @@
 ---
 name: video-demo-creator
 description: |
-  Guides the full presales demo-video lifecycle — brief, Tell-Show-Tell script, recording
-  checklist, editing, and 13-point validation across all 5 video levels; integrates Descript,
-  Synthesia, goConsensus. Use on "create a demo video", "video brief", or "Synthesia script".
+  Guides the full presales demo-video lifecycle — brief, Tell-Show-Tell script, recording,
+  editing, validation; integrates Descript, Synthesia, goConsensus. Use on "create a demo video",
+  "video brief", or "Synthesia script".
 ---
 
 # Video Demo Creator
@@ -395,7 +395,7 @@ Tracking gives you:
 
 | Tool | Purpose | Access |
 |------|---------|--------|
-| **Descript** | Screen recording, script-based editing, AI filler removal, export | https://descript.cello.so/ukNKAhow9fy |
+| **Descript** | Screen recording, script-based editing, AI filler removal, export | https://www.descript.com/ |
 | **goConsensus** | Publish videos, build guided buyer stories, track engagement | https://app.goconsensus.com/ |
 | **Synthesia** | AI avatar videos for TELL 1 and TELL 2 segments | https://app.synthesia.io/ |
 

@@ -9,7 +9,7 @@ Scan for security issues introduced by the current work. Default scope is **diff
 
 ## Steps
 
-1. **Resolve scope (and the stack).** Read `STACK.md` first and resolve commands per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md` — active components change the attack surface, and each component's `package_manager` and `working_dir` drive the dependency scan in step 2. If there is no `STACK.md`, auto-detect components once from project markers and recommend the user run `/cc:setup:stack` to persist a manifest.
+1. **Resolve scope (and the stack).** Read `STACK.md` first and resolve commands per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md` — active components change the attack surface, and each component's `package_manager` and `working_dir` drive the dependency scan in step 2. No `STACK.md` → auto-detect components once and recommend `/cc:setup:stack`.
    - `diff` (default, and always the mode inside a verify chain): collect `git diff` (unstaged + staged) plus `git diff main...HEAD`. If the combined diff is empty, report "nothing to scan" and hand off.
    - `full`: invoke the **security-audit** skill and follow its workflow end-to-end (full-repo scope, all dimensions, officer-ready report to `${user_config.workspace_dir}/reports/security/`). Skip steps 2–3 below.
 

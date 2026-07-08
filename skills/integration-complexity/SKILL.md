@@ -1,10 +1,9 @@
 ---
 name: integration-complexity
 description: |
-  Assesses a prospect's integration landscape and rates the complexity and risk of connecting to
-  ${user_config.company} — maps ERP/WMS/TMS/carrier/customs systems and produces an SC effort
-  estimate for PoC and OSD scoping. Use on "assess integration complexity" or "map their
-  integrations".
+  Assesses a prospect's integration landscape and rates the risk of connecting to
+  ${user_config.company} — maps ERP/WMS/TMS/carrier/customs systems. Use on "assess integration
+  complexity" or "map their integrations".
 ---
 
 # Integration Complexity Assessor

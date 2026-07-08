@@ -1,6 +1,7 @@
 ---
 description: RFP/RFI Go/No-Go Analyzer — should we bid? Pulls Salesforce account history, deal health, prior RFPs, and scores the opportunity before committing SC resources
 argument-hint: [account name] [paste RFP/RFI document or description]
+size-budget: exempt — go/no-go scoring rubric and report template embedded
 ---
 
 Run the RFP/RFI go/no-go analysis for: **$ARGUMENTS**

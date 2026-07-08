@@ -1,10 +1,9 @@
 ---
 name: osd-architect
 description: |
-  Generates a full Optimal Solution Design from discovery notes and POC results per the
-  ${user_config.company} OSD template — every claim tagged 🟢 Confirmed / 🟡 Proposed / 🔴
-  Assumption. Use at technical win, for the PS handover, or on "OSD", "solution design",
-  "technical proposal".
+  Generates a full Optimal Solution Design per the ${user_config.company} OSD template — every
+  claim tagged 🟢 Confirmed / 🟡 Proposed / 🔴 Assumption. Use at technical win, for the PS handover,
+  or on "OSD", "solution design", "technical proposal".
 ---
 
 # OSD Architect

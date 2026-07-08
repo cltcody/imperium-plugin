@@ -1,8 +1,9 @@
 ---
 name: subscriptions-audit
 description: >-
-  Audit recurring costs and subscriptions (US) for waste, duplicates, forgotten trials, and renewal traps; produce a prioritized savings and cancellation plan with a template. Use for "audit my subscriptions", "where can I cut costs", "lower my monthly bills", "subscription creep", "free trial about to renew".
-
+  Audit recurring costs and subscriptions (US) for waste, duplicates, forgotten trials, and
+  renewal traps; produce a savings and cancellation plan. Use for "audit my subscriptions", "where
+  can I cut costs", "lower my monthly bills", "subscription creep", "free trial about to renew".
 ---
 
 # Subscriptions & Recurring-Cost Audit (US)

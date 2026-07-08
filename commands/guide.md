@@ -1,6 +1,7 @@
 ---
 description: Interactive router — find the right skill or command for your situation, or browse the full phase map
 argument-hint: [optional: a phase name "discovery" / "demo" / "closing", or "list" for the full reference]
+size-budget: exempt — full phase-map router with per-phase decision tables
 ---
 
 ## Step 1 — Load the live inventory

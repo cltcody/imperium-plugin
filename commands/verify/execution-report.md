@@ -18,7 +18,7 @@ Compare what the plan said against what was actually built, classify every diver
    git ls-files --others --exclude-standard
    ```
    List files added/modified/deleted and total lines changed.
-3. **Collect validation results** from the `/cc:verify:run` and `/cc:verify:code` runs in this session — the `test`, `typecheck`, `lint`, `format:check`, `build`, and `smoke` step outcomes **per component**, plus the review verdict and any fix loops used. Resolve which steps apply from the project's `STACK.md` per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md`; skip steps a component does not map. If there is no `STACK.md`, auto-detect once from project markers and recommend the user run `/cc:setup:stack` to persist a manifest. If validation hasn't run, run `/cc:verify:run` now — a report without validation results is incomplete.
+3. **Collect validation results** from the `/cc:verify:run` and `/cc:verify:code` runs in this session — the `test`, `typecheck`, `lint`, `format:check`, `build`, and `smoke` step outcomes **per component**, plus the review verdict and any fix loops used. Resolve which steps apply from the project's `STACK.md` per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md`; skip steps a component does not map. No `STACK.md` → auto-detect once and recommend `/cc:setup:stack`. If validation hasn't run, run `/cc:verify:run` now — a report without validation results is incomplete.
 4. **Walk the plan item by item** and mark each: ✅ done as planned / 🔀 diverged / ⏭️ skipped.
 5. **Classify every divergence:**
    - **Good ✅ (justified by discovery)** — the plan assumed something untrue of the codebase; a better existing pattern was found; a real security/performance issue forced a change.

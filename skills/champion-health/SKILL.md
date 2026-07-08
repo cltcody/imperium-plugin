@@ -2,7 +2,7 @@
 name: champion-health
 description: |
   Diagnoses champion strength in a live deal — separates friendly contacts from advocates actively
-  selling for you, and flags at-risk champions early. Use on "how strong is my champion", "is my
+  selling for you, and flags at-risk champions. Use on "how strong is my champion", "is my
   champion real", or "champion health check".
 ---
 

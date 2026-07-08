@@ -2,6 +2,7 @@
 description: Dependency UPDATE loop — apply verify:dependencies findings in risk tiers (security, then patch/minor, majors only with --major), each tier gated by STACK.md's verify steps and rolled back independently on red
 argument-hint: [--major]
 disable-model-invocation: true
+size-budget: exempt — tiered update loop with per-tier gate/rollback procedure
 ---
 
 # Maintain: Dependency Update Loop

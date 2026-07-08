@@ -1,9 +1,9 @@
 ---
 name: win-loss-analyzer
 description: |
-  Structured win/loss debrief on any closed deal — the real reason for the decision, what to
-  repeat or change, competitive intel; works for wins, losses, no-decisions, with Salesforce
-  history. Use on "debrief this win", "why did we lose", or "post-mortem on this deal".
+  Structured win/loss debrief on any closed deal — the real reason, what to repeat or change,
+  competitive intel; wins, losses, no-decisions. Use on "debrief this win", "why did we lose", or
+  "post-mortem on this deal".
 ---
 
 # Win/Loss Analyzer

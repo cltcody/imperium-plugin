@@ -1,10 +1,9 @@
 ---
 name: feature-interview
 description: |
-  Lightweight feature-planning interview — one question at a time, no repo access needed —
-  producing a structured Feature Brief that /cc:plan:feature turns into a full implementation
-  plan in Claude Code. Built for chat surfaces where dev commands don't exist.
-  Use on "I have a feature idea", "help me plan/spec a feature", or "feature brief".
+  Lightweight feature-planning interview producing a structured Feature Brief that
+  /cc:plan:feature turns into a full implementation plan. Use on "I have a feature idea", "help me
+  plan/spec a feature", or "feature brief".
 ---
 
 # Feature Interview — Chat-Portable Planning Onramp

@@ -1,9 +1,9 @@
 ---
 name: exec-briefing-prep
 description: |
-  Preps the SC and AE for a C-suite meeting — tight agenda, persona-calibrated talking points
-  (CEO/CFO/COO/CPO), meeting objective, and coaching for the economic buyer's sceptical questions.
-  Use on "exec briefing prep", "EBC prep", or "briefing the CFO".
+  Preps the team for a single C-suite meeting — persona-calibrated talking points
+  (CEO/CFO/COO/CPO). Use on "exec briefing prep" or "briefing the CFO"; for a multi-day EBC or
+  workshop agenda use `workshop-agenda-builder`.
 ---
 
 # Executive Briefing Prep

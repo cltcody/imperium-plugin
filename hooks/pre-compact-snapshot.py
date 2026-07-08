@@ -35,6 +35,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from piv_state import (  # noqa: E402  (local module, path set above)
     REVIEW_IGNORE,
     WORKSPACE_DIR,
+    _artifact_times,
     _newest,
     detect_state,
 )
@@ -87,15 +88,20 @@ def _status_summary(cwd: Path) -> tuple[str, list[str]]:
     return summary, paths
 
 
-def _links(workspace: Path) -> list[str]:
-    """Newest artifact per evidence dir, as `## Links` bullet lines."""
+def _links(cwd: Path, workspace: Path) -> list[str]:
+    """Newest artifact per evidence dir, as `## Links` bullet lines.
+
+    Ranked by git commit time like detect_state, so "Links" and "Stopped at"
+    can't name different "newest" artifacts in the same snapshot.
+    """
+    times = _artifact_times(cwd)
     lines: list[str] = []
     for label, subdir, ignore in (
         ("Plan", "plans", None),
         ("Review", "code-reviews", REVIEW_IGNORE),
         ("Report", "execution-reports", None),
     ):
-        newest = _newest(workspace / subdir, ignore=ignore)
+        newest = _newest(workspace / subdir, ignore=ignore, cwd=cwd, times=times)
         if newest is not None:
             lines.append(f"- {label}: `{WORKSPACE_DIR}/{subdir}/{newest.name}`")
     return lines or ["- (no plans, reviews, or reports yet)"]
@@ -140,7 +146,7 @@ def _build_snapshot(cwd: Path, workspace: Path) -> str:
         nxt,
         "",
         "## Links",
-        *_links(workspace),
+        *_links(cwd, workspace),
         "",
     ]
     return "\n".join(lines)

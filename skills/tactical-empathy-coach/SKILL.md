@@ -1,9 +1,10 @@
 ---
 name: tactical-empathy-coach
 description: |
-  Coaches objection handling with tactical empathy (Voss: labels, mirrors, calibrated questions,
-  accusation audit) and NVC — 3 ranked responses for any pushback. Use to rehearse a high-stakes
-  call, or on "objection", "they pushed back", "how do I respond to".
+  Coaches live conversational moves with tactical empathy (Voss: labels, mirrors, calibrated
+  questions, accusation audit) and NVC. Use on "objection", "they pushed back", "how do I respond
+  to this objection", or to rehearse a high-stakes call; to build a brief beforehand use
+  `negotiation-prep`.
 ---
 
 # Tactical Empathy Coach

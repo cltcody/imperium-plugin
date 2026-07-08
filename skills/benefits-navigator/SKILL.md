@@ -1,8 +1,9 @@
 ---
 name: benefits-navigator
 description: >-
-  US government and admin process navigator — which agency, forms, documents, deadlines, costs, and pitfalls (SSA, IRS, USCIS, DMV, Medicaid/SNAP, ACA, VA). Orientation only, NOT legal advice — confirm on the official .gov site. Use for "how do I apply for [benefit]", "what forms do I need", "deal with the DMV/IRS".
-
+  US government and admin process navigator — which agency, forms, documents, deadlines, costs,
+  and pitfalls (SSA, IRS, USCIS, DMV, Medicaid/SNAP, ACA, VA). Orientation only, NOT legal advice —
+  confirm on the official .gov site. Use for "how do I apply for [benefit]", "what forms do I need", "deal with the DMV/IRS".
 ---
 
 # Benefits & Bureaucracy Navigator (US)

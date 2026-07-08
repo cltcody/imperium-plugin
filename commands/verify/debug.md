@@ -7,7 +7,7 @@ argument-hint: [test path, error message, or description of the failure]
 
 Diagnose a failing test, error, or unexpected behaviour through a disciplined loop: reproduce, classify, isolate, hypothesize, verify, then apply the minimal fix to the root cause. Use this when `/cc:verify:run` fails repeatedly or any error resists a quick fix.
 
-This command is **stack-agnostic**: the concrete commands come from the project's `STACK.md`, not from this file. Resolve steps per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md` — read `STACK.md` at the project root and run each component's mapped command from its `working_dir`. Skip any step a component does not map (not an error). If there is no `STACK.md`, auto-detect once from project markers and recommend the user run `/cc:setup:stack` to persist a manifest.
+This command is **stack-agnostic**: the concrete commands come from the project's `STACK.md`, not from this file. Resolve steps per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md` — read `STACK.md` at the project root and run each component's mapped command from its `working_dir`. Skip any step a component does not map (not an error). No `STACK.md` → auto-detect once and recommend `/cc:setup:stack`.
 
 ## Steps
 

@@ -98,6 +98,6 @@ recommendations first, then `/cc:verify:run`.
 and the root cause is non-trivial, document it as Keep (with justification) rather than
 leaving the build red — and route the underlying issue to `/cc:verify:debug` or
 `/cc:plan:task`. If a component has no `typecheck` mapped in `STACK.md`, skip its checker
-confirmation; if there is no `STACK.md` at all, auto-detect the type checker once from
-project markers and recommend the user run `/cc:setup:stack` to persist a manifest.
+confirmation; no `STACK.md` at all → auto-detect the type checker once and recommend
+`/cc:setup:stack`.
 Remember the project rule: zero new suppressions without explicit approval.

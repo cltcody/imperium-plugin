@@ -4,6 +4,7 @@ description: |
   Diagnoses where you are in the PIV development cycle from actual project state (git, plans,
   reports, reviews) and routes to — or launches — the right command, skill, or agent. Use on "what
   should I do next", "where was I", "I'm stuck", "PIV status", or "continue where we left off".
+disable-model-invocation: true
 ---
 
 # PIV Orchestrator
@@ -29,6 +30,10 @@ Run these checks before saying anything. Each is cheap; run them in parallel whe
 | Validation signals | Look for failing-test output in recent context; if unknown and changes exist, validation status is **unknown**, not "passing" | Whether /cc:verify:run has run on the current diff |
 | Open PRs | `gh pr list --limit 10` (skip silently if `gh` unavailable or not a GitHub repo) | Review/merge work outstanding |
 | Open issues | `gh issue list --limit 10` (optional, same caveat) | Candidate next goals |
+
+All "List `${user_config.workspace_dir}/<sub>/`" checks above are top-level only — ignore
+`${user_config.workspace_dir}/archive/`. It holds closed artifacts (`/cc:maintain:specify
+sweep`, ADR-002 D3); the state detector (`piv_state.py`) never globs into it either.
 
 Only ask the user one thing, and only if the evidence doesn't answer it: **"What is the goal right now?"** — and only when nothing is in flight.
 

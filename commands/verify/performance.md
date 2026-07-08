@@ -12,7 +12,7 @@ This review is **mostly static analysis** and **stack-agnostic**: the heuristics
 
 ## Steps
 
-1. **Resolve the stack (for scoping).** Read the project's `STACK.md` and resolve components per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md`. Use each component's `working_dir` and `language` to know which directories and file types to scan, and its `migrate` step as the route for any index/schema fix. If there is no `STACK.md`, auto-detect components once from project markers and recommend the user run `/cc:setup:stack` to persist a manifest. Skip components that map nothing relevant.
+1. **Resolve the stack (for scoping).** Read the project's `STACK.md` and resolve components per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md`. Use each component's `working_dir` and `language` to know which directories and file types to scan, and its `migrate` step as the route for any index/schema fix. No `STACK.md` → auto-detect components once and recommend `/cc:setup:stack`. Skip components that map nothing relevant.
 
 2. **Scope the review.** Default to the current diff (`git diff HEAD`, or against main). If an argument names a path/area, review that instead. State the scope — and the resolved stack — in the report header.
 

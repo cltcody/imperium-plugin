@@ -130,6 +130,12 @@ Infer a component from these markers. Prefer the project's **real** scripts over
 | `pyproject.toml` | Python | `uv.lock`→uv · `poetry.lock`→poetry · else pip | test=pytest if present; typecheck=mypy/pyright; lint=ruff/flake8 |
 | `manage.py` | Django | (python rules above) | `smoke`→`manage.py check`, `migrate`→`manage.py migrate`, `dev`→`manage.py runserver` |
 | `app/main.py` + uvicorn dep | FastAPI | uv | `smoke`→import app, `dev`→`uvicorn app.main:app` |
+| `Cargo.toml` | Rust | cargo | `test`→`cargo test`, `build`→`cargo build`, `lint`→`cargo clippy` |
+| `go.mod` | Go | go | `test`→`go test ./...`, `build`→`go build ./...`, `lint`→`go vet ./...` |
+| `Makefile` / `Taskfile.yml` | task-runner | — | Read the file's targets; prefer a project-defined `test`/`lint`/`build` target over a language default |
+
+When nothing else resolves a step, fall back to the project's CI config (`.github/workflows/*`,
+`.gitlab-ci.yml`, etc.) — it records the commands the project actually runs.
 
 **Monorepo:** if multiple roots match (`backend/`+`frontend/`, `apps/*`, npm/pnpm
 workspaces), emit one component per root.

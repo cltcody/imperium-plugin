@@ -5,7 +5,7 @@
 **[COMPANY] / [COMPANY]**
 
 **Tools:**
-- Descript: https://descript.cello.so/ukNKAhow9fy
+- Descript: https://www.descript.com/
 - goConsensus: https://app.goconsensus.com/
 - Synthesia: https://app.synthesia.io/
 

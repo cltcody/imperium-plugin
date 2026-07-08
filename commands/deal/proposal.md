@@ -1,6 +1,7 @@
 ---
 description: Build the formal commercial proposal — cover letter, solution narrative, expected outcomes, investment, implementation approach, and a specific next step
 argument-hint: [account] [products] [deal value]
+size-budget: exempt — full proposal document template embedded
 ---
 
 Build the commercial proposal for: **$ARGUMENTS**

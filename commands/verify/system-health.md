@@ -1,6 +1,7 @@
 ---
 description: Holistic system health check before release, on schedule, or post-deployment
 disable-model-invocation: true
+size-budget: exempt — dual-mode (pre-release + post-deploy) runbook with report templates
 ---
 
 # Verify: System Health
@@ -28,9 +29,8 @@ Read the project's `STACK.md` and resolve commands per
 `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md`. The stack-coupled checks below
 run **per component** from that component's `working_dir`, using the component's mapped
 commands and `package_manager`. Skip any step a component does not map (not an error), and
-**aggregate** results per component — do not stop at the first component's failure. If there
-is no `STACK.md`, auto-detect once from project markers and recommend the user run
-`/cc:setup:stack` to persist a manifest.
+**aggregate** results per component — do not stop at the first component's failure. No
+`STACK.md` → auto-detect once and recommend `/cc:setup:stack`.
 
 Mapping for this command:
 

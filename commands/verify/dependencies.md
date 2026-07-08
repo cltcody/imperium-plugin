@@ -26,9 +26,8 @@ manifest, and lockfile:
 | `yarn` | `yarn npm audit` (berry) / `yarn audit` (classic) | `yarn outdated` | `yarn install --immutable --dry-run` | `package.json` / `yarn.lock` |
 | `bun` | `bun audit` | `bun outdated` | `bun install --frozen-lockfile --dry-run` | `package.json` / `bun.lockb` |
 
-Prefer whatever scanner is already installed. If there is no `STACK.md`, auto-detect each
-component once from project markers (manifest + lockfile → package_manager) and recommend the
-user run `/cc:setup:stack` to persist a manifest. Never assume a single ecosystem — a repo
+Prefer whatever scanner is already installed. No `STACK.md` → auto-detect each component once
+(manifest + lockfile → package_manager) and recommend `/cc:setup:stack`. Never assume a single ecosystem — a repo
 can have several components, each with its own package_manager; audit each.
 
 ## Steps

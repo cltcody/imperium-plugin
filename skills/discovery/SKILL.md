@@ -1,10 +1,9 @@
 ---
 name: discovery
 description: |
-  Full-lifecycle discovery for ${user_config.company} solutions — researches (Salesforce +
-  SharePoint + web), applies the FTD opening framework, and produces a branded pre-discovery
-  questionnaire or post-call summary. Use on "discovery prep", "FTD", "call prep", or "discovery
-  summary".
+  Full-lifecycle discovery for ${user_config.company} solutions — research, the FTD opening
+  framework, and a branded pre-discovery questionnaire or post-call summary. Use on "discovery
+  prep", "FTD", "call prep", or "discovery summary".
 ---
 
 # Discovery Skill

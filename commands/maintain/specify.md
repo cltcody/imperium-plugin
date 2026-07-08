@@ -1,7 +1,8 @@
 ---
-description: Archive completed workspace docs — move finished plans, reports, and reviews out of the active [WORKSPACE_DIR] folders into [WORKSPACE_DIR]/completed/ when a feature ships
-argument-hint: [feature-name (default: current branch) | all]
+description: Archive completed workspace docs — move finished plans, reports, and reviews out of the active [WORKSPACE_DIR] folders into [WORKSPACE_DIR]/completed/ when a feature ships, or run the `sweep` mode to auto-archive every Status-closed, PR-merged plan into [WORKSPACE_DIR]/archive/<year>/
+argument-hint: [feature-name (default: current branch) | all | sweep]
 disable-model-invocation: true
+size-budget: exempt — three-mode lifecycle (feature/all/sweep) with archive procedure
 ---
 
 # Maintain: Archive Workspace Docs
@@ -13,6 +14,10 @@ every plan, report, and review under one archive root that mirrors the source la
 
 It **moves, never deletes** — and previews every move before touching a file. It is manual by
 design: nothing archives as a side effect of opening a PR.
+
+`$ARGUMENTS == sweep` runs a different, automated mode instead — see **Sweep mode** below. It
+is the periodic housekeeping pass (ADR-002 D3); the per-feature flow above stays for archiving
+a single feature's docs the moment its PR opens.
 
 ## Scope
 
@@ -131,7 +136,84 @@ exactly what moved and any collisions handled.
 - [ ] `reference/`, `test-runs/`, and `completed/` left untouched
 - [ ] No file overwritten — collisions suffixed and reported
 
+## Sweep mode (`$ARGUMENTS == sweep`) — ADR-002 D3
+
+The periodic housekeeping pass. Unlike the per-feature flow above, it runs unattended over the
+whole workspace and only moves an artifact when **both** signals agree: the plan is
+Status-closed **and** its work is merged. Convention: `[WORKSPACE_DIR]/archive/<year>/<sub>/`,
+preserving the subdir it came from (`archive/2026/plans/`, `archive/2026/code-reviews/`,
+`archive/2026/execution-reports/`, `archive/2026/system-reviews/`) — `<year>` is the current
+year at sweep time. Never touches `reference/`, `test-runs/`, or `completed/`.
+
+### S1 — Find closed plans
+
+A plan is **Status-closed** when its first 5 lines carry `implemented` / `superseded` / `done`
+— either the bold form (`**implemented**`) or the status-line form (`Status: implemented`,
+asterisks stripped before matching) — the exact convention `global/hooks/piv_state.py`'s
+`_plan_done()` machine-reads. Scan `[WORKSPACE_DIR]/plans/*.md` only (top-level — `archive/`
+is never re-scanned).
+
+### S2 — Confirm each closed plan's work is merged
+
+For each Status-closed plan, in order:
+
+1. **Branch/PR named in the plan** (header or body mentions a `#<number>` PR or an explicit
+   branch name) → `gh pr list --state merged --search "<number-or-branch>"` (or
+   `gh pr view <number> --json state,mergedAt`). Merged if the PR shows as merged.
+2. **No PR named, but commits plausibly reference the plan** → `git log --oneline --all
+   --grep="<plan-kebab-name>"` on `main`; treat as merged only when a matching commit is
+   reachable from `main`.
+3. **Neither signal resolves it** → do not guess. Leave the plan in place, list it under
+   "Skipped (ambiguous)" in the report, and ask the user to confirm merge status if they want
+   it archived this run.
+
+### S3 — Move the plan and its same-named artifacts
+
+For each plan confirmed closed-and-merged:
+
+```bash
+YEAR=$(date +%Y)
+dest="[WORKSPACE_DIR]/archive/$YEAR/plans"
+mkdir -p "$dest"
+git mv "[WORKSPACE_DIR]/plans/<name>.md" "$dest/<name>.md"
+
+# Same kebab name in code-reviews/, execution-reports/, system-reviews/ archives alongside it —
+# only because the plan it belongs to just archived, never on its own.
+for sub in code-reviews execution-reports system-reviews; do
+  src="[WORKSPACE_DIR]/$sub/<name>.md"
+  [ -f "$src" ] || continue
+  mkdir -p "[WORKSPACE_DIR]/archive/$YEAR/$sub"
+  git mv "$src" "[WORKSPACE_DIR]/archive/$YEAR/$sub/<name>.md"
+done
+```
+
+Skip (do not archive) a `code-reviews/` / `execution-reports/` / `system-reviews/` file whose
+same-named plan is still live or ambiguous — those folders only follow an archived plan, they
+are never swept independently.
+
+### S4 — Report
+
+Print a table, not prose:
+
+```
+Sweep — [WORKSPACE_DIR] (<date>)
+─────────────────────────────────────────────
+Moved 23 files → [WORKSPACE_DIR]/archive/2026/
+
+  plan                              status        merged        →  archive/2026/plans/
+  ────────────────────────────────  ────────────  ────────────  ──────────────────────
+  piv-state-staleness               implemented   PR #34        plans/, code-reviews/, execution-reports/
+  fold-global-commands-into-cc      implemented   PR #21        plans/
+  ...
+
+  Skipped (ambiguous): domain-trade-radar-research-valuation.md — no PR/branch named, no
+    matching commit on main; confirm merge status to archive.
+  Left live: harness-hardening-backlog.md (Status: in-progress)
+```
+
 ## Handoff
 
 Run at PR time — after `/cc:verify:execution-report`, alongside or just before
-`/cc:github:pr`. Pair with `/cc:maintain:audit` to keep the plugin itself clean.
+`/cc:github:pr`. Pair with `/cc:maintain:audit` to keep the plugin itself clean. Run `sweep`
+periodically (e.g. from `/cc:verify:system` or a standalone housekeeping pass) — it is safe to
+re-run; already-archived files are never re-scanned.

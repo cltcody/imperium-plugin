@@ -3,8 +3,13 @@
 # Claude Code install, so /cc:* commands and skills are available in every project.
 #
 # The repo (this folder) stays the single source of truth. Claude Code copies the
-# plugin into ~/.claude/plugins/cache on install, so this script re-syncs that copy
-# whenever you've edited the plugin. Safe to re-run any time.
+# plugin into a VERSION-KEYED cache dir on install
+# (~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/) — and a reinstall at the
+# same version does NOT re-copy content (verified empirically 2026-07-08), so
+# `marketplace update` + uninstall/reinstall alone would leave same-version edits
+# stale. Step 4a therefore force-syncs the current version's cache dir from the
+# source after install, so edits go live without a version bump. Safe to re-run
+# any time.
 #
 # Usage:
 #   bash scripts/cc-publish.sh                # apply config, publish, then restore source
@@ -78,6 +83,39 @@ fi
 step "Installing '$REF' at user scope"
 claude plugin uninstall "$REF" 2>/dev/null || true
 claude plugin install "$REF" --scope user
+
+# ── 4a. Force-sync the version-keyed cache copy ────────────────────────────────
+# `plugin install` does not re-copy content into an existing <version> cache dir, so
+# a same-version publish would silently leave the live copy stale. Mirror the (still
+# baked, if cc-apply ran) source over it directly, preserving Claude Code's own
+# `.in_use` marker. Direct cache manipulation is an established seam here —
+# cc-profile-filter.sh already edits this dir in place. Must run BEFORE step 4b's
+# source restore, so baked values (not tokens) land in the live copy.
+step "Force-syncing the cache copy (same-version edits go live)"
+if command -v python3 &>/dev/null; then
+  VERSION="$(python3 -c "import json; print(json.load(open('$ROOT/.claude-plugin/plugin.json'))['version'])")"
+  # $VERSION names the rsync --delete / rm -rf target below — an empty or malformed value
+  # would aim the delete at the cache ROOT (every installed version). Refuse, don't guess.
+  if [[ ! "$VERSION" =~ ^[0-9A-Za-z][0-9A-Za-z.+-]*$ ]]; then
+    echo "  ⚠ implausible plugin version '$VERSION' in plugin.json — refusing cache sync" >&2
+    exit 1
+  fi
+  CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+  CACHE="$CLAUDE_DIR/plugins/cache/$MARKETPLACE/$PLUGIN/$VERSION"
+  if [[ -d "$CACHE" ]]; then
+    if command -v rsync &>/dev/null; then
+      rsync -a --delete --exclude '.in_use' "$ROOT/" "$CACHE/"
+    else
+      find "$CACHE" -mindepth 1 -maxdepth 1 ! -name '.in_use' -exec rm -rf {} +
+      cp -R "$ROOT/." "$CACHE/"
+    fi
+    echo "  synced $ROOT -> $CACHE"
+  else
+    echo "  (no cache dir at $CACHE — nothing to sync)"
+  fi
+else
+  echo "  ⚠ python3 not found — cannot resolve the plugin version; cache copy may be stale at the same version"
+fi
 
 # ── 4b. Keep the repo config-neutral: restore the source cc-apply just baked ───
 # The install above copied the baked content into the plugin cache, so reverting the

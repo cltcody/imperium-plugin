@@ -1,8 +1,9 @@
 ---
 name: family-council
 description: >-
-  Family decision council — communication, values, practical, and conflict-repair hats weigh a family decision, then resolve the tensions into a fair path forward. Decision preparation, NOT therapy or counseling. Use for "help our family decide", "we disagree about", "talk through a decision with my partner".
-
+  Family decision council — communication, values, practical, and conflict-repair hats weigh a
+  family decision. Decision prep, NOT therapy or counseling. Use for "help our family decide", "we
+  disagree about", "talk through a decision with my partner".
 ---
 
 # Family Council

@@ -1,6 +1,6 @@
 ---
 name: diagram
-description: Generate software architecture and flow diagrams in Excalidraw format. For a company's supply-chain / logistics map use the `supply-chain-map` skill instead; for Theory-of-Constraints thinking-process trees and clouds use `toc-bbit-expert`.
+description: Generate architecture, flow, and process diagrams in Excalidraw format — system architecture, data flows, sequence and state diagrams, business process maps, decision trees. Not for supply-chain maps (use `supply-chain-map`) or Theory-of-Constraints trees (use `toc-bbit-expert`).
 ---
 
 # 🎨 Skill: Create Diagram
@@ -14,29 +14,17 @@ Generate beautiful, editable diagrams (Excalidraw format) for:
 
 ---
 
-## Usage
+## Diagram types
 
-```
-/create:diagram [type] [title]
-```
+Say what you want in plain words ("draw the architecture of X", "diagram our escalation process"):
 
-### Types
-
-- `architecture` — System components and relationships
-- `dataflow` — How data moves through the system
-- `database` — Tables, relationships, constraints
-- `sequence` — Message sequence between actors
-- `state` — State machine transitions
-- `entity-relationship` — Database entities and relationships
-
-### Examples
-
-```
-/create:diagram architecture "Items Service Architecture"
-/create:diagram dataflow "Create Item Request Flow"
-/create:diagram database "Items Database Schema"
-/create:diagram sequence "User Authentication Flow"
-```
+- `architecture` — system components and relationships
+- `dataflow` — how data moves through a system
+- `process` — business process maps, org flows, decision trees
+- `database` — tables, relationships, constraints
+- `sequence` — message sequence between actors
+- `state` — state machine transitions
+- `entity-relationship` — database entities and relationships
 
 ---
 

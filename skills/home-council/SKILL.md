@@ -1,8 +1,10 @@
 ---
 name: home-council
 description: >-
-  Housing decision council (US) — money / life-fit / property / market-timing hats weigh buy-vs-rent, renovate, relocate, or refinance, resolved into one prioritized recommendation. Decision preparation, NOT financial or real-estate advice. Use for "should I buy or rent", "renovate or move", "home council", "is this house worth it".
-
+  Housing decision council (US) — money / life-fit / property / market-timing hats weigh
+  buy-vs-rent, renovate, relocate, or refinance. Decision prep, NOT financial or real-estate
+  advice. Use for "should I buy or rent", "renovate or move", "home council", "is this house worth
+  it".
 ---
 
 # Home Council (US)

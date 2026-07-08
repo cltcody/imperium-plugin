@@ -2,8 +2,7 @@
 name: brand
 description: |
   Shared brand registry read by output skills (pptx-generator, docx-generator) before any branded
-  artefact — authoritative color tokens, fonts, logo paths, and per-format configs (PPTX, DOCX,
-  HTML, Excalidraw). NOT invoked directly by users; configure in brands/template/brand.json.
+  artefact — color tokens, fonts, logo paths, templates. Configure in brands/template/brand.json.
 user-invocable: false
 ---
 
@@ -19,9 +18,9 @@ Shared asset library for all output skills that generate branded content.
 
 | Skill | What it reads |
 |-------|--------------|
-| `pptx-generator` | `brand.json` → `formats.pptx` section |
-| `docx-generator` | `brand.json` → `formats.docx` section |
-| Future `html-report` | `brand.json` → `formats.html` section |
+| `pptx-generator` | `brand.json` → colors, `font_family`, logos, `pptx_template` |
+| `docx-generator` | `brand.json` → colors, `font_family`, logos, `docx_template` |
+| Future `html-report` | `brand.json` → colors, `font_family`, logos |
 
 **Skills that do NOT use this registry:**
 - `diagram` — uses its own semantic color grammar defined in the skill. Brand colors would destroy semantic encoding.
@@ -89,4 +88,4 @@ If brand guidelines change:
 1. Update `brands/{brand}/brand.json` — hex values only, never restructure keys
 2. Add new logo SVGs to `brands/{brand}/assets/`
 
-Do not store format-specific values (slide dimensions, page margins) in output skills — they belong in `brand.json` under `formats.{output-type}`.
+Format-specific output settings (slide dimensions, page margins) do NOT belong in `brand.json` — they live in each output skill's own per-brand `config.json` (e.g. `skills/pptx-generator/brands/{brand}/config.json`). `brand.json` holds brand identity only: colors, fonts, logos, templates, tone.

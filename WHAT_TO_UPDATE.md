@@ -35,9 +35,9 @@ The token → config mapping lives in the `placeholders` block of `cc.config.jso
 | `[PRODUCT_B]` | `products.product_b` | Product line B (e.g. AI document capture) |
 | `[PRODUCT_C]` | `products.product_c` | Product line C (e.g. partner / restricted-party screening) |
 | `[PRODUCT_D]` | `products.product_d` | Product line D (e.g. trade-agreement / rules-of-origin) |
-| `[PRODUCT_E]` | `products.product_e` | Product line E (e.g. supply-chain planning) |
+| `[PRODUCT_E]` | `products.product_e` | Product line E (e.g. supply-chain planning) — intentionally spare slot; no shipped content uses it yet |
 | `[SOLUTION_SUITE_1]` | `solutions.suite_1` | Primary solution suite name |
-| `[SOLUTION_SUITE_2]` | `solutions.suite_2` | Secondary suite (optional) |
+| `[SOLUTION_SUITE_2]` | `solutions.suite_2` | Secondary suite (optional) — intentionally spare slot; no shipped content uses it yet |
 
 ### Sales & brand (set in `cc.config.json`)
 | Token | Config field | Default |

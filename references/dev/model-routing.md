@@ -53,6 +53,32 @@ If a task involves any high-stakes signal, prefer the session model (or `opus`/`
 regardless of tier: `production`, `security`, `auth`, `migration`, `delete`, `payment`,
 `billing`, `pii`, `gdpr`, `rollback`, `irreversible`.
 
+## Parallel subagent fan-out
+When you hand-dispatch a fleet of subagents to fan work across a task (Agent tool calls or
+workflow `agent()`), route **each subagent by the nature of its slice**, not by the session
+model. This is the runtime companion to lever #3 above — the static frontmatter policy routes
+*commands*, and `dynamic-routing.md` routes *tasks inside a `/cc:piv:ship` chain*, but neither
+covers the common "fan work across hand-dispatched subagents" pattern. The working default:
+
+| Model | Route to it | Examples |
+|-------|-------------|----------|
+| `sonnet` | mechanical / well-specified subagent work — the design is settled and acceptance is close to a grep | hook logic, scripts, config JSON, file moves/renames, count updates |
+| `opus` | judgment-heavy prose sweeps and reviews where fidelity matters — **and durable design artifacts (specs, ADRs, deep plans) whenever Fable isn't available in the running environment** | doc/reference sweeps, code/design review, adversarial verify, specs/ADRs when Fable is out of reach |
+| `fable` | durable design artifacts — **only on a subscription tier that includes Fable** | specs, ADRs, deep implementation plans when the running plan includes Fable |
+
+**Fable availability is subscription-tier-dependent.** Fable is available only on subscription
+tiers that include it; on tiers that don't, treat it as unavailable. Route durable artifacts to
+Fable **only when the running environment's plan includes it** — otherwise **Opus is the top
+tier** and covers durable artifacts too. Don't hard-depend on the `fable` alias resolving; treat
+**Opus as the default ceiling and Fable as an upgrade when present**.
+
+Same principle as everywhere else in this policy: pick the cheapest tier that clears the
+slice's acceptance bar, and when genuinely unsure route **up** one tier — a wasted `opus`
+call costs less than a shipped `sonnet` mistake. The high-stakes signals in
+"Escalation — never downgrade these" apply here too: a slice touching `security`, `migration`,
+`payment`, `pii`, and the rest belongs on `opus`/`fable` regardless of how mechanical it looks.
+Validated in practice during the ADR-002 six-agent fleet run (PR #35).
+
 ## `allowed-tools` policy
 `allowed-tools:` frontmatter restricts a command's own turn to a named tool list. It isn't a
 model/cost lever, but it lives in the same "harness enforces it, not a prompt" family as

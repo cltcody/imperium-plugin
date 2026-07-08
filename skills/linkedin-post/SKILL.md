@@ -1,8 +1,9 @@
 ---
 name: linkedin-post
 description: >-
-  LinkedIn content engine — ideate, posts, articles, Live scripts, podcast notes, and style reviews, with config-driven voice profiles (personal or company). Use on "write a LinkedIn post/article", "turn this into a post", "draft a Live script", "topic ideas", "review this post".
-
+  LinkedIn content engine — ideate, posts, articles, Live scripts, podcast notes, style reviews.
+  Use on "write a LinkedIn post/article", "turn this into a post", "draft a Live script", "topic
+  ideas", "review this post".
 ---
 
 # LinkedIn Content Engine

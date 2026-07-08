@@ -7,7 +7,7 @@ argument-hint: [log file path, request_id, or paste/pipe the log output]
 
 Turn a wall of log output into a diagnosis: cluster the errors, trace the failing request, build the timeline, correlate with recent changes, and hand off to the right verify command.
 
-This command is **stack-agnostic**: how the app runs and where it writes logs come from the project's `STACK.md`, not from this file. Resolve the runtime per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md` — read `STACK.md` at the project root and, for the component under investigation, use its `dev` command (and `working_dir`) to know what process emits the logs. If there is no `STACK.md`, auto-detect once from project markers and recommend the user run `/cc:setup:stack` to persist a manifest.
+This command is **stack-agnostic**: how the app runs and where it writes logs come from the project's `STACK.md`, not from this file. Resolve the runtime per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md` — read `STACK.md` at the project root and, for the component under investigation, use its `dev` command (and `working_dir`) to know what process emits the logs. No `STACK.md` → auto-detect once and recommend `/cc:setup:stack`.
 
 The analysis logic below is **log-format-neutral**. Many backends emit **structured (JSON-per-line) logs** keyed by a correlation id; if this project does, lean on it. A common convention is the `{domain}.{component}.{action}_{state}` event pattern:
 

@@ -29,7 +29,7 @@ Goal: find patterns to **mirror, not invent**. Launch **parallel subagents** (Ex
 7. **Dependencies** — relevant libraries, how they are integrated, versions and compatibility constraints.
 8. **Testing** — test framework and layout, representative test examples to mirror, coverage expectations, mocking patterns.
 9. **Integration points** — existing files needing updates, new files to create with exact locations, registration/wiring patterns (routers, DI, exports).
-10. **Resolve the project's actual validation commands** from its `STACK.md` per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md` — the plan's prescribed validation must match the project's mapped `smoke` / `test` / `typecheck` / `lint` / `format:check` / `migrate` steps (per component, from each component's `working_dir`). If there is no `STACK.md`, auto-detect once from project markers and note that the user should run `/cc:setup:stack` to persist a manifest. Never assume a specific test runner, type checker, or linter.
+10. **Resolve the project's actual validation commands** from its `STACK.md` per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md` — the plan's prescribed validation must match the project's mapped `smoke` / `test` / `typecheck` / `lint` / `format:check` / `migrate` steps (per component, from each component's `working_dir`). No `STACK.md` → auto-detect once and recommend `/cc:setup:stack`. Never assume a specific test runner, type checker, or linter.
 
 ### Stack notes
 
@@ -49,7 +49,7 @@ Mirror the project's own architecture and conventions — discover them in Phase
 ### Phase 5 — Plan generation
 
 16. Write the plan to `${user_config.workspace_dir}/plans/<kebab-name>.md` (create the directory if needed) with this structure:
-    - **Feature Description / User Story / Problem / Solution** and metadata (type, complexity, systems affected)
+    - **Feature Description / User Story / Problem / Solution** and metadata (type, complexity, systems affected), including a `**Status:** in-progress` line **within the first 5 lines of the file** — the PIV state detector (`hooks/piv_state.py`) machine-reads it there to keep finished plans out of phase detection; `/cc:release:commit` flips it to `implemented` when the work ships (recognized closed values: `implemented`, `superseded`, `done`)
     - **CONTEXT REFERENCES** — files to read before implementing (`path` + line ranges + why), new files to create, documentation links (anchored, with why), patterns to follow with actual code excerpts from this project
     - **NOT BUILDING** — explicit out-of-scope items, to keep the implementer minimal
     - **STEP-BY-STEP TASKS** — dependency-ordered, atomic. Each task: `{ACTION} {target-file}` with **IMPLEMENT** (specifics), **PATTERN** (file:line reference), **IMPORTS**, **GOTCHA**, **VALIDATE** (executable command). Actions: CREATE / UPDATE / ADD / REMOVE / REFACTOR / MIRROR. Flag side-effect import order where registration depends on it (e.g. `# ruff: noqa: I001`). When a task introduces **new observable behavior** (a new file, marker, warning, guard, or failure path), its VALIDATE must include a positive check that *exercises that behavior* — syntax checks, presence greps, and "existing tests not worse than baseline" cannot catch a bug in the new path.

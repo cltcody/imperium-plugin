@@ -1,9 +1,8 @@
 ---
 name: architecture-board
 description: |
-  Pre-deploy architecture board — UX, AI, and systems heads review the release together, resolve
-  their conflicts, and return one GO/NO-GO (decision support, not a substitute for the team's
-  call). Use on "architecture review", "deploy board", "are we ready to ship", or from
+  Pre-deploy architecture board — UX, AI, and systems heads review the release together and return
+  one GO/NO-GO (decision support, not a substitute for the team's call). Use on "architecture review", "deploy board", "are we ready to ship", or from
   /cc:release:deploy.
 ---
 

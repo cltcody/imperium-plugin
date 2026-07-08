@@ -20,9 +20,8 @@ component to prove the green baseline.
 
 If there is **no `STACK.md`**, this command pairs naturally with `/cc:setup:stack` —
 recommend the user run it first to detect the stack and persist a manifest. You may
-auto-detect once from project markers (per the resolution spec) to get moving, but a
-claimed or new project should end with a `STACK.md` so every future session starts
-informed.
+auto-detect once (per the resolution spec) to get moving, but a claimed or new project
+should end with a `STACK.md` so every future session starts informed.
 
 ### 2. Assess the starting point
 

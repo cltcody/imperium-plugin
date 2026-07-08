@@ -72,7 +72,8 @@ Review everything on the current branch before it merges: the complete diff agai
    smoke → test → typecheck → lint → format:check
    ```
 
-   Run smoke first (fail-fast), then run all components and aggregate per-component results — do not stop at the first component's failure. If there is no `STACK.md`, auto-detect once from project markers and recommend the user run `/cc:setup:stack` to persist a manifest.
+   Run smoke first (fail-fast), then run all components and aggregate per-component results — do not stop at the first component's failure. No `STACK.md` → auto-detect once and recommend `/cc:setup:stack`.
+   Then invoke the **premerge-checklist** skill for the known-burns pass — merge-time judgment checks a regex hook cannot make (client-side key exposure, platform/deploy config drift, mobile credentials, OAuth token storage, branch hygiene, validation honesty); carry any CHECK item into the findings below.
 
 6. **Issue the verdict** using the report format below; if a PR exists, post it as a review (`gh pr review <ref> --approve|--request-changes --body ...`) or otherwise as a comment.
 

@@ -1,6 +1,7 @@
 ---
 description: Apply TOC + BBiT structured thinking to a complex presales problem, stuck deal, or strategic conflict
 argument-hint: [describe the situation, problem, or challenge in plain language]
+size-budget: exempt — embeds the TOC+BBiT method frameworks it applies
 ---
 
 Think through this presales challenge using Theory of Constraints + Black Belt in Thinking (BBiT) combined with Extreme Ownership and ${user_config.company} principles.

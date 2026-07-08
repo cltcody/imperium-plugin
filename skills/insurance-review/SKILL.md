@@ -2,9 +2,8 @@
 name: insurance-review
 description: |
   Insurance coverage review (US) — health, auto, home/renters, life, disability, umbrella — for
-  gaps, over-insurance, wrong limits, and duplicates, ending in a prioritized action plan.
-  Decision prep, NOT insurance advice. Use on "review my insurance", "insurance gaps", "am I over-
-  insured".
+  gaps, over-insurance, wrong limits, and duplicates. Decision prep, NOT insurance advice. Use on
+  "review my insurance", "insurance gaps", "am I over-insured".
 ---
 
 # Insurance Review (US)

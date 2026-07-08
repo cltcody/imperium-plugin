@@ -16,9 +16,8 @@ This gate is **stack-agnostic**: the concrete validation, migration, build, and 
 Read the project's `STACK.md` and resolve commands per
 `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md`. Active components and steps
 change what must be verified. Each readiness item below runs its step **per component** from
-that component's `working_dir`, skipping any step a component does not map (not an error). If
-there is no `STACK.md`, auto-detect once from project markers and recommend the user run
-`/cc:setup:stack` to persist a manifest.
+that component's `working_dir`, skipping any step a component does not map (not an error). No
+`STACK.md` → auto-detect once and recommend `/cc:setup:stack`.
 
 ### 2. Fresh validation
 

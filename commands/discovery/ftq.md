@@ -40,8 +40,6 @@ Does this opportunity align with our go-to-market motion and product capability?
 
 **Subtotal: [X]/15**
 
----
-
 ### Dimension 2: Technical Requirements
 
 Can we actually deliver what they need?
@@ -53,8 +51,6 @@ Can we actually deliver what they need?
 | Data availability for AI products (${user_config.product_a}, ${user_config.product_b}) is sufficient | 1-5 | |
 
 **Subtotal: [X]/15**
-
----
 
 ### Dimension 3: Workflow Analysis
 
@@ -68,8 +64,6 @@ Are their processes compatible with how our products work?
 
 **Subtotal: [X]/15**
 
----
-
 ### Dimension 4: Pain Points
 
 Is the pain real, urgent, and owned?
@@ -82,8 +76,6 @@ Is the pain real, urgent, and owned?
 
 **Subtotal: [X]/15**
 
----
-
 ### Dimension 5: Competitive Situation
 
 Can we win?
@@ -95,8 +87,6 @@ Can we win?
 | No entrenched incumbent with political protection | 1-5 | |
 
 **Subtotal: [X]/15**
-
----
 
 ### Dimension 6: Implementation Complexity
 

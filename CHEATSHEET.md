@@ -7,8 +7,9 @@ are in a dev cycle run `/cc:next`.
 Commands are `/cc:<group>:<name>`. Skills are invoked by description (just say what you want,
 e.g. *"stress-test this plan"* → `grill-me`).
 
-> **Surface note:** commands run only in Claude Code (CLI/desktop/web) — they need the repo.
-> Skills also work on claude.ai chat, where commands never load; see README → *Where things
+> **Surface note:** grouped commands (`/cc:group:name`) run only in Claude Code
+> (CLI/desktop/web) — they need the repo. Skills and top-level commands (`find`, `guide`,
+> `next`, `prime`, …) also surface on claude.ai chat / Cowork; see README → *Where things
 > work*. Chat-side feature planning: the `feature-interview` skill.
 
 ---
@@ -143,6 +144,7 @@ None of these need company/brand setup — they work with zero configuration.
 | Add your logo / confirm colors & fonts (guided, no file editing) | `/cc:setup:brand` |
 | Teach a project its stack (test/lint/build commands) | `/cc:setup:stack` |
 | Health-check the plugin (placeholders, drift, broken refs, hardcoded stack) | `/cc:maintain:audit` (mechanical half: `bash scripts/cc-audit.sh`) |
+| Publish the next plugin version (bump → changelog → tag → mirror) | `/cc:maintain:release` |
 | Run a cc command on a schedule (weekly audit, post-deploy polling) | [`references/dev/scheduling.md`](references/dev/scheduling.md) — `/loop` vs Desktop Tasks vs Routines vs cron |
 | Give the plugin to a teammate | repo-root [`README.md`](../README.md) → "Sharing with your team" |
 | See everything available | read [`INVENTORY.md`](INVENTORY.md) or run `/cc:guide list` |

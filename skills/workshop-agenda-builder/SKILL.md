@@ -1,9 +1,9 @@
 ---
 name: workshop-agenda-builder
 description: |
-  Builds a time-boxed customer workshop or EBC agenda from a modular section library, plus
-  facilitator briefs, materials lists, and a pre-workshop checklist — half-day to 3-day. Use on
-  "build a workshop agenda", "plan an EBC", or "customer discovery day".
+  Builds a time-boxed customer workshop or multi-day EBC agenda, half-day to 3-day. Use on "build
+  a workshop agenda", "plan an EBC" (multi-day), or "customer discovery day"; for a single exec
+  meeting use `exec-briefing-prep`.
 ---
 
 # Workshop Agenda Builder

@@ -1,8 +1,9 @@
 ---
 name: finance-council
 description: >-
-  Personal finance advisory council (US) — investment / budget / planner / tax hats weigh a money decision, then resolve the conflicts into prioritized next steps. Decision preparation, NOT financial or tax advice. Use for "should I invest / pay down debt / buy vs rent", "Roth conversion", "money decision", "finance council".
-
+  Personal finance advisory council (US) — investment / budget / planner / tax hats weigh a money
+  decision. Decision prep, NOT financial or tax advice. Use for "should I invest / pay down debt /
+  buy vs rent", "Roth conversion", "money decision", "finance council".
 ---
 
 # Finance Council (US)

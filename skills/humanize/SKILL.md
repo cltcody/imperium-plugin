@@ -3,8 +3,7 @@ name: humanize
 description: |
   Strip AI tells from user-facing prose — em-dash overuse, stock AI vocabulary, rule-of-three
   stacking, "not just X, but Y" — with separate English and German rulebooks. Use on "humanize
-  this", "sounds like AI", "remove em dashes", "klingt nach KI", or AI-tell findings from the UX
-  review head.
+  this", "sounds like AI", "remove em dashes", "klingt nach KI".
 ---
 
 # Humanize — De-AI User-Facing Prose

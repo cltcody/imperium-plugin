@@ -13,9 +13,8 @@ Audit and update the project's documentation so it matches what is actually on d
 Read the project's `STACK.md` and resolve commands per
 `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md`. You'll use it to confirm
 doc claims against reality — version numbers, the components and their `working_dir`s, and
-any `build`/`dev`/`test` steps a doc references. If there is no `STACK.md`, auto-detect
-once from project markers and recommend the user run `/cc:setup:stack` to persist a
-manifest.
+any `build`/`dev`/`test` steps a doc references. No `STACK.md` → auto-detect once and
+recommend `/cc:setup:stack`.
 
 ### 2. Inventory the docs
 

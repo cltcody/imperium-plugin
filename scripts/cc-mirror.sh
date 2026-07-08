@@ -13,8 +13,17 @@
 # ship. The mirror's log is one commit per release.
 #
 # Usage:
-#   bash global/scripts/cc-mirror.sh <mirror-remote-url> [branch]
+#   bash global/scripts/cc-mirror.sh [--profile <name>] [--dry-run] <mirror-remote-url> [branch]
 #   bash global/scripts/cc-mirror.sh https://github.com/cltcody/imperium-plugin.git
+#   bash global/scripts/cc-mirror.sh --profile business https://github.com/cltcody/imperium-plugin-business.git
+#
+# Profiles (scripts/mirror-profiles/<name>.json) publish a FILTERED variant of
+# the plugin: the listed skill/command paths are dropped from the snapshot tree
+# and the plugin/marketplace manifests are renamed, so a distinct audience
+# (e.g. business users on claude.ai chat / Cowork, where only skills/ surface)
+# installs a curated catalog instead of the full dev+sales+life set.
+# --dry-run runs every gate and builds the tree, prints what would ship, and
+# exits before contacting the remote.
 #
 # Pre-flight gates (any failure aborts the push):
 #   1. clean working tree (mirror only ever publishes committed state)
@@ -24,11 +33,24 @@
 
 set -euo pipefail
 
-REMOTE="${1:?usage: cc-mirror.sh <mirror-remote-url> [branch]}"
-BRANCH="${2:-main}"
+PROFILE=""
+DRY_RUN=false
+POSITIONAL=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --profile) PROFILE="${2:?--profile requires a name}"; shift 2 ;;
+    --dry-run) DRY_RUN=true; shift ;;
+    --*) echo "Error: unknown flag $1" >&2; exit 1 ;;
+    *) POSITIONAL+=("$1"); shift ;;
+  esac
+done
+REMOTE="${POSITIONAL[0]:?usage: cc-mirror.sh [--profile <name>] [--dry-run] <mirror-remote-url> [branch]}"
+BRANCH="${POSITIONAL[1]:-main}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+# shellcheck source=global/scripts/lib/cc-filter.sh
+source "$SCRIPT_DIR/lib/cc-filter.sh"
 cd "$REPO_ROOT"
 
 step() { printf '\n\033[1m▸ %s\033[0m\n' "$1"; }
@@ -52,10 +74,89 @@ else
   echo "Warning: claude CLI not on PATH — skipping manifest validation." >&2
 fi
 
-# ── 4. Leak-scan the shipped tree ─────────────────────────────────────────────
-# The shipped tree is HEAD:global — exactly what the snapshot commit will carry.
+# ── 4. Build the shipped tree ─────────────────────────────────────────────────
+# Default: exactly HEAD:global. With --profile: HEAD:global minus the profile's
+# excluded paths, with plugin.json/marketplace.json renamed for the variant.
 TREE="$(git rev-parse "HEAD:global")"
 
+if [[ -n "$PROFILE" ]]; then
+  PROFILE_FILE="global/scripts/mirror-profiles/$PROFILE.json"
+  # Profile is read from HEAD, not the working tree — same rule as the content.
+  if ! git cat-file -e "HEAD:$PROFILE_FILE" 2>/dev/null; then
+    echo "Error: profile not found at $PROFILE_FILE (must be committed)." >&2
+    exit 1
+  fi
+
+  step "Applying profile: $PROFILE"
+  TMPIDX="$(mktemp -u)"
+  trap 'rm -f "$TMPIDX"' EXIT
+  GIT_INDEX_FILE="$TMPIDX" git read-tree "$TREE"
+
+  # Drop excluded paths. Every entry must match something — a stale entry means
+  # the profile has drifted from the tree, which should fail loudly, not ship.
+  while IFS= read -r path; do
+    if ! GIT_INDEX_FILE="$TMPIDX" git ls-files --error-unmatch -- "$path" >/dev/null 2>&1; then
+      echo "Error: profile excludes '$path' but the tree has no such path — fix $PROFILE_FILE." >&2
+      exit 1
+    fi
+    GIT_INDEX_FILE="$TMPIDX" git ls-files -z -- "$path" \
+      | GIT_INDEX_FILE="$TMPIDX" git update-index -z --force-remove --stdin
+  done < <(git cat-file blob "HEAD:$PROFILE_FILE" | cc_profile_exclude_paths)
+
+  # Rewrite the manifests so the variant installs under its own name.
+  for MF in .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
+    NEW_BLOB="$(
+      { git cat-file blob "$TREE:$MF"; printf '\f'; git cat-file blob "HEAD:$PROFILE_FILE"; } \
+      | python3 -c '
+import json, sys
+manifest_raw, profile_raw = sys.stdin.read().split("\f")
+m, p = json.loads(manifest_raw), json.loads(profile_raw)
+if "plugins" in m:  # marketplace.json
+    m["name"] = p["marketplaceName"]
+    m["description"] = p["marketplaceDescription"]
+    m["plugins"][0]["name"] = p["pluginName"]
+    m["plugins"][0]["description"] = p["pluginDescription"]
+    if "tags" in p: m["plugins"][0]["tags"] = p["tags"]
+else:               # plugin.json
+    m["name"] = p["pluginName"]
+    m["description"] = p["pluginDescription"]
+print(json.dumps(m, indent=2, ensure_ascii=False))
+' | git hash-object -w --stdin
+    )"
+    GIT_INDEX_FILE="$TMPIDX" git update-index --cacheinfo "100644,$NEW_BLOB,$MF"
+  done
+
+  TREE="$(GIT_INDEX_FILE="$TMPIDX" git write-tree)"
+
+  # Regenerate INVENTORY.md against the filtered tree, so the variant's catalog
+  # documents what it actually ships (cc-inventory.sh reads the filesystem, so
+  # excluded skills/commands drop out of the generated tables).
+  TMPTREE="$(mktemp -d)"
+  trap 'rm -f "$TMPIDX"; rm -rf "$TMPTREE"' EXIT
+  git archive "$TREE" | tar -x -C "$TMPTREE"
+  bash "$TMPTREE/scripts/cc-inventory.sh" >/dev/null
+  INV_BLOB="$(git hash-object -w "$TMPTREE/INVENTORY.md")"
+  GIT_INDEX_FILE="$TMPIDX" git update-index --cacheinfo "100644,$INV_BLOB,INVENTORY.md"
+  TREE="$(GIT_INDEX_FILE="$TMPIDX" git write-tree)"
+
+  # Profile overrides: any file under mirror-profiles/<name>/ replaces the same
+  # path in the shipped tree root (e.g. a variant-specific README.md). Applied
+  # last, so an override wins over generated content too.
+  OVERRIDE_DIR="scripts/mirror-profiles/$PROFILE"
+  if git cat-file -e "HEAD:global/$OVERRIDE_DIR" 2>/dev/null; then
+    while IFS= read -r rel; do
+      OV_BLOB="$(git rev-parse "HEAD:global/$OVERRIDE_DIR/$rel")"
+      GIT_INDEX_FILE="$TMPIDX" git update-index --add --cacheinfo "100644,$OV_BLOB,$rel"
+      echo "  override: $rel"
+    done < <(git ls-tree -r --name-only "HEAD:global/$OVERRIDE_DIR")
+    TREE="$(GIT_INDEX_FILE="$TMPIDX" git write-tree)"
+  fi
+
+  SKILL_COUNT="$(git ls-tree --name-only "$TREE:skills" | wc -l | tr -d ' ')"
+  echo "  filtered tree: $TREE ($SKILL_COUNT skills shipped, INVENTORY regenerated)"
+fi
+
+# ── 5. Leak-scan the shipped tree ─────────────────────────────────────────────
 step "Leak-scanning the shipped tree ($TREE)"
 
 # Structural: nothing outside the plugin should exist in the tree (top-level
@@ -97,14 +198,26 @@ if [[ -n "$SECRETS" ]]; then
 fi
 echo "  clean (structure, brand terms, secrets)."
 
-# ── 5. Snapshot commit and push ───────────────────────────────────────────────
-VERSION="$(python3 -c "import json; print(json.load(open('global/.claude-plugin/plugin.json'))['version'])")"
+# ── 6. Snapshot commit and push ───────────────────────────────────────────────
+# Name/version come from the tree being shipped, so profile renames carry through.
+PLUGIN_NAME="$(git cat-file blob "$TREE:.claude-plugin/plugin.json" | python3 -c "import json,sys; print(json.load(sys.stdin)['name'])")"
+MARKETPLACE_NAME="$(git cat-file blob "$TREE:.claude-plugin/marketplace.json" | python3 -c "import json,sys; print(json.load(sys.stdin)['name'])")"
+VERSION="$(git cat-file blob "$TREE:.claude-plugin/plugin.json" | python3 -c "import json,sys; print(json.load(sys.stdin)['version'])")"
 
-step "Building snapshot commit (cc $VERSION)"
+if $DRY_RUN; then
+  step "Dry run — tree that would ship ($PLUGIN_NAME $VERSION)"
+  echo "  skills:   $(git ls-tree --name-only "$TREE:skills" 2>/dev/null | wc -l | tr -d ' ')"
+  echo "  commands: $(git ls-tree -r --name-only "$TREE:commands" 2>/dev/null | wc -l | tr -d ' ')"
+  git ls-tree --name-only "$TREE:skills" 2>/dev/null | sed 's/^/    skill: /'
+  echo "Dry run complete — nothing pushed."
+  exit 0
+fi
+
+step "Building snapshot commit ($PLUGIN_NAME $VERSION)"
 # Parent = the mirror's current branch head, so releases chain into a clean
 # one-commit-per-release history. First publish has no parent.
 PARENT="$(git ls-remote "$REMOTE" "refs/heads/$BRANCH" | cut -f1 || true)"
-MSG="cc $VERSION — mirror snapshot of imperium global/ @ $(git rev-parse --short HEAD)"
+MSG="$PLUGIN_NAME $VERSION — mirror snapshot of imperium global/ @ $(git rev-parse --short HEAD)${PROFILE:+ (profile: $PROFILE)}"
 if [[ -n "$PARENT" ]]; then
   git fetch -q "$REMOTE" "refs/heads/$BRANCH"
   if [[ "$(git rev-parse "$PARENT^{tree}")" == "$TREE" ]]; then
@@ -122,7 +235,7 @@ git push "$REMOTE" "$SNAP:refs/heads/$BRANCH"
 
 cat <<EOF
 
-✅ Mirror published — plugin version $VERSION at $REMOTE ($BRANCH).
+✅ Mirror published — $PLUGIN_NAME version $VERSION at $REMOTE ($BRANCH).
 
    Reminder: marketplace installs only update when plugin.json "version" is
    bumped. If this publish carries user-facing changes, confirm the version
@@ -130,5 +243,5 @@ cat <<EOF
 
    Consumers install with:
      /plugin marketplace add <owner>/<mirror-repo>
-     /plugin install cc@imperium
+     /plugin install $PLUGIN_NAME@$MARKETPLACE_NAME
 EOF

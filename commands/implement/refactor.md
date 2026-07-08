@@ -29,7 +29,7 @@ Reduce to a one-sentence goal: *"Extract X into a shared utility because A, B, C
    grep -rn "<symbol_or_pattern>" <source_dir>
    ```
    List every affected file — this is the change surface.
-3. **Establish the behavioural baseline.** Resolve the project's `STACK.md` per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md` and run the verify steps (`smoke → test → typecheck`) for each affected component from its `working_dir` — or invoke `/cc:verify:run`. The baseline **must be green BEFORE anything changes**. Skip steps a component does not map; if there is no `STACK.md`, auto-detect once from project markers and recommend `/cc:setup:stack`.
+3. **Establish the behavioural baseline.** Resolve the project's `STACK.md` per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md` and run the verify steps (`smoke → test → typecheck`) for each affected component from its `working_dir` — or invoke `/cc:verify:run`. The baseline **must be green BEFORE anything changes**. Skip steps a component does not map; no `STACK.md` → auto-detect once and recommend `/cc:setup:stack`.
    If coverage over the refactor area is thin, run `/cc:verify:coverage` and write characterisation tests for the current behaviour first — never refactor untested code blindly.
 4. **Refactor in small reversible steps.** For each step:
    - Add the new structure (new file/function/location) first.

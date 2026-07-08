@@ -54,7 +54,88 @@ def _mtime(p: Path | None) -> float:
         return -1.0
 
 
-def _newest(directory: Path, ignore: set[str] | None = None) -> Path | None:
+# How many workspace-touching commits _artifact_times walks. Module-level so the
+# self-test can shrink it to exercise the overflow clamp without 300 commits.
+_LOG_LIMIT = 300
+
+# git prints non-ASCII paths octal-escaped in quotes unless told not to; escaped
+# keys would never match a real relpath, silently re-enabling the mtime fallback.
+_GIT_PATHS_RAW = ("-c", "core.quotepath=false")
+
+
+def _artifact_times(cwd: Path, status_lines: list[str] | None = None) -> dict[str, float]:
+    """Last-touching git commit time per workspace artifact (repo-relative posix path).
+
+    Filesystem mtimes are checkout times in a fresh worktree/clone, so ranking by
+    them is arbitrary there. Commit times survive checkout. Batched git calls only
+    (this runs on every statusline render — per-file `git log` would not fly):
+      1. one bounded `git log --name-only` over the workspace — first appearance of
+         a path is its most recent touching commit;
+      2. one `git ls-files` — tracked artifacts older than the log window get a
+         floor BELOW every seen commit time (a raw-mtime fallback in a fresh
+         worktree would be checkout time ≈ now and always win — inverted ranking);
+      3. `git status --porcelain` — modified/untracked artifacts are dropped so
+         they fall back to fs mtime, which for uncommitted work IS the true time.
+         The caller may pass full-repo porcelain lines it already has (dedupes a
+         subprocess); otherwise a workspace-scoped call is made here.
+    """
+    times: dict[str, float] = {}
+    try:
+        log = _git(
+            cwd, *_GIT_PATHS_RAW, "log", "-n", str(_LOG_LIMIT),
+            "--format=%x01%ct", "--name-only", "--", WORKSPACE_DIR,
+        )
+        if not log:
+            return {}
+        current_ct = -1.0
+        for line in log.splitlines():
+            if line.startswith("\x01"):
+                try:
+                    current_ct = float(line[1:].strip())
+                except ValueError:
+                    current_ct = -1.0
+            elif line.strip() and current_ct > 0:
+                times.setdefault(line.strip(), current_ct)
+        if times:
+            floor = min(times.values()) - 1.0
+            tracked = _git(cwd, *_GIT_PATHS_RAW, "ls-files", "--", WORKSPACE_DIR)
+            for path in tracked.splitlines():
+                if path.strip():
+                    times.setdefault(path.strip(), floor)
+        if status_lines is None:
+            status_lines = _git(
+                cwd, *_GIT_PATHS_RAW, "status", "--porcelain", "--", WORKSPACE_DIR
+            ).splitlines()
+        for line in status_lines:
+            path = line[3:].strip()
+            if " -> " in path:  # rename: "old -> new"
+                path = path.split(" -> ", 1)[1]
+            times.pop(path.strip('"'), None)
+        return times
+    except Exception:
+        return {}
+
+
+def _atime(p: Path | None, cwd: Path | None, times: dict[str, float] | None) -> float:
+    """Artifact time: git commit time when known, else fs mtime."""
+    if p is None:
+        return -1.0
+    if cwd is not None and times:
+        try:
+            rel = p.relative_to(cwd).as_posix()
+            if rel in times:
+                return times[rel]
+        except Exception:
+            pass
+    return _mtime(p)
+
+
+def _newest(
+    directory: Path,
+    ignore: set[str] | None = None,
+    cwd: Path | None = None,
+    times: dict[str, float] | None = None,
+) -> Path | None:
     try:
         ignore = ignore or set()
         files = [
@@ -62,9 +143,41 @@ def _newest(directory: Path, ignore: set[str] | None = None) -> Path | None:
             for p in directory.glob("*.md")
             if p.is_file() and p.name not in ignore
         ]
-        return max(files, key=lambda p: p.stat().st_mtime) if files else None
+        return max(files, key=lambda p: _atime(p, cwd, times)) if files else None
     except Exception:
         return None
+
+
+def _plan_done(path: Path) -> bool:
+    """True when a plan's header declares it finished.
+
+    First 5 lines only — the status marker convention sits on the title/status
+    line, and plan DESCRIPTIONS a few lines down legitimately contain these very
+    strings (a plan about fixing this detector quoted "**implemented**" at line 9).
+    Conservative marker list, mirroring _review_state: unknown → False (live).
+    """
+    try:
+        with path.open(encoding="utf-8", errors="replace") as f:
+            head = "".join(f.readline() for _ in range(5)).lower()
+    except Exception:
+        return False
+    bold_markers = (
+        "**implemented**",
+        "**superseded**",
+        "**done**",
+    )
+    # Status-line form: matched with asterisks stripped so the natural markdown
+    # authoring style `**Status:** implemented` counts too. (Bold markers above
+    # are matched raw — stripping would reduce them to bare words, far too loose.)
+    status_markers = (
+        "status: implemented",
+        "status: superseded",
+        "status: done",
+    )
+    head_plain = head.replace("*", "")
+    return any(m in head for m in bold_markers) or any(
+        m in head_plain for m in status_markers
+    )
 
 
 def _review_state(path: Path) -> str:
@@ -117,35 +230,60 @@ def detect_state(cwd: Path) -> tuple[str, str, str]:
                 return ("", "—", "/cc:prime")
             return ("", "—", "")
 
-        dirty = bool(_git(cwd, "status", "--porcelain").strip())
+        status_lines = _git(
+            cwd, *_GIT_PATHS_RAW, "status", "--porcelain"
+        ).splitlines()
+        dirty = any(line.strip() for line in status_lines)
+        times = _artifact_times(cwd, status_lines)
 
         plans_dir = workspace / "plans"
-        plan = _newest(plans_dir)
-        review = _newest(workspace / "code-reviews", ignore=REVIEW_IGNORE)
-        report = _newest(workspace / "execution-reports")
+        try:
+            all_plans = [p for p in plans_dir.glob("*.md") if p.is_file()]
+        except Exception:
+            all_plans = []
+        # A plan whose header says implemented/superseded/done is not in flight —
+        # it must never put the loop back into "implement".
+        live_plans = [p for p in all_plans if not _plan_done(p)]
+        plan = (
+            max(live_plans, key=lambda p: _atime(p, cwd, times))
+            if live_plans
+            else None
+        )
+        review = _newest(
+            workspace / "code-reviews", ignore=REVIEW_IGNORE, cwd=cwd, times=times
+        )
+        report = _newest(workspace / "execution-reports", cwd=cwd, times=times)
 
-        if plan is None:
+        if plan is None and review is None and report is None:
+            if all_plans:  # only finished plans exist — nothing in flight
+                newest_done = max(all_plans, key=lambda p: _atime(p, cwd, times))
+                return ("clean", f"plan {newest_done.stem} (done)", NEXT_FALLBACK)
             return ("plan", "—", "/cc:plan:feature")
 
-        # Ambiguity guard: several plans newer than the newest report = more than
-        # one effort in flight. Don't guess which — defer to the orchestrator.
+        # Ambiguity guard: several LIVE plans newer than everything verify/release
+        # has produced = more than one effort in flight. Don't guess which — defer
+        # to the orchestrator. (Reviews used to disable this guard entirely.)
         try:
-            report_mt = _mtime(report)
+            threshold = max(
+                _atime(report, cwd, times), _atime(review, cwd, times)
+            )
             in_flight = [
-                p for p in plans_dir.glob("*.md")
-                if p.is_file() and _mtime(p) > report_mt
+                p for p in live_plans if _atime(p, cwd, times) > threshold
             ]
-            if len(in_flight) > 1 and review is None:
+            if len(in_flight) > 1:
                 return ("plan", f"plans ({len(in_flight)} in flight)", NEXT_FALLBACK)
         except Exception:
             pass
 
-        # Newest-artifact-wins across plan / review / report.
+        # Newest-artifact-wins across plan / review / report. Later pipeline
+        # stages listed first: artifacts committed together tie on commit time,
+        # and max() keeps the first — a tie must resolve to the later stage
+        # (report > review > plan), not send "next" to an already-done step.
         candidates = [
-            kp for kp in (("plan", plan), ("review", review), ("report", report))
+            kp for kp in (("report", report), ("review", review), ("plan", plan))
             if kp[1] is not None
         ]
-        kind, newest = max(candidates, key=lambda kp: _mtime(kp[1]))
+        kind, newest = max(candidates, key=lambda kp: _atime(kp[1], cwd, times))
         last = f"{kind} {newest.stem}"
 
         if kind == "report":

@@ -1,9 +1,9 @@
 ---
 name: toc-bbit-expert
 description: |
-  Theory of Constraints + Black Belt in Thinking coach — full BBiT process (UDEs, CRT, Evaporation
-  Cloud, FRT, Transition Tree) with Excalidraw diagrams for every tree and cloud. Use for stuck
-  deals, broken processes, team conflict, or "what's the real constraint", "draw a cloud".
+  Theory of Constraints + Black Belt in Thinking coach (UDEs, CRT, Evaporation Cloud, FRT,
+  Transition Tree), with Excalidraw diagrams. Use for stuck deals, broken processes, team
+  conflict, or "what's the real constraint", "draw a cloud".
 ---
 
 # Theory of Constraints + Black Belt in Thinking Expert

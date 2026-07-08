@@ -2,6 +2,7 @@
 description: One-shot init for a NEW or EXISTING repo — git init, classify (personal/corporate/shared-oss), scaffold [WORKSPACE_DIR]/, generate STACK.md, offer CI, and (personal only, confirmed) plant per-repo plugin settings. Use when the ask is "set this repo up for cc", "init this project", or you've just cloned/created a repo and want the full one-shot setup instead of running setup:stack, setup:ci, and classification by hand.
 argument-hint: "[path — defaults to cwd]"
 model: sonnet
+size-budget: exempt — one-shot init spanning classify/scaffold/stack/CI/settings branches
 ---
 
 # Setup: Project — One-Shot Init

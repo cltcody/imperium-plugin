@@ -1,6 +1,7 @@
 ---
 description: RFP/RFI Response Writer — map every requirement to a capability, draft compliant responses, track coverage, and produce a submission-ready document
 argument-hint: [account name] [paste requirements or describe document]
+size-budget: exempt — coverage-tracked response document template embedded
 ---
 
 Build the RFP/RFI response for: **$ARGUMENTS**

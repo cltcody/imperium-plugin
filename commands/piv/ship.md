@@ -1,6 +1,7 @@
 ---
 description: Full plan-or-idea → merged-PR chain with per-task dynamic model routing — plan (or reuse a plan), implement across routed subagents, verify every phase, gate on commit, ship. Use when the ask is "take this idea all the way to a merged PR" or "run the whole thing, but route the grunt work to a cheaper model"
 argument-hint: "[plan path | feature description] [--merge] [--no-qa]"
+size-budget: exempt — full chain orchestration with per-task routing tables
 ---
 
 # Ship — Idea to Merged PR, Dynamically Routed

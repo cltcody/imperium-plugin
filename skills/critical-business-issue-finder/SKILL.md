@@ -2,8 +2,8 @@
 name: critical-business-issue-finder
 description: |
   Surfaces the Critical Business Issues hiding in a discovery summary, meeting notes, or account
-  brief — the 2-4 problems that put the business at risk — separating CBIs from symptoms. Use on
-  "find the CBIs", "what's the real pain here", or "what's driving this deal".
+  brief — separating CBIs from symptoms. Use on "find the CBIs", "what's the real pain here", or
+  "what's driving this deal".
 ---
 
 # Critical Business Issue Finder

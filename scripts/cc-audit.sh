@@ -43,10 +43,11 @@ echo "Root: $ROOT"
 # ══════════════════════════════════════════════════════════════════════════════
 rule "1. Reference existence (\${CLAUDE_PLUGIN_ROOT}/... paths)"
 
-REF_OUT="$(python3 - "$ROOT" <<'PYEOF'
+REF_OUT="$(python3 - "$ROOT" "$REPO_ROOT" <<'PYEOF'
 import os, re, sys
 
 root = sys.argv[1]
+repo_root = sys.argv[2]
 scan_dirs = ["skills", "commands", "agents"]
 
 # Capture the run of path-ish characters right after ${CLAUDE_PLUGIN_ROOT}.
@@ -110,7 +111,95 @@ for d in scan_dirs:
                         rel_source = os.path.relpath(fpath, root)
                         broken.append(f"{rel_source}:{lineno} → {path}  [missing {kind}: {os.path.relpath(target, root)}]")
 
-print(f"CHECKED\t{checked}")
+# ── (a2) Markdown-relative *.md link integrity ──────────────────────────────
+# Scope: references/, skills/, commands/ prose. Only resolves EXPLICIT markdown
+# link syntax `[text](target.md)` — not bare backtick mentions like `foo.md`.
+# Empirically (this corpus), bare-backtick `*.md` mentions are overwhelmingly
+# informal citations to *other* repos/tools (e.g. "the Archon CLI repository",
+# TOC/BBiT source material, a sibling project's generated STACK.md) rather than
+# repo-relative links, and flagging them was all false positives. Real markdown
+# links are a much higher-confidence signal of "this points at a repo file".
+# External URLs, ${CLAUDE_PLUGIN_ROOT} paths (handled above), and template-
+# looking tokens are excluded. Content inside fenced ``` code blocks is skipped
+# — those are frequently illustrative "what your SKILL.md might look like"
+# examples, not real links from the file they appear in. Heading anchors
+# (#section) are not validated — file existence is the floor.
+md_link_re = re.compile(r"\[[^\]\n]*\]\(([^()\s]+)\)")
+fence_re = re.compile(r"```.*?```", re.DOTALL)
+
+def is_skippable_target(raw):
+    if raw.startswith(("http://", "https://", "mailto:", "#")):
+        return True
+    if "${CLAUDE_PLUGIN_ROOT}" in raw or "${" in raw:
+        return True
+    if any(c in raw for c in ("{", "<", "*", "[", "]")):
+        return True
+    return False
+
+link_scan_dirs = ["references", "skills", "commands"]
+md_checked = 0
+for d in link_scan_dirs:
+    base = os.path.join(root, d)
+    if not os.path.isdir(base):
+        continue
+    for dirpath, dirnames, filenames in os.walk(base):
+        dirnames[:] = [dn for dn in dirnames if dn != ".git"]
+        for fn in filenames:
+            if not fn.endswith(".md"):
+                continue
+            fpath = os.path.join(dirpath, fn)
+            try:
+                with open(fpath, "r", encoding="utf-8", errors="strict") as fh:
+                    text = fh.read()
+            except (UnicodeDecodeError, OSError):
+                continue
+            # Blank out fenced code-block bodies (keep line/offset alignment intact
+            # for accurate line numbers) so example snippets aren't scanned.
+            text_scan = fence_re.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), text)
+            # skills/<name>/... files may write paths relative to the skill's own
+            # root (e.g. `guides/cli.md` from within skills/archon/guides/setup.md,
+            # meaning skills/archon/guides/cli.md) rather than their own directory.
+            skill_root = None
+            rel_from_skills = os.path.relpath(dirpath, os.path.join(root, "skills"))
+            if not rel_from_skills.startswith(".."):
+                skill_name = rel_from_skills.split(os.sep)[0]
+                skill_root = os.path.join(root, "skills", skill_name)
+
+            seen_on_line = set()
+            for m in md_link_re.finditer(text_scan):
+                raw = m.group(1).strip()
+                if is_skippable_target(raw):
+                    continue
+                path_part, _, _anchor = raw.partition("#")
+                path_part = path_part.strip()
+                if not path_part.endswith(".md"):
+                    continue
+                if path_part.startswith("/"):
+                    continue  # absolute/root-relative — out of scope, avoid false positives
+                lineno = text_scan[: m.start()].count("\n") + 1
+                md_checked += 1
+                # This corpus mixes authoring conventions: paths relative to the
+                # source file's own dir (`./sibling.md`), relative to `global/`
+                # (`references/piv/foo.md` written from a sibling dir), relative to
+                # the repo root (`docs/foo.md`, the imperium-repo-level docs/ beside
+                # global/), and relative to a skill's own root. Accept a match
+                # against any before calling it broken.
+                candidates = [
+                    os.path.normpath(os.path.join(dirpath, path_part)),
+                    os.path.normpath(os.path.join(root, path_part)),
+                    os.path.normpath(os.path.join(repo_root, path_part)),
+                ]
+                if skill_root:
+                    candidates.append(os.path.normpath(os.path.join(skill_root, path_part)))
+                if not any(os.path.exists(c) for c in candidates):
+                    rel_source = os.path.relpath(fpath, root)
+                    key = (rel_source, lineno, path_part)
+                    if key in seen_on_line:
+                        continue
+                    seen_on_line.add(key)
+                    broken.append(f"{rel_source}:{lineno} → missing {path_part}")
+
+print(f"CHECKED\t{checked + md_checked}")
 for b in broken:
     print(f"BROKEN\t{b}")
 PYEOF
@@ -263,6 +352,31 @@ for fpath in targets:
     if not has_description:
         bad.append((fpath, "missing 'description:' key in frontmatter"))
 
+    # Value validation: model:/effort: are OPTIONAL (absence = inherit), but WHEN
+    # present their value must be from the allowed set. See
+    # references/dev/model-routing.md → "The real levers".
+    VALID_MODELS = {"haiku", "sonnet", "opus", "fable", "best", "opusplan"}
+    VALID_EFFORTS = {"low", "medium", "high", "xhigh", "max"}
+
+    def strip_value(raw):
+        v = raw.strip()
+        if len(v) >= 2 and v[0] == v[-1] and v[0] in ("'", '"'):
+            v = v[1:-1].strip()
+        return v
+
+    for l in block:
+        if l.startswith("model:"):
+            val = strip_value(l[len("model:"):])
+            base = val
+            if base.endswith("[1m]"):
+                base = base[: -len("[1m]")]
+            if base not in VALID_MODELS:
+                bad.append((fpath, f"frontmatter model: '{val}' not in {{{','.join(sorted(VALID_MODELS))}}} (optionally suffixed with [1m])"))
+        elif l.startswith("effort:"):
+            val = strip_value(l[len("effort:"):])
+            if val not in VALID_EFFORTS:
+                bad.append((fpath, f"frontmatter effort: '{val}' not in {{{','.join(sorted(VALID_EFFORTS))}}}"))
+
 print(f"CHECKED\t{checked}")
 for fpath, reason in bad:
     rel = os.path.relpath(fpath, root)
@@ -326,6 +440,13 @@ NON_CONFIG_TOKENS = {
 # [XX], [AE]...) are never config tokens — real config tokens are full words.
 single_letter_re = re.compile(r"^\[[A-Z]{1,2}\]$")
 
+# Intentionally spare schema slots: placeholders kept in cc.config.json (and the
+# plugin.json userConfig schema) with zero current uses, so a brand instance can
+# adopt them without a schema change. Decision recorded in
+# .specify/plans/cody-followups-2026-07.md (2026-07-08) — zero uses is expected,
+# not drift. Remove a token from this set the moment content starts using it.
+SPARE_PLACEHOLDERS = {"[PRODUCT_E]", "[SOLUTION_SUITE_2]"}
+
 def is_non_config(tok):
     return tok in NON_CONFIG_TOKENS or single_letter_re.match(tok)
 
@@ -370,19 +491,23 @@ for d in target_dirs:
 
 used_tokens = {t for t in uses if not is_non_config(t)}
 undefined = sorted(used_tokens - placeholders)
-unused = sorted(placeholders - used_tokens)
+unused = sorted(placeholders - used_tokens - SPARE_PLACEHOLDERS)
+spare = sorted((placeholders - used_tokens) & SPARE_PLACEHOLDERS)
 
 for tok in undefined:
     examples = uses[tok][:3]
     print(f"UNDEFINED\t{tok}\t{'; '.join(examples)}\t{len(uses[tok])}")
 for tok in unused:
     print(f"UNUSED\t{tok}")
+for tok in spare:
+    print(f"SPARE\t{tok}")
 PYEOF
 )"
 
 ph_config_error=$(printf '%s\n' "$PH_OUT" | grep '^CONFIG_ERROR' | cut -f2-)
 ph_undefined=$(printf '%s\n' "$PH_OUT" | grep '^UNDEFINED')
 ph_unused=$(printf '%s\n' "$PH_OUT" | grep '^UNUSED')
+ph_spare=$(printf '%s\n' "$PH_OUT" | grep '^SPARE')
 
 if [[ -n "$ph_config_error" ]]; then
   err "Placeholder sync: cannot read cc.config.json ($ph_config_error)"
@@ -399,11 +524,19 @@ else
   fi
 
   if [[ -z "$ph_unused" ]]; then
-    ok "Placeholder sync: every cc.config.json placeholders entry is used at least once"
+    ok "Placeholder sync: every cc.config.json placeholders entry is used (or intentionally spare)"
   else
     ph_unused_count=$(printf '%s\n' "$ph_unused" | grep -c .)
     warn "Placeholder sync: $ph_unused_count placeholders map entry(ies) with zero uses"
     printf '%s\n' "$ph_unused" | while IFS=$'\t' read -r _ tok; do
+      [[ -n "$tok" ]] && detail "$tok"
+    done
+  fi
+
+  if [[ -n "$ph_spare" ]]; then
+    ph_spare_count=$(printf '%s\n' "$ph_spare" | grep -c .)
+    notice "Placeholder sync: $ph_spare_count intentionally spare slot(s) with zero uses (expected)"
+    printf '%s\n' "$ph_spare" | while IFS=$'\t' read -r _ tok; do
       [[ -n "$tok" ]] && detail "$tok"
     done
   fi
@@ -662,6 +795,332 @@ done
 
 if [[ "$claude_md_checked" -eq 0 ]]; then
   notice "CLAUDE.md line budget: no CLAUDE.md files found to check"
+fi
+
+# ══════════════════════════════════════════════════════════════════════════════
+# (j) Per-command size budget — command bodies are injected verbatim per
+#     invocation, and chains pay duplication multiplicatively (ADR-002 D6).
+#     Legitimately long commands (embedded templates, scaffolds, multi-mode
+#     runbooks) declare `size-budget: exempt — <reason>` in frontmatter; the
+#     reason is mandatory so every exemption stays a recorded judgment, and a
+#     file back under budget with a lingering marker is flagged as stale.
+# ══════════════════════════════════════════════════════════════════════════════
+rule "10. Per-command size budget"
+
+CMD_LINE_BUDGET=150
+cmd_budget_checked=0
+cmd_over=""
+cmd_exempt=""
+cmd_bad_marker=""
+
+# print the size-budget: line from the leading frontmatter block, if any
+size_budget_marker() {
+  awk 'NR==1 && $0!="---"{exit} NR>1 && $0=="---"{exit} /^size-budget:/{print; exit}' "$1"
+}
+
+if [[ -d "$ROOT/commands" ]]; then
+  while IFS= read -r cmd_file; do
+    [[ -z "$cmd_file" ]] && continue
+    cmd_budget_checked=$((cmd_budget_checked + 1))
+    rel="${cmd_file#"$ROOT"/}"
+    n_lines=$(wc -l < "$cmd_file" | tr -d ' ')
+    marker="$(size_budget_marker "$cmd_file")"
+    if [[ "$n_lines" -gt "$CMD_LINE_BUDGET" ]]; then
+      # the reason must contain at least one alphanumeric — a bare "exempt —" is reasonless
+      if [[ "$marker" =~ ^size-budget:[[:space:]]*exempt[[:space:]]+.*[[:alnum:]] ]]; then
+        cmd_exempt="$cmd_exempt$rel	$n_lines"$'\n'
+      elif [[ -n "$marker" ]]; then
+        cmd_bad_marker="$cmd_bad_marker$rel	missing reason (want: size-budget: exempt — <reason>)"$'\n'
+        cmd_over="$cmd_over$rel	$n_lines"$'\n'
+      else
+        cmd_over="$cmd_over$rel	$n_lines"$'\n'
+      fi
+    elif [[ -n "$marker" ]]; then
+      cmd_bad_marker="$cmd_bad_marker$rel	stale exemption ($n_lines lines is within budget — drop the marker)"$'\n'
+    fi
+  done < <(find "$ROOT/commands" -type f -name '*.md' | sort)
+fi
+
+if [[ -z "$cmd_over" ]]; then
+  ok "Per-command size budget: all $cmd_budget_checked command file(s) within the ${CMD_LINE_BUDGET}-line budget (or exempt with reason)"
+else
+  cmd_over_count=$(printf '%s' "$cmd_over" | grep -c .)
+  warn "Per-command size budget: $cmd_over_count of $cmd_budget_checked command file(s) exceed the ${CMD_LINE_BUDGET}-line budget"
+  printf '%s' "$cmd_over" | while IFS=$'\t' read -r rel n_lines; do
+    [[ -n "$rel" ]] && detail "$rel — $n_lines lines"
+  done
+fi
+
+if [[ -n "$cmd_bad_marker" ]]; then
+  cmd_bad_count=$(printf '%s' "$cmd_bad_marker" | grep -c .)
+  warn "Per-command size budget: $cmd_bad_count malformed/stale size-budget marker(s)"
+  printf '%s' "$cmd_bad_marker" | while IFS=$'\t' read -r rel why; do
+    [[ -n "$rel" ]] && detail "$rel — $why"
+  done
+fi
+
+if [[ -n "$cmd_exempt" ]]; then
+  cmd_exempt_count=$(printf '%s' "$cmd_exempt" | grep -c .)
+  notice "Per-command size budget: $cmd_exempt_count command(s) exempt by declared reason"
+  printf '%s' "$cmd_exempt" | while IFS=$'\t' read -r rel n_lines; do
+    [[ -n "$rel" ]] && detail "$rel — $n_lines lines"
+  done
+fi
+
+# ══════════════════════════════════════════════════════════════════════════════
+# (k) Duplicate stack-resolution boilerplate — the ~80-word fallback paragraph
+#     should live once, in references/dev/stack-resolution.md, with commands
+#     pointing at it. Warn if the distinctive fingerprint reappears in >1 command
+#     file (ADR-002 D6). Scoped to commands/ so this script's own literal below
+#     is not counted.
+# ══════════════════════════════════════════════════════════════════════════════
+rule "11. Duplicate stack-resolution boilerplate"
+
+BOILERPLATE_FINGERPRINT='auto-detect once from project markers'
+dup_files=""
+if [[ -d "$ROOT/commands" ]]; then
+  dup_files="$(grep -rlF "$BOILERPLATE_FINGERPRINT" "$ROOT/commands" 2>/dev/null | sort)"
+fi
+dup_count=0
+[[ -n "$dup_files" ]] && dup_count=$(printf '%s\n' "$dup_files" | grep -c .)
+
+if [[ "$dup_count" -le 1 ]]; then
+  ok "Duplicate stack-resolution boilerplate: fingerprint in $dup_count command file(s) (≤1 — deduped to the reference)"
+else
+  warn "Duplicate stack-resolution boilerplate: fingerprint in $dup_count command files — collapse each to the canonical pointer sentence (references/dev/stack-resolution.md)"
+  printf '%s\n' "$dup_files" | while IFS= read -r line; do
+    [[ -n "$line" ]] && detail "${line#"$ROOT"/}"
+  done
+fi
+
+# ══════════════════════════════════════════════════════════════════════════════
+# (l) Install/mirror profile definitions — scripts/mirror-profiles/*.json
+# ══════════════════════════════════════════════════════════════════════════════
+rule "12. Profile definitions (scripts/mirror-profiles/*.json)"
+
+PROFILE_DIR="$SCRIPT_DIR/mirror-profiles"
+if [[ ! -d "$PROFILE_DIR" ]]; then
+  notice "scripts/mirror-profiles/ not found — skipping profile validation"
+else
+  PROFILE_OUT="$(python3 - "$ROOT" "$PROFILE_DIR" <<'PYEOF'
+import json, os, sys
+
+root, profile_dir = sys.argv[1], sys.argv[2]
+
+checked = 0
+for fn in sorted(os.listdir(profile_dir)):
+    if not fn.endswith(".json"):
+        continue
+    checked += 1
+    fpath = os.path.join(profile_dir, fn)
+    rel = os.path.relpath(fpath, root)
+    try:
+        with open(fpath, "r", encoding="utf-8") as fh:
+            data = json.load(fh)
+    except (OSError, UnicodeDecodeError) as e:
+        print(f"ERR\t{rel}\tunreadable: {e}")
+        continue
+    except json.JSONDecodeError as e:
+        print(f"ERR\t{rel}\tinvalid JSON: {e}")
+        continue
+
+    for field in ("pluginName", "pluginDescription", "marketplaceName", "marketplaceDescription"):
+        val = data.get(field)
+        if not isinstance(val, str) or not val.strip():
+            print(f"ERR\t{rel}\tmissing or empty required field: {field}")
+
+    exclude = data.get("exclude")
+    if not isinstance(exclude, list):
+        print(f"ERR\t{rel}\t\"exclude\" must be a list")
+        continue
+    for path in exclude:
+        if not isinstance(path, str):
+            print(f"ERR\t{rel}\tnon-string exclude entry: {path!r}")
+            continue
+        if not os.path.exists(os.path.join(root, path)):
+            print(f"ERR\t{rel}\texcludes '{path}' but no such path exists under global/ — stale entry")
+
+print(f"CHECKED\t{checked}")
+PYEOF
+)"
+
+  profile_checked=$(printf '%s\n' "$PROFILE_OUT" | grep '^CHECKED' | cut -f2)
+  profile_errs=$(printf '%s\n' "$PROFILE_OUT" | grep '^ERR')
+
+  if [[ -z "$profile_errs" ]]; then
+    ok "Profile definitions: ${profile_checked:-0} profile(s) valid (JSON parses, exclude paths exist, descriptions non-empty)"
+  else
+    profile_err_count=$(printf '%s\n' "$profile_errs" | grep -c .)
+    err "Profile definitions: $profile_err_count issue(s) across ${profile_checked:-0} profile(s)"
+    printf '%s\n' "$profile_errs" | while IFS=$'\t' read -r _tag rel msg; do
+      [[ -n "$rel" ]] && detail "$rel — $msg"
+    done
+  fi
+fi
+
+# ══════════════════════════════════════════════════════════════════════════════
+# (m) Baked-substitution guard — the tracked tree must keep its ${user_config.*}
+#     tokens. cc-apply must only ever run against installed copies; if it runs
+#     against the source tree, tokens silently become literal config values (the
+#     2026-07-08 incident: ~57 files baked in an agent worktree). Value-matching
+#     can't catch this (defaults like "MEDDPICC" appear legitimately), so we
+#     compare per-file token-bearing line counts against git HEAD instead: a
+#     working-tree count BELOW HEAD's is the baking signature. ERROR, not warn —
+#     it's a clean-room violation. No-op on committed state (worktree == HEAD)
+#     and skipped outside a git checkout (installed cache copies).
+# ══════════════════════════════════════════════════════════════════════════════
+rule "13. Baked-substitution guard (tracked \${user_config.*} tokens survive in the working tree)"
+
+if ! git -C "$REPO_ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  notice "Baked-substitution guard: not a git checkout — skipped (source-repo check only)"
+else
+  BAKE_OUT="$(cd "$REPO_ROOT" && python3 - <<'PYEOF'
+import os, subprocess
+
+TOKEN = "${user_config."
+
+head = subprocess.run(
+    ["git", "grep", "-c", "-F", TOKEN, "HEAD", "--", "global/"],
+    capture_output=True, text=True,
+).stdout
+
+checked = 0
+for line in head.splitlines():
+    # format: HEAD:path:count
+    try:
+        _, path, cnt = line.split(":", 2)
+        head_cnt = int(cnt)
+    except ValueError:
+        continue
+    checked += 1
+    if not os.path.exists(path):
+        continue  # deleted/renamed — other checks own file lifecycle
+    wt_cnt = 0
+    try:
+        with open(path, encoding="utf-8", errors="replace") as fh:
+            for l in fh:
+                if TOKEN in l:
+                    wt_cnt += 1
+    except OSError:
+        continue
+    if wt_cnt < head_cnt:
+        print(f"BAKED\t{path}\t{head_cnt}\t{wt_cnt}")
+print(f"CHECKED\t{checked}")
+PYEOF
+)"
+
+  bake_checked=$(printf '%s\n' "$BAKE_OUT" | grep '^CHECKED' | cut -f2)
+  bake_hits=$(printf '%s\n' "$BAKE_OUT" | grep '^BAKED' || true)
+
+  if [[ -z "$bake_hits" ]]; then
+    ok "Baked-substitution guard: ${bake_checked:-0} token-bearing tracked file(s) intact vs HEAD"
+  else
+    bake_count=$(printf '%s\n' "$bake_hits" | grep -c .)
+    err "Baked-substitution guard: $bake_count file(s) lost \${user_config.*} tokens vs HEAD — cc-apply likely ran against the source tree; restore with git checkout -- <file> (intentional token removals clear once committed)"
+    printf '%s\n' "$bake_hits" | while IFS=$'\t' read -r _tag path head_cnt wt_cnt; do
+      [[ -n "$path" ]] && detail "$path — token lines $head_cnt at HEAD → $wt_cnt in working tree"
+    done
+  fi
+fi
+
+# ══════════════════════════════════════════════════════════════════════════════
+# (n) Tracked settings shape — .claude/settings.json files this repo ships must
+#     match the shapes Claude Code validates at load time. A schema violation
+#     makes Claude Code skip the ENTIRE file (not just the bad key), which
+#     silently killed one-prompt plugin enablement when the marketplace-source
+#     schema moved from bare strings to typed objects (2026-07-08 incident).
+#     Offline by design: we validate the structural rules for the keys this
+#     repo actually uses, not the full upstream schema.
+# ══════════════════════════════════════════════════════════════════════════════
+rule "14. Tracked settings shape (.claude/settings.json load-time validity)"
+
+SETTINGS_OUT="$(python3 - "$REPO_ROOT" <<'PYEOF'
+import json, os, sys
+
+repo = sys.argv[1]
+VALID_SOURCE_TYPES = {
+    # discriminator -> required companion field
+    "directory": "path",
+    "local": "path",
+    "github": "repo",
+    "git": "url",
+    "url": "url",
+}
+
+candidates = [
+    os.path.join(repo, ".claude", "settings.json"),
+    os.path.join(repo, "global", ".claude", "settings.json"),
+]
+
+checked = 0
+for fpath in candidates:
+    if not os.path.isfile(fpath):
+        continue
+    checked += 1
+    rel = os.path.relpath(fpath, repo)
+    try:
+        with open(fpath, encoding="utf-8") as fh:
+            data = json.load(fh)
+    except (OSError, json.JSONDecodeError) as e:
+        print(f"ERR\t{rel}\tinvalid JSON (Claude Code will skip the whole file): {e}")
+        continue
+    if not isinstance(data, dict):
+        print(f"ERR\t{rel}\ttop level must be an object")
+        continue
+
+    mkts = data.get("extraKnownMarketplaces")
+    if mkts is not None:
+        if not isinstance(mkts, dict):
+            print(f"ERR\t{rel}\textraKnownMarketplaces must be an object")
+        else:
+            for name, entry in mkts.items():
+                where = f"extraKnownMarketplaces.{name}"
+                if not isinstance(entry, dict):
+                    print(f"ERR\t{rel}\t{where} must be an object")
+                    continue
+                src = entry.get("source")
+                if not isinstance(src, dict):
+                    print(f"ERR\t{rel}\t{where}.source must be an OBJECT "
+                          f"(e.g. {{\"source\": \"directory\", \"path\": \"./global\"}}) — "
+                          f"got {type(src).__name__}; the bare-string form is rejected "
+                          f"and Claude Code skips the entire file")
+                    continue
+                stype = src.get("source")
+                if stype not in VALID_SOURCE_TYPES:
+                    print(f"ERR\t{rel}\t{where}.source.source must be one of "
+                          f"{sorted(VALID_SOURCE_TYPES)} — got {stype!r}")
+                    continue
+                needed = VALID_SOURCE_TYPES[stype]
+                if not isinstance(src.get(needed), str) or not src[needed].strip():
+                    print(f"ERR\t{rel}\t{where}.source ({stype}) requires a non-empty "
+                          f"string field \"{needed}\"")
+
+    plugins = data.get("enabledPlugins")
+    if plugins is not None:
+        if not isinstance(plugins, dict):
+            print(f"ERR\t{rel}\tenabledPlugins must be an object")
+        else:
+            for pname, val in plugins.items():
+                if not isinstance(val, bool):
+                    print(f"ERR\t{rel}\tenabledPlugins.{pname} must be a boolean — got {val!r}")
+
+print(f"CHECKED\t{checked}")
+PYEOF
+)"
+
+settings_checked=$(printf '%s\n' "$SETTINGS_OUT" | grep '^CHECKED' | cut -f2)
+settings_errs=$(printf '%s\n' "$SETTINGS_OUT" | grep '^ERR' || true)
+
+if [[ "${settings_checked:-0}" -eq 0 ]]; then
+  notice "Tracked settings shape: no tracked .claude/settings.json found — skipped"
+elif [[ -z "$settings_errs" ]]; then
+  ok "Tracked settings shape: ${settings_checked} settings file(s) load-time valid"
+else
+  settings_err_count=$(printf '%s\n' "$settings_errs" | grep -c .)
+  err "Tracked settings shape: $settings_err_count issue(s) — Claude Code skips a whole settings file on any schema violation"
+  printf '%s\n' "$settings_errs" | while IFS=$'\t' read -r _tag rel msg; do
+    [[ -n "$rel" ]] && detail "$rel — $msg"
+  done
 fi
 
 # ══════════════════════════════════════════════════════════════════════════════

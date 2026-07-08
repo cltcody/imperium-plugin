@@ -5,16 +5,9 @@ disable-model-invocation: true
 
 # Verify: Codebase
 
-Full project code review — scans the entire codebase, not just recent changes. Covers
-static analysis, AI smell detection, and a security spot-check across all source files.
+Full project code review — the entire codebase, not just recent changes: static analysis, AI smell detection, and a security spot-check across all source files. Use periodically, before a major release, or when onboarding. Pre-commit review is `/cc:verify:code`; branch review is `/cc:verify:pr`.
 
-Use this periodically, before a major release, or when onboarding to a new codebase.
-For pre-commit review use `/cc:verify:code`. For branch review use `/cc:verify:pr`.
-
-It is **stack-agnostic**: static-analysis commands resolve from the project's `STACK.md`
-per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md` — never hardcoded.
-
----
+**Stack-agnostic**: static-analysis commands resolve from the project's `STACK.md` per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md` — never hardcoded.
 
 ## Step 1: Understand the project
 
@@ -23,50 +16,25 @@ cat STACK.md 2>/dev/null || echo "No STACK.md — will auto-detect"
 git log --oneline -5 2>/dev/null || echo "Not a git repo"
 ```
 
-Read `STACK.md` and resolve commands per
-`${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md`. Identify:
-- **Components** to scan (from STACK.md `components:` map; or auto-detect from project markers)
-- **Source directories** for each component (`working_dir` + standard src layout conventions)
+Read `STACK.md` and resolve commands per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md`. Identify:
+- **Components** to scan (from STACK.md `components:` map, or auto-detect from project markers)
+- **Source directories** per component (`working_dir` + standard src layout conventions)
 - **Directories to exclude**: `.venv/`, `node_modules/`, `dist/`, `__pycache__/`, `bin/`, `obj/`, `.next/`, `coverage/`
 
-If no `STACK.md`, auto-detect once and recommend the user run `/cc:setup:stack` to persist a manifest.
-
----
+No `STACK.md` → auto-detect once and recommend `/cc:setup:stack`.
 
 ## Step 2: Static analysis
 
-For each component resolved from `STACK.md`, run from its `working_dir`:
-- The `lint` step (if mapped)
-- The `typecheck` step (if mapped)
-- The `build` step (if mapped and not expensive — skip if build takes >60s or requires a running service)
+For each component resolved from `STACK.md`, run from its `working_dir`: the `lint` step, the `typecheck` step, and the `build` step — each if mapped (skip build if it takes >60s or requires a running service).
 
-Run **all** components — do not stop at the first failure. Collect all errors and warnings.
-Do not fix here — report only.
+Run **all** components — do not stop at the first failure; collect every error and warning. Do not fix here — report only. Unmapped step for a component → skip silently (not an error). No STACK.md → fall back to auto-detection per the resolution algorithm.
 
-**Example resolution (uv Python backend):**
-```
-STACK.md maps: lint → uv run ruff check .  |  typecheck → uv run mypy .
-→ cd backend && uv run ruff check .
-→ cd backend && uv run mypy .
-```
-
-**Example resolution (npm TypeScript frontend):**
-```
-STACK.md maps: lint → npm run lint  |  typecheck → npm run typecheck
-→ cd frontend && npm run lint
-→ cd frontend && npm run typecheck
-```
-
-If a step is unmapped for a component: skip silently (not an error).
-If no STACK.md: fall back to auto-detection per the resolution algorithm.
-
----
+**Example (uv Python backend):** `lint → uv run ruff check .`, `typecheck → uv run mypy .` → `cd backend && uv run ruff check .`, then `cd backend && uv run mypy .`
+**Example (npm TypeScript frontend):** `lint → npm run lint`, `typecheck → npm run typecheck` → `cd frontend && npm run lint`, then `cd frontend && npm run typecheck`
 
 ## Step 3: AI smell scan
 
-Run these grep patterns across all **source** directories detected in Step 1.
-Adjust file extensions (`*.py`, `*.ts`, `*.tsx`, `*.cs`, `*.java`, etc.) to match
-the components' detected languages. Skip vendor/generated/excluded directories.
+Run these grep patterns across all **source** directories detected in Step 1. Adjust file extensions (`*.py`, `*.ts`, `*.tsx`, `*.cs`, `*.java`, etc.) to match the detected languages; skip vendor/generated/excluded directories.
 
 ```bash
 # Debug artifacts
@@ -104,8 +72,6 @@ grep -rn "# type: ignore\|# noqa\|# pyright: ignore\|@ts-ignore\|@ts-expect-erro
   <src-dirs> 2>/dev/null
 ```
 
----
-
 ## Step 4: Spot-review source files
 
 Pick the 10 most recently modified source files and read each one:
@@ -122,8 +88,6 @@ For each file, check:
 - No verbose self-explaining names (`result_of_calculation`, `temp_data_holder`)
 - No multi-paragraph docstrings on simple functions
 - Naming matches the conventions of surrounding code
-
----
 
 ## Step 5: Security spot-check
 
@@ -143,14 +107,9 @@ grep -rn "\`.*SELECT\|\`.*INSERT\|\`.*UPDATE\|\".*SELECT.*\+" \
   <src-dirs> --include="*.ts" --include="*.tsx" --include="*.js" 2>/dev/null
 ```
 
----
-
 ## Step 6: Report
 
-Rate what you found per the canonical ladder in
-`${CLAUDE_PLUGIN_ROOT}/references/dev/severity-and-rubrics.md`. This report's markers map
-onto it as 🔴 = CRITICAL/HIGH (blocking), 🟡 = MEDIUM/LOW (warning); its verdicts map as
-CLEAN / NEEDS ATTENTION / ACTION REQUIRED = MERGE READY / WITH WARNINGS / NEEDS CHANGES.
+Rate what you found per the canonical ladder in `${CLAUDE_PLUGIN_ROOT}/references/dev/severity-and-rubrics.md`. This report's markers map onto it as 🔴 = CRITICAL/HIGH (blocking), 🟡 = MEDIUM/LOW (warning); its verdicts map as CLEAN / NEEDS ATTENTION / ACTION REQUIRED = MERGE READY / WITH WARNINGS / NEEDS CHANGES.
 
 ```
 CODEBASE REVIEW
@@ -184,6 +143,4 @@ SUMMARY
   Overall:          ✅ CLEAN / ⚠️ NEEDS ATTENTION / 🔴 ACTION REQUIRED
 ```
 
-If blocking issues are found → fix before next commit or PR.
-If warnings only → address in the next cleanup pass (`/cc:release:cleanup`).
-If clean → note the date so you know when the last full review ran.
+If blocking issues are found → fix before next commit or PR. Warnings only → address in the next cleanup pass (`/cc:release:cleanup`). Clean → note the date so you know when the last full review ran.

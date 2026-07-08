@@ -1,10 +1,9 @@
 ---
 name: supply-chain-map
 description: |
-  Builds a structured visual supply chain map for any named company from public research —
-  manufacturing networks, distribution, logistics flows, CMO vs owned plants, freight modes,
-  sourcing. Use on "map / diagram / analyse the supply chain of X". Not for code diagrams — use
-  `diagram`.
+  Builds a visual supply chain map for any named company — manufacturing networks, distribution,
+  logistics flows, CMO vs owned plants, freight modes, sourcing. Use on "map / diagram / analyse
+  the supply chain of X". Not for code diagrams — use `diagram`.
 ---
 
 # Supply Chain Map Skill
@@ -290,21 +289,12 @@ Deliver in this sequence:
 
 ## Saving outputs
 
-After delivering the interactive widget, **always** save a standalone copy of the full HTML to the user's outputs folder:
-
-```
-/sessions/eloquent-sharp-rubin/mnt/outputs/<CompanyName>_supply_chain_map.html
-```
+After delivering the interactive widget, **always** save a standalone copy of the full HTML as `<CompanyName>_supply_chain_map.html` — to the session's mounted outputs folder if one exists, otherwise to the current working directory.
 
 - Use the company name (spaces replaced with underscores, no special characters) in the filename, e.g. `Unilever_supply_chain_map.html`, `Colgate_Palmolive_supply_chain_map.html`.
 - The file must be fully self-contained — all CSS, JavaScript, and data embedded inline — so it opens correctly without an internet connection.
 - This is the same HTML as the widget; just write it to disk using the Write tool or Bash after rendering the widget.
-- If the user has not mounted an outputs folder, note that the file has been saved to the session's working folder and will be accessible via the file link.
-
-After saving, provide a `computer://` link so the user can open the file directly:
-```
-[View saved map](computer:///sessions/eloquent-sharp-rubin/mnt/outputs/CompanyName_supply_chain_map.html)
-```
+- After saving, tell the user where the file landed and link it so they can open it directly.
 
 ---
 

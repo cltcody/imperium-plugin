@@ -16,9 +16,9 @@ $ARGUMENTS
 1. **Classify.** One sentence: what changes and why. Type: bug-fix / enhancement / chore / config. Confirm it is genuinely small; escalate if not.
 2. **Scope the blast radius.** Grep/Glob for the affected symbols. List the exact files to change and any files that consume them. Read those files.
 3. **Find the pattern.** Locate one existing example in the codebase that the change should mirror; note file:line.
-4. **Resolve validation.** Resolve the project's `test`, `typecheck`, `lint`, and `format:check` commands from `STACK.md` per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md`. No `STACK.md` → auto-detect once from project markers and recommend the user run `/cc:setup:stack` to persist a manifest.
+4. **Resolve validation.** Resolve the project's `test`, `typecheck`, `lint`, and `format:check` commands from `STACK.md` per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md`. No `STACK.md` → auto-detect once and recommend `/cc:setup:stack`.
 5. **Write the plan** to `${user_config.workspace_dir}/plans/<kebab-name>.md` using the standard format, compressed:
-   - Description, problem, solution (a few lines each)
+   - Description, problem, solution (a few lines each), plus a `**Status:** in-progress` line within the first 5 lines of the file (machine-read by the PIV state detector; `/cc:release:commit` flips it to `implemented` when the work ships)
    - CONTEXT REFERENCES — files to read/change with line numbers and why
    - STEP-BY-STEP TASKS — typically 1–5 tasks, each with IMPLEMENT / PATTERN / GOTCHA / VALIDATE. A task adding new observable behavior (new file, marker, warning, guard, failure path) needs a VALIDATE that positively exercises it — presence greps and "not worse than baseline" can't catch a bug in a new path
    - VALIDATION COMMANDS — the resolved project commands (from `STACK.md`)

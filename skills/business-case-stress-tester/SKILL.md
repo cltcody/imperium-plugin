@@ -1,9 +1,8 @@
 ---
 name: business-case-stress-tester
 description: |
-  Pressure-tests a business case or ROI model before the customer's finance team does — challenges
-  assumptions, surfaces the weakest numbers, preps the SC for CFO scrutiny. Use on "stress-test
-  this business case", "challenge the ROI", "CFO prep", or a pasted ROI model.
+  Pressure-tests a business case or ROI model before the customer's finance team does. Use on
+  "stress-test this business case", "challenge the ROI", "CFO prep", or a pasted ROI model.
 ---
 
 # Business Case Stress Tester

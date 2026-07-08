@@ -1,9 +1,8 @@
 ---
 name: competitive-battlecard
 description: |
-  Rapid competitive positioning card against any named competitor in trade compliance, supply
-  chain visibility, or customs — where we win, their attacks, counter-plays, and discovery
-  questions. Use on "battlecard", "how do we beat [competitor]", or "how do we compare to X".
+  Rapid competitive positioning card against any named competitor — where we win, their attacks,
+  counter-plays. Use on "battlecard", "how do we beat [competitor]", or "how do we compare to X".
 ---
 
 # Competitive Battlecard

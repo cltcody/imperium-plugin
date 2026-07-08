@@ -146,6 +146,15 @@
 
 ## 7. Planning & QA discipline
 
+- **A fallback must not systematically dominate the primary signal.** When a ranking
+  or comparison falls back to a second data source (fs mtime behind git commit time,
+  a default behind a computed value), check whether the fallback lands on the *winning*
+  side of every real comparison — mtime in a fresh worktree is checkout time ≈ now and
+  beats all history, turning "degraded" into "deterministically wrong." Clamp fallbacks
+  below the primary signal's range. Same trap in tests: fixtures must place the
+  fallback value on the dominating side, or the coverage is vacuous — a fixture whose
+  scrambled mtimes were *older* than the commit dates would have passed with the fix
+  disabled. (2026-07-07)
 - **"Registered" ≠ "reachable."** That a route/feature/tool is registered in a catalog
   proves it *can* be navigated to, not that a visible affordance exists on the screen
   a plan claims. Before writing "open X from Y" into a plan or QA checklist, trace the

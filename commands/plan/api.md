@@ -5,34 +5,19 @@ argument-hint: [feature or resource name]
 
 # Plan: API Design
 
-Design the API surface *before* writing handlers — this prevents scope creep and keeps the
-team aligned on request/response format. This planning step is **stack-agnostic**: it
-designs a REST contract for any backend; any concrete command (auditing existing routes,
-starting the server) comes from the project's `STACK.md`, not from this file.
-
-**When to use:** Before writing any endpoint code for a new feature.
+Design the API surface *before* writing handlers to prevent scope creep and keep the team aligned on request/response format. **Stack-agnostic**: it designs a REST contract for any backend; concrete commands (auditing routes, starting the server) come from `STACK.md`, not this file. **Use before writing any endpoint code for a new feature.**
 
 ## Resolve the stack
 
-Before running anything, read the project's `STACK.md` and resolve commands per
-`${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md`. The component that exposes the
-API (typically a backend/API component) declares its `working_dir`, `package_manager`, and
-mapped steps — use those instead of assuming a framework. To bring the API up later (step 4),
-run that component's `dev` step from its `working_dir`. Skip any step the component does not
-map. If there is no `STACK.md`, auto-detect once from project markers and recommend the user
-run `/cc:setup:stack` to persist a manifest.
+Read the project's `STACK.md` and resolve commands per `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md`. The API-exposing component (typically a backend/API component) declares its `working_dir`, `package_manager`, and mapped steps — use those instead of assuming a framework. To bring the API up later (step 4), run that component's `dev` step from its `working_dir`. Skip any step it does not map. No `STACK.md` → auto-detect once and recommend `/cc:setup:stack`.
 
-The grep snippets below are illustrative. Adapt the route-declaration pattern, file
-extensions, and framework idioms (request/response schema, error type, pagination helper,
-auth guard) to the API component's actual language and framework as found in its source tree.
+The grep snippets below are illustrative. Adapt the route-declaration pattern, file extensions, and framework idioms (request/response schema, error type, pagination helper, auth guard) to the API component's actual language and framework.
 
 ## Steps
 
 ### 1. API audit
 
-Check existing patterns. From the API component's `working_dir`, find the framework's
-route/handler registration idiom (a decorator, a router registration, or a route table)
-across the source tree, so new endpoints match what's already there:
+From the API component's `working_dir`, find the framework's route/handler registration idiom (decorator, router registration, or route table) across the source tree, so new endpoints match what's already there:
 
 ```bash
 # Run from the API component's working_dir; adapt the pattern + file glob to its language.
@@ -61,44 +46,23 @@ For each endpoint, answer:
 | **Pagination?** | yes / no (if yes: cursor or offset?) |
 | **Rate limit?** | yes / no (requests per minute) |
 
-#### Example (schemas shown in a Pydantic-style notation — use your stack's schema language):
+#### Example (schemas in Pydantic-style notation — use your stack's schema language):
 ```
 Endpoint: POST /api/items
-
 Purpose: Create a new item in the inventory
-
 Path: /api/items
-
 Method: POST
-
 Auth required: yes (user must be authenticated)
-
 Request body:
-  ItemCreate {
-    name: string
-    description: string (optional)
-    price: number
-    quantity: integer
-  }
-
+  ItemCreate { name: string; description: string (optional); price: number; quantity: integer }
 Response (201):
-  ItemResponse {
-    id: integer
-    name: string
-    description: string
-    price: number
-    quantity: integer
-    created_at: datetime
-    updated_at: datetime
-  }
-
+  ItemResponse { id: integer; name: string; description: string; price: number;
+                 quantity: integer; created_at: datetime; updated_at: datetime }
 Errors:
   400: name or price invalid
   401: unauthorized
   409: item name already exists
-
 Pagination: no
-
 Rate limit: no
 ```
 
@@ -115,23 +79,17 @@ Rate limit: no
 
 ### 4. Schema validation (after implementation)
 
-If the framework serves a live API schema (OpenAPI/Swagger, GraphQL introspection, etc.),
-bring the API up and inspect it:
+If the framework serves a live API schema (OpenAPI/Swagger, GraphQL introspection), bring the API up and inspect it:
 
 ```bash
 # Start the dev server via the API component's resolved `dev` step (from STACK.md),
 # run from its working_dir. Examples:
-#   FastAPI: uv run uvicorn app.main:app --reload
-#   Django:  uv run python manage.py runserver
-#   Node:    npm run dev
+#   FastAPI: uv run uvicorn app.main:app --reload | Django: uv run python manage.py runserver | Node: npm run dev
 <dev-step-from-STACK.md>
-
-# Then open the served schema/docs endpoint the framework exposes
-# (e.g. /docs, /openapi.json, /graphql).
+# Then open the served schema/docs endpoint (e.g. /docs, /openapi.json, /graphql).
 ```
 
-If the framework does not serve a live schema, inspect the route declarations and schemas in
-the source directly. Check:
+If the framework does not serve a live schema, inspect the route declarations and schemas in the source directly. Check:
 
 - [ ] All endpoints visible / registered
 - [ ] Request/response schemas correct
@@ -145,37 +103,23 @@ An agreed API contract in this format:
 ```
 API CONTRACT
 ──────────────────────────────────────
-
-Feature: <feature name>
-Author: <your name>
-Date: <YYYY-MM-DD>
-
+Feature: <feature name> | Author: <your name> | Date: <YYYY-MM-DD>
 ENDPOINTS:
   POST /api/items              Create item
   GET  /api/items              List items
   GET  /api/items/{id}         Get single item
   PUT  /api/items/{id}         Update item
   DELETE /api/items/{id}       Delete item
-
 SCHEMAS:
   ItemCreate → ItemResponse
   ItemUpdate → ItemResponse
   ErrorResponse (all errors)
-
 ERRORS:
-  400: Validation error
-  401: Unauthorized
-  404: Not found
-  409: Conflict (duplicate)
-  500: Server error
-
+  400: Validation error | 401: Unauthorized | 404: Not found | 409: Conflict (duplicate) | 500: Server error
 PAGINATION:
-  GET /api/items?limit=10&offset=0
-  Response includes: items[], total, limit, offset
-
+  GET /api/items?limit=10&offset=0 → response includes: items[], total, limit, offset
 RATE LIMITS:
   None (or specify if enforced)
-
 SIGNED OFF: ✅ Team agrees
 ```
 

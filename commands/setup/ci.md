@@ -1,6 +1,7 @@
 ---
 description: Generate or repair a CI pipeline (GitHub Actions or Azure DevOps) that mirrors the project's STACK.md verify gate
 argument-hint: "[--forge github|ado]"
+size-budget: exempt — embeds complete GitHub Actions + Azure DevOps pipeline templates
 ---
 
 # Setup: CI Pipeline
@@ -19,7 +20,7 @@ forge-agnostic**: it never hardcodes a toolchain or a CI provider.
 
 Read the project's `STACK.md` and resolve components per
 `${CLAUDE_PLUGIN_ROOT}/references/dev/stack-resolution.md`. If there is no `STACK.md`,
-auto-detect once from project markers (same live-detection table as the other dev commands).
+auto-detect once (same live-detection table as the other dev commands).
 
 **Abort rule:** if there is no `STACK.md` **and** auto-detection finds no component (no
 `package.json`, `pyproject.toml`, `manage.py`, etc. anywhere in the project), stop here and
