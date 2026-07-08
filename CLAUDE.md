@@ -69,6 +69,9 @@ This plugin ships brand-neutral. All company- and product-specific values live a
 - **Ongoing maintenance**: run `/cc:maintain:audit` after adding/editing any
   skill, command, or agent. It checks for unresolved placeholders, brand leakage,
   missing frontmatter, broken internal references, INVENTORY.md drift, and MCP coverage.
+- **Before creating any new skill**: apply the admission gate in
+  `skills/skill-creator/SKILL.md` — recurs 3+ times · procedure stable · no better home ·
+  pays its listing cost. When in doubt, extend an existing skill instead of adding one.
 
 Placeholder → config mapping is defined in the `placeholders` block of
 `cc.config.json`. To add a new substitutable token, add it there and re-run the script.

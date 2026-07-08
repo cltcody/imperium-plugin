@@ -127,7 +127,7 @@ A skill should only contain essential files that directly support its functional
 - CHANGELOG.md
 - etc.
 
-The skill should only contain the information needed for an AI agent to do the job at hand. It should not contain auxiliary context about the process that went into creating it, setup and testing procedures, user-facing documentation, etc. Creating additional documentation files just adds clutter and confusion. (`python scripts/validate_claude_assets.py` flags README files inside skill folders.)
+The skill should only contain the information needed for an AI agent to do the job at hand. It should not contain auxiliary context about the process that went into creating it, setup and testing procedures, user-facing documentation, etc. Creating additional documentation files just adds clutter and confusion.
 
 ### Progressive Disclosure Design Principle
 
@@ -185,13 +185,34 @@ Show basic content, link to advanced content ("For tracked changes: see referenc
 - **Avoid deeply nested references** - Keep references one level deep from SKILL.md. All reference files should link directly from SKILL.md.
 - **Structure longer reference files** - For files longer than 100 lines, include a table of contents at the top so Claude can see the full scope when previewing.
 
+## Before Creating: the Admission Gate
+
+Skill metadata rides in every session's context and the listing budget is finite — each new
+skill makes every other skill slightly harder to trigger. Repetition alone does not justify a
+skill. Require all four before creating one:
+
+1. **Recurs** — the task has come up 3+ times, or is certain to recur on a schedule. Twice is
+   a pattern worth noting, not yet a skill.
+2. **Stable** — the procedure has settled. Capture a proven workflow, not a first attempt; a
+   skill written mid-exploration hardens the wrong shape.
+3. **No better home** — prefer, in order: extend an existing skill → grow one of its reference
+   files → add a `CLAUDE.md` line → keep a saved prompt. Personal or company-specific content
+   is never skill material: this plugin is distributable (public mirror, packed archives), so
+   personal context belongs in memory or a claude.ai Project, and company values flow through
+   `cc.config.json`.
+4. **Pays its listing cost** — the description must trigger reliably without stealing triggers
+   from neighboring skills. Internal tooling meant to be invoked deliberately should set
+   `disable-model-invocation: true`, which removes it from the model-facing listing entirely.
+
+A candidate that fails any gate gets the cheaper container, not a new skill.
+
 ## Skill Creation Process
 
 1. Understand the skill with concrete examples
 2. Plan reusable skill contents (scripts, references, assets)
 3. Create the skill folder and resources
 4. Write SKILL.md
-5. Register and validate (CLAUDE.md + `python scripts/validate_claude_assets.py`)
+5. Register and validate (CLAUDE.md + `/cc:maintain:audit`)
 6. Iterate based on real usage
 
 ### Step 1: Understanding the Skill with Concrete Examples
@@ -238,7 +259,7 @@ Write the YAML frontmatter with `name` and `description`:
   - Include all "when to use" information here — not in the body. The body is only loaded after triggering, so "When to Use This Skill" sections in the body are not helpful to Claude.
   - Example for a `docx` skill: "Comprehensive document creation, editing, and analysis with support for tracked changes, comments, formatting preservation, and text extraction. Use when Claude needs to work with professional documents (.docx files) for: (1) Creating new documents, (2) Modifying or editing content, (3) Working with tracked changes, (4) Adding comments, or any other document tasks"
 
-Do not include any other fields in the YAML frontmatter.
+Do not include other fields in the YAML frontmatter, with one exception: `disable-model-invocation: true` for internal tooling that should only run when invoked deliberately — it frees skill-listing budget (see the Admission Gate).
 
 ##### Body
 
@@ -249,7 +270,7 @@ Write instructions for using the skill and its bundled resources. If the skill r
 The skill ships with the repository — no packaging step, no install script. To land the skill:
 
 1. Document the skill in the Skills section of `CLAUDE.md`.
-2. Run `python scripts/validate_claude_assets.py` and fix anything it reports (frontmatter fields, kebab-case naming, broken relative links, stray files).
+2. Run `/cc:maintain:audit` (or `bash scripts/cc-audit.sh` directly) and fix anything it reports — frontmatter, naming, broken references, INVENTORY drift.
 3. Commit via `/cc:release:commit`.
 
 ### Step 6: Iterate
@@ -261,4 +282,4 @@ After testing the skill, users may request improvements. Often this happens righ
 1. Use the skill on real tasks
 2. Notice struggles or inefficiencies
 3. Identify how SKILL.md or bundled resources should be updated
-4. Implement changes, re-run `python scripts/validate_claude_assets.py`, and test again
+4. Implement changes, re-run the audit, and test again
