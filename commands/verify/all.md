@@ -25,6 +25,8 @@ gate; use `/cc:verify:all` for the gate plus a one-shot review sweep with a sing
 | `--full` | `/cc:verify:run` | `/cc:verify:code`, `/cc:verify:security`, `/cc:verify:dependencies`, `/cc:verify:coverage`, `/cc:verify:design` | diff |
 | `--release` | `/cc:release:validate` (supersedes `/cc:verify:run` — see above) | same 5 reviews + `/cc:verify:pr` | branch (vs `main`) |
 
+E2E is deliberately outside every tier — `/cc:verify:e2e` is opt-in (STACK.md `e2e:*`) and runs separately, after all source edits land.
+
 ## Steps
 
 ### 1. Resolve the tier

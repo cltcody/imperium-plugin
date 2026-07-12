@@ -151,6 +151,7 @@ DEV_SKILLS = [
     "piv-orchestrator", "security-audit", "gdpr-check", "skill-creator", "sop-creator",
     "archon", "rulecheck", "save-task-list", "triage", "diagram", "ship-pr",
     "architecture-board", "humanize", "feature-interview", "premerge-checklist",
+    "piv-autopilot",
 ]
 LIFE_SKILLS = [
     "council", "finance-council", "big-purchase-council", "subscriptions-audit",

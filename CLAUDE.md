@@ -20,13 +20,13 @@
 
 - **plan**: `prd`, `spec`, `feature`, `task`, `api`, `agent`, `service`, `setup`, `project` (greenfield inception interview)
 - **implement**: `execute`, `migrate`, `refactor`
-- **verify**: `run`, `all`, `code`, `code-review-fix`, `security`, `design` (architecture review — UX / AI / systems heads, via the `ux-reviewer`, `ai-architect`, `systems-architect` agents), `test` (author + run tests for the diff), `gdpr`, `rca`, `debug`, `pr`, `api`, `performance`, `dependencies`, `coverage`, `test-quality` (do the tests catch bugs — smell catalog + guarded mutation-lite probe), `a11y` (WCAG-mechanics audit), `bundle` (build-artifact budgets vs STACK.md), `qa`, `codebase`, `execution-report`, `type-ignores`, `system`, `system-health` (`system-health` includes post-deployment mode — see `/cc:verify:system-health --post-deploy`)
+- **verify**: `run`, `all`, `code`, `code-review-fix`, `security`, `design` (architecture review — UX / AI / systems heads, via the `ux-reviewer`, `ai-architect`, `systems-architect` agents), `test` (author + run tests for the diff), `gdpr`, `rca`, `debug`, `pr`, `api`, `performance`, `dependencies`, `coverage`, `e2e` (opt-in device/end-to-end gate via STACK.md `e2e:*` steps), `test-quality` (do the tests catch bugs — smell catalog + guarded mutation-lite probe), `a11y` (WCAG-mechanics audit), `bundle` (build-artifact budgets vs STACK.md), `qa`, `codebase`, `execution-report`, `type-ignores`, `system`, `system-health` (`system-health` includes post-deployment mode — see `/cc:verify:system-health --post-deploy`)
 - **release**: `validate`, `env`, `deploy`, `changelog`, `docs`, `cleanup`, `commit`, `ship`, `rollback`
 - **git**: `guide` (interactive Q&A git mentor — diagnose from real repo state, prescribe safety-tiered fixes, teach the mental model; backed by `references/dev/git-situation-map.md`)
 - **github**: `list`, `issue`, `fix`, `pr`, `draft`, `sync`, `worktree`, `worktree-cleanup`
 - **radar**: `scan`, `impact`, `brief` (regulatory-change radar — see `references/domains/trade/`)
 - **debug**: `logs`
-- **maintain**: `audit`, `specify`, `deps`, `lessons` (re-harvest project LESSONS.md files into the shared reference), `release` (plugin version bump → changelog → tag → mirror publish)
+- **maintain**: `audit`, `specify`, `deps`, `lessons` (re-harvest project LESSONS.md files into the shared reference), `issues` (recurring GitHub issue-hygiene sweep — zombies, consolidation orphans, metadata gaps; batched recommendations, never auto-closing), `release` (plugin version bump → changelog → tag → mirror publish)
 - **piv**: `loop` (autonomous PIV chain, ends at commit), `ship` (full chain plan→PR with dynamic model routing)
 - **entry/session**: `prime` (`--resume`), `pause`, `next`, `find`, `guide`, `memory` (unified status across session cursor, memory-sync, task-list, native auto-memory)
 - **setup**: `configure`, `brand`, `design`, `stack`, `ci`, `project` (one-shot init: classify + scaffold + stack + settings)
@@ -50,7 +50,7 @@ All councils instantiate the shared council pattern (`references/life/council-pa
 
 ## Skills
 
-- **Dev skills (15)**: Planning, implementation, verification (incl. post-deployment health), release, GitHub integration, PR autopilot (`ship-pr`), debugging, PIV loop, code review, security review, `architecture-board` (deliberative pre-deploy UX/AI/systems GO-NO-GO), `humanize` (strip AI tells from user-facing prose — EN + DE rulebooks), `feature-interview` (chat-portable planning interview → Feature Brief consumed by `/cc:plan:feature`), `premerge-checklist` (known-burns judgment pass before merge — invoked by `/cc:verify:pr`)
+- **Dev skills (16)**: Planning, implementation, verification (incl. post-deployment health), release, GitHub integration, PR autopilot (`ship-pr`), input-free PIV autopilot (`piv-autopilot` — plan → implement → validate → review → opened PR, never merges), debugging, PIV loop, code review, security review, `architecture-board` (deliberative pre-deploy UX/AI/systems GO-NO-GO), `humanize` (strip AI tells from user-facing prose — EN + DE rulebooks), `feature-interview` (chat-portable planning interview → Feature Brief consumed by `/cc:plan:feature`), `premerge-checklist` (known-burns judgment pass before merge — invoked by `/cc:verify:pr`)
 - **Sales skills (28)**: Discovery, account intelligence, demo scripting, value framing, deal strategy, RFP response, handover documentation
 - **Design skills (4)**: `brand` registry, `design-system` (neutral UI token layer + components in 4 adapters), `docx-generator`, `pptx-generator`
 - **Life skills (9)**: `council` (general decision engine), `finance-council`, `big-purchase-council`, `subscriptions-audit`, `home-council`, `insurance-review`, `health-council`, `family-council`, `benefits-navigator` — all run the shared `references/life/council-pattern.md`; health/finance/family carry a "decision prep, not professional advice" frame

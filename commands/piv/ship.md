@@ -23,6 +23,7 @@ standalone:
 | `/cc:piv:loop` | a feature description | a committed, validated feature | single model — the whole loop runs on the session model |
 | `/cc:release:ship` | code already on the branch | a committed, validated, review-clean branch + PR handoff prompt | single model |
 | `/cc:ship-pr` | an open or about-to-open PR | a squash-merge to the base branch | single model — PR tail only |
+| `/cc:piv-autopilot` (skill) | a plan path, feature description, or issue | an **opened** PR (ready or draft) — zero mid-run gates, autonomous branch commits in a dedicated worktree, never merges | per-task dynamic routing under a conservative unattended profile, with a graded ledger in the PR body |
 | `/cc:piv:ship` (this command) | a plan path *or* a bare idea | a merged PR (or an opened one, without `--merge`) | **per-task dynamic routing** — the orchestrator stays on the session model; each implementation task is routed to the cheapest model tier that clears its acceptance bar |
 
 `/cc:piv:ship` is the whole arc: plan-or-idea → merged PR, with the plan's tasks fanned

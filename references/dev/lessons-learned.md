@@ -179,6 +179,11 @@
   data updates, UI polish. PRD-first: open UX/design questions, external/stakeholder
   sign-off required, 4+ screens or a new data layer, or architectural/AI decisions
   whose reasoning must outlast the conversation. (2026-04-19)
+- **Consolidating tracker issues is ONE action: comment and close together.** Posting
+  an "absorbed/folded into #X" comment on a donor issue without closing it in the same
+  action leaves the donor open indefinitely — the comment reads as handled, so no
+  later sweep touches it (`gh issue close <n> --comment "Absorbed into #X"` does both
+  atomically). Found repeatedly in a 91-issue tracker audit. (2026-07-12)
 
 ## 8. Keeping a LESSONS.md (meta)
 

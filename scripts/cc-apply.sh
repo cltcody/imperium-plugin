@@ -16,9 +16,33 @@ source "$SCRIPT_DIR/lib/cc-filter.sh"
 CONFIG="$ROOT/cc.config.json"
 [[ -f "$ROOT/cc.config.local.json" ]] && CONFIG="$ROOT/cc.config.local.json"
 DRY_RUN=true
+FORCE_IN_PLACE=false
+for arg in "$@"; do
+  case "$arg" in
+    --apply)          DRY_RUN=false ;;
+    --force-in-place) FORCE_IN_PLACE=true ;;
+  esac
+done
 
-if [[ "${1:-}" == "--apply" ]]; then
-  DRY_RUN=false
+# ── Guard: never leave a persistent in-place bake in the source ────────────────
+# --apply rewrites the brand-neutral ${user_config.*} tokens to concrete values IN
+# PLACE. The safe publisher (cc-publish.sh) does this then git-restores the source,
+# so the repo never keeps baked values — it signals that with CC_PUBLISH_CONTEXT=1.
+# A bare --apply (e.g. what /cc:setup:configure runs) leaves the bake sitting in the
+# tree; that happened 2026-07-09 and de-templatized the canonical source for a day.
+# Refuse unless the caller is the publisher, or the user explicitly opts into a
+# permanent bake in this clone with --force-in-place.
+if [[ "$DRY_RUN" == "false" && "${CC_PUBLISH_CONTEXT:-}" != "1" && "$FORCE_IN_PLACE" == "false" ]]; then
+  {
+    echo "Error: refusing to bake config into the source in place."
+    echo "  --apply rewrites brand-neutral \${user_config.*} tokens to concrete values and does"
+    echo "  NOT restore them; left in the tree, that de-templatizes the plugin (happened 2026-07-09)."
+    echo ""
+    echo "  • Publish your config safely:   bash scripts/cc-publish.sh    (bakes, publishes, restores)"
+    echo "  • Permanently bake THIS clone:  re-run with --force-in-place   (never in the canonical source)"
+    echo "  • Preview only:                 bash scripts/cc-apply.sh       (dry-run, always allowed)"
+  } >&2
+  exit 1
 fi
 
 # ── Require python3 for JSON parsing ─────────────────────────────────────────

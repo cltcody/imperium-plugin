@@ -85,3 +85,5 @@ Determine which issues to triage based on the arguments: **$ARGUMENTS**
 - **Check issue body** — titles alone aren't enough context
 - **Use the codebase** — if understanding a relationship requires seeing how modules connect, look
 - **When uncertain, note it** — flag ambiguous issues in the summary rather than guessing
+- **Report placement gaps too** — where the repo uses milestones or a project board, list issues missing that placement in the summary (flag, don't guess a placement)
+- **Filing discipline binds triage too** — any new issue filed during triage gets a duplicate search first (`gh issue list --state all --search "<title key terms>"`, read the top 3 matches) and full metadata (type + priority, plus milestone/board placement where the project uses them) in the same action

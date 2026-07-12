@@ -25,6 +25,15 @@ Commands ask for steps by these canonical names. A project maps each to a real c
 | `dev` | Start the app / dev server |
 | `migrate` | Apply database migrations |
 | `coverage` | Test run with coverage report |
+| `e2e:setup` | Provision the e2e environment (boot device/simulator, build + install the app under test). Idempotent; may be slow |
+| `e2e:smoke` | Fast end-to-end subset — the per-change gate (target: seconds-to-a-few-minutes of flow time) |
+| `e2e` | Full end-to-end suite — scheduled/manual scope, not per-change |
+
+The `e2e:*` steps are **opt-in**: only `/cc:verify:e2e` requests them — never `verify:run`
+or `release:validate`, whose gates must stay fast. The setup→run split exists because
+device provisioning is expensive and ordering-sensitive: the app under test must be built
+**after** the source under test is final (a built app bakes its code in at build time), so
+chains sequence `e2e:setup` once, at final HEAD.
 
 ---
 

@@ -32,6 +32,7 @@ The dev flow is **Plan → Implement → Verify → Release**. Pick the entry po
 | Stopping mid-task for the day | `/cc:pause` (writes a session cursor) → next session `/cc:prime --resume` |
 | "What does this project already remember?" | `/cc:memory` (session cursor, memory-sync, task-list, native auto-memory — one glance) |
 | Branch is done — ship it | `/cc:release:ship` (verify → review → QA → commit) → `/cc:ship-pr` for the PR/merge tail |
+| Run a feature unattended to an **opened** PR (no mid-run gates, never merges) | `/cc:piv-autopilot` (plan/idea/issue → routed implement → validate + e2e → review → PR) |
 
 ## Dev — verifying & reviewing
 

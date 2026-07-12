@@ -282,7 +282,7 @@ All commands use the `/cc:` prefix with colon-separated groups (e.g. `/cc:implem
 
 Three layers of customization, in order:
 
-1. **Identity** — run `/cc:setup:configure` to set company, products, and brand colors. Your values are written to `cc.config.local.json` (gitignored — overrides the tracked `cc.config.json` template) and applied across every asset. Manual path: copy `cc.config.json` → `cc.config.local.json`, edit it, then `bash scripts/cc-apply.sh --apply`. Full placeholder list in `WHAT_TO_UPDATE.md`.
+1. **Identity** — run `/cc:setup:configure` to set company, products, and brand colors. Your values are written to `cc.config.local.json` (gitignored — overrides the tracked `cc.config.json` template) and applied across every asset. Manual path: copy `cc.config.json` → `cc.config.local.json`, edit it, then `bash scripts/cc-apply.sh --apply --force-in-place` (the flag is required — a bare `--apply` is refused so a stray run can't de-templatize the source; never use it in the canonical repo — publish from there with `cc-publish.sh`). Full placeholder list in `WHAT_TO_UPDATE.md`.
 2. **Brand** — run `/cc:setup:brand` for a guided walkthrough that places your logo and sets colors/fonts (no file editing required). `BRAND_SETUP.md` is the manual reference if you prefer.
 3. **Per-project stack** — run `/cc:setup:stack` in each code project; it writes that project's `STACK.md` so the dev commands use that project's real test/lint/build/migrate commands (works across Next.js, Django, FastAPI, Expo, monorepos). Details in `STACK_SETUP.md`.
 

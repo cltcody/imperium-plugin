@@ -67,6 +67,7 @@ Apply the first matching row, top to bottom:
 | Production incident, bad deploy live | Release | `/cc:release:rollback`, then `/cc:verify:rca` |
 | Perf-sensitive change or slowness reported | Verify | `/cc:verify:performance` |
 | Dependency hygiene due (routine or pre-release) | Verify | `/cc:verify:dependencies` |
+| Full loop to an opened PR wanted, unattended (no commit-gate stop) | All | `piv-autopilot` skill — explicitly-invoked; give the user the exact command line |
 | Nothing in flight, no stated goal | — | Ask for the goal; suggest `/cc:piv:loop "<goal>"` or `/cc:plan:feature`, or `/cc:github:list` to pick an issue |
 
 **The chain** (what `/cc:piv:loop` runs hands-off): prime → plan:feature → implement:execute → verify:run → verify:code (→ verify:code-review-fix loop, max 2) → verify:security → verify:execution-report → ⛔ GATE (user approval) → release:commit → optional verify:system.
@@ -133,6 +134,7 @@ This skill is the single map of this project's development commands. One line pe
 | `/cc:verify:gdpr` | Quick GDPR/data-protection check of the current diff (delegates to `gdpr-auditor`) |
 | `/cc:verify:performance` | Static performance review — N+1s, missing pagination, sync-in-async, cache wins |
 | `/cc:verify:dependencies` | Dependency & supply-chain audit — CVEs, outdated packages, unpinned CI |
+| `/cc:verify:e2e` | Opt-in end-to-end gate — provision the device/simulator (`e2e:setup`), run the e2e smoke or full suite from STACK.md `e2e:*` steps |
 | `/cc:verify:execution-report` | Write the execution report to `${user_config.workspace_dir}/execution-reports/` |
 | `/cc:verify:system` | Post-commit process review — what about the *workflow* should improve |
 | `/cc:release:commit` | ⛔ The approval gate — present summary, get explicit approval, then commit |
@@ -162,6 +164,7 @@ This skill is the single map of this project's development commands. One line pe
 | `skill-creator` | Create or improve a skill in this project |
 | `sop-creator` | Write a runbook, SOP, or playbook for a repeatable process |
 | `rulecheck` | Autonomous code-quality cycle — finds and fixes CLAUDE.md rule violations, opens a PR |
+| `piv-autopilot` | Input-free feature loop — plan/adopt → routed implement → validate (+ opt-in e2e) → review until clean → **opened** PR; never merges. Explicitly-invoked |
 | `triage` | Label GitHub issues with type/effort/priority/area via the `triage-agent` |
 | `archon` | Delegate a workflow to the Archon remote agentic platform |
 

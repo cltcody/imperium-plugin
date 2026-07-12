@@ -21,6 +21,13 @@ Take a GitHub issue from open to pull request using the full PIV chain. This is 
 6. **Open the PR.** After the commit gate, invoke `/cc:github:pr`. The PR body must reference the issue (`Closes #<number>`) so GitHub links and auto-closes it on merge.
 7. **Close the loop.** Post the PR URL back on the issue: `gh issue comment <number> --body "PR opened: <url>"`.
 
+### Filing new issues (follow-ups, deferred scope, bugs found mid-work)
+
+Whenever this flow — or any other — files a new issue with `gh issue create`, two rules apply at creation time, not later:
+
+- **Duplicate check first (mandatory).** `gh issue list --state all --search "<key terms from the title>"` (or `gh search issues`) and read the top 3 matches before filing. A match → comment on the existing issue instead of opening a twin.
+- **Full metadata in the same action.** Apply the project's taxonomy as part of the create: a type label, a priority, and a milestone or board placement where the project uses them (taxonomies differ — fetch `gh label list` rather than assuming names). An issue filed bare is invisible to every later filter and sweep, and becomes an orphan.
+
 ## Output
 
 A branch `issue-<number>-<description>` with reviewed, validated, committed work; a PR linked to the issue; plan and PR comments on the issue. Plan artifact in `${user_config.workspace_dir}/plans/`, execution report in `${user_config.workspace_dir}/execution-reports/`.

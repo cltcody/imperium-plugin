@@ -61,9 +61,12 @@ if git -C "$ROOT" rev-parse --is-inside-work-tree &>/dev/null; then
 fi
 
 # ── 2. Bake in config substitutions (unless skipped) ──────────────────────────
+# CC_PUBLISH_CONTEXT=1 tells cc-apply.sh this in-place bake is sanctioned: the source
+# is git-restored below (step 4b), so it's never left de-templatized. Without it,
+# cc-apply refuses a bare --apply (see its guard) to prevent the 2026-07-09 foot-gun.
 if [[ "$SKIP_CONFIG" == "false" ]]; then
   step "Applying cc.config.json substitutions"
-  bash "$SCRIPT_DIR/cc-apply.sh" --apply
+  CC_PUBLISH_CONTEXT=1 bash "$SCRIPT_DIR/cc-apply.sh" --apply
 else
   echo "(skipping cc-apply.sh — publishing as-is)"
 fi

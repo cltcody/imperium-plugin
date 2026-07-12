@@ -177,6 +177,14 @@ git diff --name-only origin/main...HEAD | grep -E '(package(-lock)?\.json|pnpm-l
 
 Pass: manifests and their lockfiles appear as a pair (or neither).
 
+**5.6 Issue linkage enumerated in the PR body** — a PR that merges without `Closes #N` leaves every issue it completed open forever ("zombie" issues: shipped but still tracked as pending); consolidation PRs and work tracked under a plan name instead of an issue number are the classic offenders (2026-07-12).
+
+```bash
+gh pr view --json body -q .body | grep -inE '(close[sd]?|fix(e[sd])?|resolve[sd]?|advances) #[0-9]+|no related issues'
+```
+
+Pass: the body carries one `Closes #N` per issue the diff completes — including all donors when one PR consolidates several — or an explicit "Advances #N — closes nothing" / "No related issues" declaration. Zero hits = CHECK: enumerate now, before merge, not in a later hygiene sweep.
+
 ## 6. Validation honesty
 
 **6.1 The verify gate ran on the FINAL commit** — a gate that passed two commits ago validated a different tree; "it was green when I checked" is the classic false MERGE READY, and a post-validation fix-up commit is a new, unvalidated tree.

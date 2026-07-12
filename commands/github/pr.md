@@ -15,10 +15,10 @@ Create a well-formed pull request from the current branch, or manage an existing
 2. **Sync check.** `git fetch origin main`; if the branch is behind in a way that will conflict, run `/cc:github:sync` first.
 3. **Pre-push validation (hard gate).** Run the project-detected checks (type-check, lint, tests) and do not push until all pass. Fix and re-run any failures — never skip or work around them.
 4. **Push.** `git push -u origin <branch>`.
-5. **Compose the body** from the actual commits and diff (and `${user_config.workspace_dir}/execution-reports/` if one exists for this work). Use the repo's `.github/PULL_REQUEST_TEMPLATE.md` if present; otherwise:
+5. **Compose the body** from the actual commits and diff (and `${user_config.workspace_dir}/execution-reports/` if one exists for this work). **Enumerate completed issues first (required):** check which open issues this diff completes — `gh issue list --state open --search "<key terms>"` on the branch/commit topics. Work tracked under a plan or feature name still maps back to issues, and one PR can complete several. Then use the repo's `.github/PULL_REQUEST_TEMPLATE.md` if present; otherwise:
    - `## Summary` — what changed and why, 1–3 bullets.
    - `## Test plan` — checklist of how it was verified (project-detected checks, manual steps).
-   - `Closes #<issue>` when an issue exists.
+   - One `Closes #<n>` line per issue the diff completes; if it completes none, an explicit `Advances #<n> — closes nothing` (or `No related issues`) line instead. Never leave linkage implicit — PRs shipped without it leave zombie issues (done but still open).
    - End the body with: `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
 6. **Create.** `gh pr create --title "<conventional title>" --body "<body>" --base main`. Write the body via a temp file (`--body-file`) if quoting is awkward in the shell. Report the PR URL.
 7. **Watch CI (hard gate).** `gh pr checks <number> --watch` (or `gh run list --branch <branch>`). On red, investigate the logs immediately (`gh run view <run-id> --log-failed`), fix, commit, push, and confirm CI goes green before reporting the PR as ready.
@@ -37,7 +37,7 @@ A pull request URL with a summary + test plan body and Claude Code attribution, 
 - [ ] Not raised from main; working tree clean before push
 - [ ] Pre-push checks (type-check, lint, tests) all green before pushing
 - [ ] PR title is conventional and matches the actual change
-- [ ] Body has Summary, Test plan, issue reference where applicable, and the attribution line
+- [ ] Body has Summary, Test plan, a `Closes #n` line per completed issue (or an explicit closes-nothing declaration), and the attribution line
 - [ ] CI checks green (or failures explained to the user)
 - [ ] Merge only with green checks and resolved threads, squash by default
 

@@ -77,3 +77,10 @@ As you process issues, track:
 - **Supersedes** — broader issue encompassing a narrower one
 
 Use `Glob` and `Grep` to verify relationships by checking if issues touch the same code.
+
+## Filing Discipline
+
+If your triage run files any new issue (a split-out sub-issue, a discovered gap):
+
+- **Duplicate search before filing** — `gh issue list --state all --search "<key terms from the title>"`; read the top 3 matches. A match means comment on the existing issue, not a new one.
+- **Full metadata in the same action** — type + priority labels (plus effort/area per this rulebook), and a milestone or project-board placement where the repository uses them. Never file bare and "label it later" — bare issues are exactly what triage exists to prevent.

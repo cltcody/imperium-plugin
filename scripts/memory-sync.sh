@@ -279,16 +279,26 @@ scrub_benign_tr() {
   printf '%s\n' "$content"
 }
 
+# Blank wiki-link [[slug]] STRUCTURE out of a content stream before denylist matching.
+# A link slug is a memory filename, never a secret — but a slug such as
+# [[feedback-ask-clarifying-questions]] false-matches the sk-<20+> API-key pattern and
+# would park the whole file from sync. Scrub ONLY [[...]] (not markdown ](url) targets,
+# which could legitimately carry a secret-bearing URL) so this kills the false-positive
+# class without weakening real secret detection. Reads stdin.
+scrub_link_slugs() {
+  sed -E 's/\[\[[^]]*\]\]/ /g'
+}
+
 # Echo store-relative paths of files that hit the denylist. Scans the SAME set `git add -A`
 # would commit (all file types, any subdir incl. _handoffs/) — not just *.md — so nothing slips
 # the gate by extension. Excludes .git/ and the control files (the denylist would self-match).
-# Each file is scrubbed of BENIGN_TR_CONTEXTS (see above) before matching.
+# Each file is scrubbed of BENIGN_TR_CONTEXTS + wiki-link slugs (see above) before matching.
 denylist_hits() {
   local patterns f
   patterns="$(grep -vE '^[[:space:]]*(#|$)' "$STORE/.memory-denylist" 2>/dev/null || true)"
   [[ -n "$patterns" ]] || return 0
   ( cd "$STORE" && while IFS= read -r f; do
-      scrub_benign_tr "$f" | grep -qiE -f <(printf '%s\n' "$patterns") && printf '%s\n' "${f#./}"
+      scrub_benign_tr "$f" | scrub_link_slugs | grep -qiE -f <(printf '%s\n' "$patterns") && printf '%s\n' "${f#./}"
     done < <(find . -type f ! -path './.git/*' ! -name '.memory-denylist' ! -name 'REVIEW_NEEDED.txt' 2>/dev/null) )
 }
 
@@ -312,7 +322,7 @@ cmd_push() {
     {
       echo "Held back from sync — contains denylisted terms. Edit these, then push again:"
       for f in "${held[@]}"; do
-        scrub_benign_tr "$f" | grep -inE -f <(printf '%s\n' "$patterns") 2>/dev/null | sed "s#^#  $f:#"
+        scrub_benign_tr "$f" | scrub_link_slugs | grep -inE -f <(printf '%s\n' "$patterns") 2>/dev/null | sed "s#^#  $f:#"
       done
     } > "$STORE/REVIEW_NEEDED.txt"
     warn "${#held[@]} file(s) held from sync (denylist) — see: $STORE/REVIEW_NEEDED.txt"
@@ -489,7 +499,7 @@ cmd_doctor() {
       while IFS= read -r f; do
         [[ -n "$f" ]] || continue
         found=1
-        match="$(scrub_benign_tr "$STORE/$f" | grep -inE -f <(printf '%s\n' "$patterns") 2>/dev/null | head -n1)"
+        match="$(scrub_benign_tr "$STORE/$f" | scrub_link_slugs | grep -inE -f <(printf '%s\n' "$patterns") 2>/dev/null | head -n1)"
         warn "$f — matched: ${match:-<term>}"
         info "  fix: edit to remove the term, then 'push' again"
       done < <(denylist_hits)
@@ -511,6 +521,35 @@ cmd_doctor() {
     fi
   done
   eval "$saved"
+  [[ "$found" -eq 0 ]] && info "none found"
+
+  # (h) broken wiki-links — a [[slug]] whose target memory file is missing but whose
+  # hyphen->underscore normalization resolves (a format typo — the same class that can
+  # false-match a secret pattern and park a file; see scrub_link_slugs). Genuinely dangling
+  # links (no normalized match) are intentional placeholders per the memory convention and
+  # are NOT flagged, to keep this signal actionable.
+  step "Broken wiki-links (hyphenated slug where an underscore memory exists)"
+  found=0
+  if [[ "$store_exists" -eq 1 ]]; then
+    saved="$(shopt -p nullglob || true)"; shopt -s nullglob
+    local mdir slug norm
+    for mdir in "$STORE"/*/memory; do
+      [[ -d "$mdir" ]] || continue
+      for f in "$mdir"/*.md; do
+        [[ -f "$f" ]] || continue
+        while IFS= read -r slug; do
+          [[ -n "$slug" ]] || continue
+          [[ -f "$mdir/$slug.md" ]] && continue
+          norm="${slug//-/_}"
+          if [[ "$norm" != "$slug" && -f "$mdir/$norm.md" ]]; then
+            found=1
+            warn "${f#"$STORE"/}: [[${slug}]] does not resolve — did you mean [[${norm}]]?"
+          fi
+        done < <(grep -oE '\[\[[^]]+\]\]' "$f" 2>/dev/null | sed -E 's/^\[\[//; s/\]\]$//')
+      done
+    done
+    eval "$saved"
+  fi
   [[ "$found" -eq 0 ]] && info "none found"
 
   return 0

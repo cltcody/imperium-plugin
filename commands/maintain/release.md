@@ -39,10 +39,24 @@ Classify the commits since `$LAST_TAG` by conventional-commit prefix: any breaki
 `major`; any `feat` → `minor`; only `fix`/`docs`/`chore` → `patch`. Propose the resulting
 version; the user's `$1` overrides. Compute `NEW_VERSION`.
 
-### 3 — Bump both manifests
+### 3 — Bump all three manifests
 
-Update `"version"` in `.claude-plugin/plugin.json` **and** `.claude-plugin/marketplace.json`
-(they must always match — verify with grep afterward).
+Update `"version"` in every manifest that carries it — all three must always match:
+
+1. `.claude-plugin/plugin.json` — the authoritative plugin version.
+2. `.claude-plugin/marketplace.json` — the directory-source marketplace manifest.
+3. `../.claude-plugin/marketplace.json` — the **repo-root anchor** for `github`-source
+   installs (lets other repos / Claude.ai cloud sessions install `cc@imperium` over the
+   network). Easy to miss: it lives one level up, outside the plugin dir.
+
+Verify afterward — all three must print `NEW_VERSION`:
+
+```bash
+grep -H '"version"' .claude-plugin/plugin.json .claude-plugin/marketplace.json ../.claude-plugin/marketplace.json
+```
+
+(The `bump-plugin-version` project skill does exactly this bump-plus-changelog across all
+three in one shot, if you'd rather not edit by hand.)
 
 ### 4 — CHANGELOG entry
 

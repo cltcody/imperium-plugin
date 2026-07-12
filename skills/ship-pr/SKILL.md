@@ -93,7 +93,10 @@ conditions below are hard rules, not suggestions.
 - Push the branch: `git push -u origin <branch>`.
 - If no PR exists, create one: `gh pr create --base <base> --head <branch>` with a
   title in the repo's commit-message style and a body following the repo's PR
-  template (What / Issue / Validation). Reference the issue it addresses.
+  template (What / Issue / Validation). Enumerate the open issues the diff
+  completes — every completed issue gets its own `Closes #N` line (one PR can
+  complete several); if it completes none, declare `Advances #N — closes nothing`
+  explicitly rather than leaving linkage implicit.
 - If a PR already exists, adopt it and make sure the latest commits are pushed.
 
 ## Step 2 — Validate (two independent passes)

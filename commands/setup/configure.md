@@ -73,7 +73,14 @@ copying `cc.config.json` first. Preserve all existing structure and comments.
 
 ### 5 — Apply
 
-Run: `bash scripts/cc-apply.sh --apply`
+Run: `bash scripts/cc-apply.sh --apply --force-in-place`
+
+The `--force-in-place` flag is **required** here: `cc-apply.sh` refuses a bare `--apply`
+because baking config into the source and leaving it there de-templatizes the plugin (this
+happened to the canonical repo on 2026-07-09). `--force-in-place` is the explicit
+"permanently bake **this** clone" acknowledgment — correct for a user configuring their own
+copy. **Never run this in the canonical/upstream plugin source** — to publish from there, use
+`bash scripts/cc-publish.sh` (it bakes, publishes, then restores the source).
 
 Capture stdout and report:
 - How many files were updated

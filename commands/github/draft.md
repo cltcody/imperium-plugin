@@ -19,7 +19,7 @@ Open a draft pull request early in a feature so the team can review direction wh
    - End with: `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
 4. **Create as draft.** `gh pr create --draft --title "WIP: <title>" --body "<body>" --base main`. Report the URL and tag reviewers if the user names them (`gh pr edit <number> --add-reviewer <user>`).
 5. **Iterate.** As feedback arrives (`gh pr view <number> --comments`): apply it, commit via `/cc:release:commit`, `git push` (auto-updates the PR), reply to threads. Update the TODO list in the body with `gh pr edit <number> --body-file <file>`.
-6. **Promote when complete.** All TODOs done and `/cc:verify:run` green → retitle without "WIP:" (`gh pr edit <number> --title "<final title>"`), switch `Refs` to `Closes`, then `gh pr ready <number>` to request formal review.
+6. **Promote when complete.** All TODOs done and `/cc:verify:run` green → retitle without "WIP:" (`gh pr edit <number> --title "<final title>"`), switch `Refs` to `Closes` — at promotion, enumerate every open issue the final diff completes and give each its own `Closes #<n>` line (or declare `Advances #<n> — closes nothing` explicitly) — then `gh pr ready <number>` to request formal review.
 
 ## Output
 
@@ -30,7 +30,7 @@ A draft PR URL with explicit TODO list and reviewer questions; later, the same P
 - [ ] Created with `--draft` and a `WIP:` title
 - [ ] Body separates done from TODO honestly
 - [ ] At least one concrete question for reviewers
-- [ ] Issue referenced with `Refs`, switched to `Closes` at promotion
+- [ ] Issue referenced with `Refs`; at promotion every completed issue gets its own `Closes` line (or an explicit closes-nothing declaration)
 - [ ] Promoted to ready only after validation passes and TODOs are cleared
 
 ## Handoff
