@@ -82,11 +82,45 @@ def run_hook(name: str, *args: str, stdin: str | None = None, cwd: Path | None =
     "commit-gate.py",
     "piv-status.py",
     "pre-compact-snapshot.py",
+    "session-load.py",
 ])
 def test_embedded_self_test_passes(hook_name):
     proc = run_hook(hook_name, "--self-test")
     assert proc.returncode == 0, proc.stdout + proc.stderr
     assert "FAIL" not in proc.stdout, proc.stdout
+
+
+# ---------------------------------------------------------------------------
+# 1b. session-load.py — the PostToolUse stdin path (silent → rate-limited nudge).
+# ---------------------------------------------------------------------------
+
+_HEAVY = ('{"session_id":"pytest-load","tool_name":"Bash",'
+         '"tool_input":{"command":"npx expo run:ios --configuration Release"}}')
+
+
+def test_session_load_nudges_after_heavy_runs(tmp_path):
+    env = {"CC_SESSION_LOAD_DIR": str(tmp_path)}
+    nudged = False
+    for _ in range(20):
+        proc = run_hook("session-load.py", stdin=_HEAVY, env=env)
+        assert proc.returncode == 0, proc.stderr  # unbreakable
+        if "SESSION-LOAD" in proc.stdout:
+            nudged = True
+    assert nudged, "expected a nudge once heavy/build load crossed the threshold"
+
+
+def test_session_load_silent_on_light_use(tmp_path):
+    env = {"CC_SESSION_LOAD_DIR": str(tmp_path)}
+    light = '{"session_id":"pytest-light","tool_name":"Read","tool_input":{}}'
+    for _ in range(10):
+        proc = run_hook("session-load.py", stdin=light, env=env)
+        assert proc.returncode == 0
+        assert proc.stdout.strip() == "", "a few cheap reads must never nudge"
+
+
+def test_session_load_malformed_stdin_exits_zero():
+    proc = run_hook("session-load.py", stdin="not json")
+    assert proc.returncode == 0, "garbage stdin must never fail a tool call"
 
 
 # ---------------------------------------------------------------------------

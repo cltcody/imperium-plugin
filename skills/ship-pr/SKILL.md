@@ -94,10 +94,18 @@ conditions below are hard rules, not suggestions.
 - If no PR exists, create one: `gh pr create --base <base> --head <branch>` with a
   title in the repo's commit-message style and a body following the repo's PR
   template (What / Issue / Validation). Enumerate the open issues the diff
-  completes — every completed issue gets its own `Closes #N` line (one PR can
-  complete several); if it completes none, declare `Advances #N — closes nothing`
-  explicitly rather than leaving linkage implicit.
+  completes — every completed issue gets its own `Closes #N` line **in the body**
+  (one PR can complete several); if it completes none, declare `Advances #N — closes
+  nothing` explicitly rather than leaving linkage implicit. A title `(#N)` reference
+  does **not** auto-close — GitHub only closes from a closing keyword in the body or
+  a default-branch commit, so the linkage line must live in the body.
 - If a PR already exists, adopt it and make sure the latest commits are pushed.
+- **Verify the linkage landed before moving on — check the effect, not the intent:**
+  `gh pr view <pr> --json closingIssuesReferences` MUST list every completed issue.
+  Empty or missing one ⇒ the `Closes #N` line is absent or malformed → fix the body
+  (`gh pr edit <pr> --body-file <fixed>`) and re-check. Since this skill **merges**, an
+  unlinked issue here ships done-but-open — never proceed to validate/merge until every
+  completed issue is linked.
 
 ## Step 2 — Validate (two independent passes)
 

@@ -97,7 +97,7 @@ work → **draft** PR, blocking reason as the first line. Sub-9 park (no code) �
 
 Cheap first read: `python3 ${CLAUDE_PLUGIN_ROOT}/hooks/piv_state.py --cwd <worktree>`
 (emits `phase	last	next`), then the evidence checks from the `piv-orchestrator` skill
-(git state, `${user_config.workspace_dir}/plans/` vs `execution-reports/`, open reviews,
+(git state, `.specify/plans/` vs `execution-reports/`, open reviews,
 open PRs — top-level only, never `archive/`). Never ask what can be detected. First
 matching row wins:
 
@@ -123,7 +123,7 @@ readiness rule always apply to the final state.
 
 Invoke `/cc:plan:feature` (or adopt per row 1/3). Confidence ≥ 9/10 → continue. Sub-9 →
 the degrade table's PARK policy. The plan is written to the target repo's
-`${user_config.workspace_dir}/plans/` and committed with the work.
+`.specify/plans/` and committed with the work.
 
 ### 3. Implement — routed
 
@@ -193,14 +193,31 @@ finding's file (ties → the later task; no match → unattributed, listed separ
 ### 8. Open (or adopt) the PR
 
 `git push -u origin <branch>` (commit guard applies — see Guardrails). Create the PR
-per the repo's template — or **adopt** the existing one (row 9) and update it. Body:
-What/Issue (`Closes #N`, noting when the goal came verbatim from an issue), validation
-evidence (per-component verify report + security verdict + e2e flow results, including
-any harness-classified e2e fixes with rationale), the **graded routing ledger** (the
-reviewer's per-task scrutiny baseline: read C/F diffs hardest, skim A-graded sweeps),
-**Needs human decision** (external text fenced), deferred/tracked findings, plan +
-execution-report paths. Ready vs draft per the readiness rule. Then **STOP — never
-merge; do not invoke `/cc:ship-pr`.**
+per the repo's template — or **adopt** the existing one (row 9) and update it.
+
+**Issue linkage is mandatory and goes in the body, never implicit.** For every issue the
+diff completes, a literal `Closes #N` line **in the PR body** (one per completed issue) —
+noting when the goal came verbatim from an issue. A title `(#N)` reference does **not**
+auto-close: GitHub only closes from a closing keyword in the body or a default-branch
+commit, so `(#480)` in the title with no `Closes #480` in the body leaves a zombie issue
+(done but still open — the exact failure this gate prevents). If the run completes no
+issue, write an explicit `Advances #N — closes nothing` (or `No related issues`) line
+instead — never omit the linkage line entirely.
+
+Then the rest of the body: validation evidence (per-component verify report + security
+verdict + e2e flow results, including any harness-classified e2e fixes with rationale),
+the **graded routing ledger** (the reviewer's per-task scrutiny baseline: read C/F diffs
+hardest, skim A-graded sweeps), **Needs human decision** (external text fenced),
+deferred/tracked findings, plan + execution-report paths.
+
+**Verify the linkage landed — check the effect, don't trust the instruction:** after
+create/adopt, `gh pr view <pr> --json closingIssuesReferences` MUST list every carried
+issue N. Empty or missing an N ⇒ the `Closes #N` line is absent or malformed → fix the
+body (`gh pr edit <pr> --body-file <fixed>`) and re-check until it resolves. Never finish
+step 8 with a completed issue GitHub hasn't linked.
+
+Ready vs draft per the readiness rule. Then **STOP — never merge; do not invoke
+`/cc:ship-pr`.**
 
 ### 9. Final report
 

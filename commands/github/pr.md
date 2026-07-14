@@ -20,7 +20,7 @@ Create a well-formed pull request from the current branch, or manage an existing
    - `## Test plan` — checklist of how it was verified (project-detected checks, manual steps).
    - One `Closes #<n>` line per issue the diff completes; if it completes none, an explicit `Advances #<n> — closes nothing` (or `No related issues`) line instead. Never leave linkage implicit — PRs shipped without it leave zombie issues (done but still open).
    - End the body with: `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
-6. **Create.** `gh pr create --title "<conventional title>" --body "<body>" --base main`. Write the body via a temp file (`--body-file`) if quoting is awkward in the shell. Report the PR URL.
+6. **Create.** `gh pr create --title "<conventional title>" --body "<body>" --base main`. Write the body via a temp file (`--body-file`) if quoting is awkward in the shell. Report the PR URL. **Then verify the linkage landed** (the title's `(#n)` does not auto-close — only a body keyword does): `gh pr view <number> --json closingIssuesReferences` must list every completed issue. Empty or missing one ⇒ the `Closes #n` line is absent or malformed → fix the body (`gh pr edit <number> --body-file <fixed>`) and re-check.
 7. **Watch CI (hard gate).** `gh pr checks <number> --watch` (or `gh run list --branch <branch>`). On red, investigate the logs immediately (`gh run view <run-id> --log-failed`), fix, commit, push, and confirm CI goes green before reporting the PR as ready.
 
 ### Manage (argument = PR number)
@@ -38,6 +38,7 @@ A pull request URL with a summary + test plan body and Claude Code attribution, 
 - [ ] Pre-push checks (type-check, lint, tests) all green before pushing
 - [ ] PR title is conventional and matches the actual change
 - [ ] Body has Summary, Test plan, a `Closes #n` line per completed issue (or an explicit closes-nothing declaration), and the attribution line
+- [ ] Linkage verified via `gh pr view --json closingIssuesReferences` — every completed issue actually listed (title `(#n)` alone does not auto-close)
 - [ ] CI checks green (or failures explained to the user)
 - [ ] Merge only with green checks and resolved threads, squash by default
 

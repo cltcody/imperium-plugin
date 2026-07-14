@@ -397,8 +397,11 @@ cmd_doctor() {
         info "remote: $origin"
         local tcmd=()
         command -v timeout &>/dev/null && tcmd=(timeout 5)
+        # bash 3.2 (macOS default) aborts on "${empty[@]}" under `set -u`; timeout(1) is usually
+        # absent on macOS, so tcmd stays empty here. The ${arr[@]+…} form expands to nothing when
+        # empty and to the quoted elements when set — portable across bash 3.2 and 4+/5.
         if GIT_TERMINAL_PROMPT=0 GIT_SSH_COMMAND="${GIT_SSH_COMMAND:-ssh -o BatchMode=yes -o ConnectTimeout=5}" \
-            "${tcmd[@]}" git -C "$STORE" ls-remote --exit-code origin &>/dev/null; then
+            ${tcmd[@]+"${tcmd[@]}"} git -C "$STORE" ls-remote --exit-code origin &>/dev/null; then
           info "remote reachable (git ls-remote OK)"
         else
           warn "remote unreachable right now — offline, network hiccup, or auth issue (not fatal; pull/push will just retry next session)"

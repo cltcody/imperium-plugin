@@ -9,6 +9,13 @@
 # Heavy text/JSON logic is delegated to python3 (already a hard requirement elsewhere
 # in this repo — see scripts/cc-apply.sh).
 #
+# Each python3 block is defined as a `_ccpy_*` helper function and captured via
+# `VAR="$(_ccpy_foo)"` — do NOT inline the heredoc back into the command substitution as
+# `VAR="$(python3 - <<'PYEOF' ... PYEOF)"`. bash 3.2's $() lexer tries to token-balance the
+# heredoc BODY (its backticks, apostrophes, and parens) and aborts with "unexpected EOF
+# looking for matching `" at parse time; bash 4+/5 (CI, Homebrew) parse it fine, so the
+# breakage is invisible until someone runs the gate with the stock macOS /bin/bash.
+#
 # Usage:
 #   bash scripts/cc-audit.sh
 
@@ -43,7 +50,7 @@ echo "Root: $ROOT"
 # ══════════════════════════════════════════════════════════════════════════════
 rule "1. Reference existence (\${CLAUDE_PLUGIN_ROOT}/... paths)"
 
-REF_OUT="$(python3 - "$ROOT" "$REPO_ROOT" <<'PYEOF'
+_ccpy_REF_OUT() { python3 - "$ROOT" "$REPO_ROOT" <<'PYEOF'
 import os, re, sys
 
 root = sys.argv[1]
@@ -203,7 +210,8 @@ print(f"CHECKED\t{checked + md_checked}")
 for b in broken:
     print(f"BROKEN\t{b}")
 PYEOF
-)"
+}
+REF_OUT="$(_ccpy_REF_OUT)"
 
 ref_checked=$(printf '%s\n' "$REF_OUT" | grep '^CHECKED' | cut -f2)
 ref_broken=$(printf '%s\n' "$REF_OUT" | grep '^BROKEN' | cut -f2-)
@@ -249,7 +257,7 @@ run_denylist 'pinned model ID (claude-*-4-N)' -E 'claude-(opus|sonnet|haiku)-4-[
 
 # CRLF — git grep -I can miss it depending on regex support across grep builds, so
 # check byte-for-byte in python instead.
-CRLF_OUT="$(python3 - "$REPO_ROOT" <<'PYEOF'
+_ccpy_CRLF_OUT() { python3 - "$REPO_ROOT" <<'PYEOF'
 import subprocess, sys, os
 
 repo_root = sys.argv[1]
@@ -275,7 +283,8 @@ for rel in out.stdout.splitlines():
 for h in hits:
     print(h)
 PYEOF
-)"
+}
+CRLF_OUT="$(_ccpy_CRLF_OUT)"
 
 if [[ -z "$CRLF_OUT" ]]; then
   ok "CRLF check: no CRLF line endings in tracked global/ or gtm-local/ files"
@@ -297,7 +306,7 @@ fi
 # ══════════════════════════════════════════════════════════════════════════════
 rule "3. Frontmatter validation"
 
-FM_OUT="$(python3 - "$ROOT" <<'PYEOF'
+_ccpy_FM_OUT() { python3 - "$ROOT" <<'PYEOF'
 import os, sys
 
 root = sys.argv[1]
@@ -382,7 +391,8 @@ for fpath, reason in bad:
     rel = os.path.relpath(fpath, root)
     print(f"BAD\t{rel}: {reason}")
 PYEOF
-)"
+}
+FM_OUT="$(_ccpy_FM_OUT)"
 
 fm_checked=$(printf '%s\n' "$FM_OUT" | grep '^CHECKED' | cut -f2)
 fm_bad=$(printf '%s\n' "$FM_OUT" | grep '^BAD' | cut -f2-)
@@ -402,7 +412,7 @@ fi
 # ══════════════════════════════════════════════════════════════════════════════
 rule "4. Placeholder sync (cc.config.json)"
 
-PH_OUT="$(python3 - "$ROOT" <<'PYEOF'
+_ccpy_PH_OUT() { python3 - "$ROOT" <<'PYEOF'
 import json, os, re, sys
 
 root = sys.argv[1]
@@ -502,7 +512,8 @@ for tok in unused:
 for tok in spare:
     print(f"SPARE\t{tok}")
 PYEOF
-)"
+}
+PH_OUT="$(_ccpy_PH_OUT)"
 
 ph_config_error=$(printf '%s\n' "$PH_OUT" | grep '^CONFIG_ERROR' | cut -f2-)
 ph_undefined=$(printf '%s\n' "$PH_OUT" | grep '^UNDEFINED')
@@ -584,7 +595,7 @@ else
   BASH_TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/cc-audit-bash.XXXXXX")"
   trap 'rm -rf "$BASH_TMP_DIR"' EXIT
 
-  MANIFEST="$(python3 - "$ROOT" "$BASH_TMP_DIR" <<'PYEOF'
+  _ccpy_MANIFEST() { python3 - "$ROOT" "$BASH_TMP_DIR" <<'PYEOF'
 import os, re, sys
 
 root, tmp_dir = sys.argv[1], sys.argv[2]
@@ -635,7 +646,8 @@ for d in scan_dirs:
                 rel = os.path.relpath(fpath, root)
                 print(f"{tmp_path}\t{rel}:{lineno}")
 PYEOF
-)"
+  }
+  MANIFEST="$(_ccpy_MANIFEST)"
 
   sc_bad=0
   sc_checked=0
@@ -690,7 +702,7 @@ fi
 # ══════════════════════════════════════════════════════════════════════════════
 rule "8. Model-routing tier coverage"
 
-MR_OUT="$(python3 - "$ROOT" <<'PYEOF'
+_ccpy_MR_OUT() { python3 - "$ROOT" <<'PYEOF'
 import os, sys
 
 root = sys.argv[1]
@@ -756,7 +768,8 @@ print(f"CHECKED\t{checked}")
 for m in missing:
     print(f"MISSING\t{m}")
 PYEOF
-)"
+}
+MR_OUT="$(_ccpy_MR_OUT)"
 
 mr_checked=$(printf '%s\n' "$MR_OUT" | grep '^CHECKED' | cut -f2)
 mr_missing=$(printf '%s\n' "$MR_OUT" | grep '^MISSING' | cut -f2-)
@@ -902,7 +915,7 @@ PROFILE_DIR="$SCRIPT_DIR/mirror-profiles"
 if [[ ! -d "$PROFILE_DIR" ]]; then
   notice "scripts/mirror-profiles/ not found — skipping profile validation"
 else
-  PROFILE_OUT="$(python3 - "$ROOT" "$PROFILE_DIR" <<'PYEOF'
+  _ccpy_PROFILE_OUT() { python3 - "$ROOT" "$PROFILE_DIR" <<'PYEOF'
 import json, os, sys
 
 root, profile_dir = sys.argv[1], sys.argv[2]
@@ -942,7 +955,8 @@ for fn in sorted(os.listdir(profile_dir)):
 
 print(f"CHECKED\t{checked}")
 PYEOF
-)"
+  }
+  PROFILE_OUT="$(_ccpy_PROFILE_OUT)"
 
   profile_checked=$(printf '%s\n' "$PROFILE_OUT" | grep '^CHECKED' | cut -f2)
   profile_errs=$(printf '%s\n' "$PROFILE_OUT" | grep '^ERR')
@@ -974,7 +988,7 @@ rule "13. Baked-substitution guard (tracked \${user_config.*} tokens survive in 
 if ! git -C "$REPO_ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   notice "Baked-substitution guard: not a git checkout — skipped (source-repo check only)"
 else
-  BAKE_OUT="$(cd "$REPO_ROOT" && python3 - <<'PYEOF'
+  _ccpy_BAKE_OUT() { cd "$REPO_ROOT" && python3 - <<'PYEOF'
 import os, subprocess
 
 TOKEN = "${user_config."
@@ -1007,7 +1021,8 @@ for line in head.splitlines():
         print(f"BAKED\t{path}\t{head_cnt}\t{wt_cnt}")
 print(f"CHECKED\t{checked}")
 PYEOF
-)"
+  }
+  BAKE_OUT="$(_ccpy_BAKE_OUT)"
 
   bake_checked=$(printf '%s\n' "$BAKE_OUT" | grep '^CHECKED' | cut -f2)
   bake_hits=$(printf '%s\n' "$BAKE_OUT" | grep '^BAKED' || true)
@@ -1034,7 +1049,7 @@ fi
 # ══════════════════════════════════════════════════════════════════════════════
 rule "14. Tracked settings shape (.claude/settings.json load-time validity)"
 
-SETTINGS_OUT="$(python3 - "$REPO_ROOT" <<'PYEOF'
+_ccpy_SETTINGS_OUT() { python3 - "$REPO_ROOT" <<'PYEOF'
 import json, os, sys
 
 repo = sys.argv[1]
@@ -1106,7 +1121,8 @@ for fpath in candidates:
 
 print(f"CHECKED\t{checked}")
 PYEOF
-)"
+}
+SETTINGS_OUT="$(_ccpy_SETTINGS_OUT)"
 
 settings_checked=$(printf '%s\n' "$SETTINGS_OUT" | grep '^CHECKED' | cut -f2)
 settings_errs=$(printf '%s\n' "$SETTINGS_OUT" | grep '^ERR' || true)
