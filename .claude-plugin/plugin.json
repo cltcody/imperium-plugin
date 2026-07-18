@@ -2,7 +2,7 @@
   "name": "cc",
   "displayName": "Command Center",
   "description": "Unified dev workflow + sales methodology + personal life-decision skills and commands",
-  "version": "1.5.2",
+  "version": "1.7.0",
   "author": {
     "name": "Cody Williams"
   },
@@ -96,6 +96,12 @@
       "title": "Workspace directory",
       "description": "Project-relative folder where cc commands write plans, reports, and reviews",
       "default": ".specify"
+    },
+    "component_reference_dir": {
+      "type": "string",
+      "title": "Component reference library",
+      "description": "Absolute path to a component reference library (see references/dev/component-reference-library.md). Empty = probe the portfolio default (~/code/_templates/reference); if neither resolves the integration is silently off.",
+      "default": ""
     }
   }
 }

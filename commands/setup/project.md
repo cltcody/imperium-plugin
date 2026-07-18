@@ -127,6 +127,22 @@ Ask whether to run `/cc:setup:ci` now (invoke via the SlashCommand tool on a yes
 an offer, not a default action — decline leaves nothing written and isn't an abort condition
 for the rest of this command.
 
+### 5b — Offer reference components (when a library is configured)
+
+Resolve the portfolio's component reference library per
+`${CLAUDE_PLUGIN_ROOT}/references/dev/component-reference-library.md`. **No library
+resolves → skip this step silently** (no mention in output beyond the status row).
+
+If a library resolves **and** it carries a stack directory matching this project's
+detected stack, offer per-family copies — one multi-select question, default none:
+"Copy reference component families? (e.g. forms / auth / data / shell / none)" — listing
+the families the library actually has for that stack. On a selection, copy per the
+reference doc's copy-semantics table (component source + NOTES.md to the stack's
+destination; never `_demo/`, examples, or `CONVENTIONS.md`), then record the traceability
+line (families + library commit) in the CLAUDE.md stub or `[WORKSPACE_DIR]/reports/`.
+Declining copies nothing and isn't an abort condition. Idempotent: if a destination
+component dir already exists, report "present, skipped" for it rather than overwriting.
+
 ### 6 — Plant per-repo plugin settings (personal only, gated)
 
 Per the safeguard matrix, this is the one command-family cell with real per-class variance:
@@ -209,6 +225,7 @@ STACK.md         <written | already present, class: added | already present, unc
 [WORKSPACE_DIR]/  plans/ reports/ code-reviews/  <created | present, skipped>
 .gitignore       <[WORKSPACE_DIR]/ ignored (shared-oss) | tracked, no entry added>
 CI               <written | offered, declined | already present | not offered — declined upstream>
+components       <copied: <families> @ <library-commit> | offered, declined | no library | no stack match>
 settings.json    <planted | planted with P1 caveat | skipped (probe fail) | refused (class) | present, skipped>
 
 Next: /cc:plan:project   — or —   /cc:prime
@@ -225,6 +242,9 @@ Next: /cc:plan:project   — or —   /cc:prime
       existing manifest's components
 - [ ] `[WORKSPACE_DIR]/` gitignore treatment matches the class (ignore only for shared-oss)
 - [ ] CI was offered, never forced
+- [ ] Reference components were offered only when a library resolved with a matching
+      stack, copied only on explicit selection, and the copy was recorded with the
+      library commit; existing destinations were never overwritten
 - [ ] Settings planting happened in `personal` repos only, only after user confirmation, and
       respected whichever P1 branch applied (recorded pass/fail, or the plant-with-caveat
       default when unresolved)

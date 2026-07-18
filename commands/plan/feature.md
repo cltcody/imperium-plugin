@@ -25,7 +25,7 @@ $ARGUMENTS
 Goal: find patterns to **mirror, not invent**. Launch **parallel subagents** (Explore/general-purpose) for these analyses; consolidate their findings:
 
 5. **Structure** — languages, frameworks, directory layout, architectural boundaries, config files, build process.
-6. **Patterns** — similar existing implementations; naming, error-handling, and logging conventions; CLAUDE.md rules; anti-patterns to avoid. Capture *actual code excerpts* (with file:line) for the structures you'll follow — not generic descriptions.
+6. **Patterns** — similar existing implementations; naming, error-handling, and logging conventions; CLAUDE.md rules; anti-patterns to avoid. Capture *actual code excerpts* (with file:line) for the structures you'll follow — not generic descriptions. **If the feature touches a user-facing surface** (forms/validation, auth screens, tables/pagination/async states, layout/modal/toast/destructive-confirm), resolve the portfolio's component reference library per `${CLAUDE_PLUGIN_ROOT}/references/dev/component-reference-library.md` and check it for a canonical component **before inventing one**: plan those tasks as COPY + ADAPT with the library file as the PATTERN reference and its NOTES.md "breaks guarantees" list carried into the GOTCHA field. No library resolved → skip silently.
 7. **Dependencies** — relevant libraries, how they are integrated, versions and compatibility constraints.
 8. **Testing** — test framework and layout, representative test examples to mirror, coverage expectations, mocking patterns.
 9. **Integration points** — existing files needing updates, new files to create with exact locations, registration/wiring patterns (routers, DI, exports).

@@ -34,6 +34,7 @@ Create whatever is missing — never overwrite what exists:
 - `README.md` stub with name, one-line description, and how to run (only if no README exists).
 - `CLAUDE.md` stub: stack summary, key commands (test/lint/build/run), and a pointer to `${user_config.workspace_dir}/plans/` as the planning dir.
 - PIV working dirs: `${user_config.workspace_dir}/plans/`, `${user_config.workspace_dir}/execution-reports/`, `${user_config.workspace_dir}/code-reviews/`, `${user_config.workspace_dir}/system-reviews/`, `${user_config.workspace_dir}/reports/`.
+- If a component reference library resolves for this project's stack (per `${CLAUDE_PLUGIN_ROOT}/references/dev/component-reference-library.md`), mention it in the CLAUDE.md stub's key-commands section as the first stop for form/auth/data/shell UI work — one line, no copying at this stage (`/cc:setup:project` owns the copy offer).
 
 ### 4. Install the environment
 
